@@ -3,5 +3,5 @@
 import DashboardShell from "../../components/dashboard/DashboardShell";
 
 export default function HomePage() {
-  return <DashboardShell initialNav="home" onNavigateLanding={() => (window.location.href = "/")} />;
+  return <DashboardShell initialNav="dashboard" onNavigateLanding={() => (window.location.href = "/")} />;
 }

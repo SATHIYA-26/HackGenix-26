@@ -45,7 +45,7 @@ import FeedbackDetailDrawer from "./modals/FeedbackDetailDrawer";
 import { USER_PROFILE, PROBLEMS, ACTIONS, CONNECTED_SOURCES, getFullFeedbackDatabase } from "./data/intelligenceMockData";
 
 export default function DashboardShell({
-  initialNav = "home",
+  initialNav = "dashboard",
   initialProblemId = null,
   initialFeedbackId = null,
   initialSettingsTab = "taxonomy",
@@ -136,7 +136,7 @@ export default function DashboardShell({
   };
 
   const navItems = [
-    { id: "home", label: "Home", icon: LayoutDashboard },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "insights", label: "Insights", icon: Sparkles },
     { id: "problems", label: "Problems", icon: AlertTriangle, badge: PROBLEMS.filter((p) => p.status === "critical" || p.status === "emerging").length },
     { id: "trends", label: "Trends", icon: TrendingUp },
@@ -144,7 +144,6 @@ export default function DashboardShell({
     { id: "sources", label: "Sources", icon: Globe, count: CONNECTED_SOURCES.length },
     { id: "recommendations", label: "Recommendations", icon: Lightbulb },
     { id: "actions", label: "Actions", icon: CheckCircle2, count: ACTIONS.length },
-    { id: "dashboards", label: "Dashboards", icon: BarChart3 },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
@@ -187,7 +186,10 @@ export default function DashboardShell({
         <nav className="flex-1 py-4 px-2.5 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeNav === item.id && !selectedProblemId;
+            const isActive =
+              (item.id === "dashboard"
+                ? activeNav === "dashboard" || activeNav === "home" || activeNav === "dashboards"
+                : activeNav === item.id) && !selectedProblemId;
 
             return (
               <button
@@ -340,7 +342,7 @@ export default function DashboardShell({
               />
             ) : (
               <>
-                {activeNav === "home" && (
+                {(activeNav === "dashboard" || activeNav === "home" || activeNav === "dashboards") && (
                   <HomeView
                     onSelectProblem={handleSelectProblem}
                     onSelectFeedback={handleSelectFeedback}
@@ -373,12 +375,6 @@ export default function DashboardShell({
                 )}
                 {activeNav === "actions" && (
                   <ActionsView onSelectProblem={handleSelectProblem} />
-                )}
-                {activeNav === "dashboards" && (
-                  <CustomDashboardsView
-                    onSelectProblem={handleSelectProblem}
-                    onSelectFeedback={handleSelectFeedback}
-                  />
                 )}
                 {activeNav === "settings" && <SettingsView />}
               </>

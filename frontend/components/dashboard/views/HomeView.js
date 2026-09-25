@@ -1,19 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, ArrowRight, TrendingUp, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, ExternalLink, Activity } from "lucide-react";
-import { USER_PROFILE, AI_BRIEF, PROBLEMS, RAW_FEEDBACK_ITEMS } from "../data/intelligenceMockData";
+import {
+  Sparkles,
+  ArrowRight,
+  TrendingUp,
+  AlertTriangle,
+  ShieldCheck,
+  CheckCircle2,
+  MessageSquare,
+  ExternalLink,
+  Activity,
+  Share2,
+  Globe,
+  Layers,
+} from "lucide-react";
+import {
+  USER_PROFILE,
+  AI_BRIEF,
+  PROBLEMS,
+  RAW_FEEDBACK_ITEMS,
+  CONNECTED_SOURCES,
+} from "../data/intelligenceMockData";
 
 export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate }) {
   const [timeframe, setTimeframe] = useState("30d");
+  const [showShareToast, setShowShareToast] = useState(false);
 
   const emergingProblems = PROBLEMS.filter((p) => p.status === "emerging" || p.status === "critical").slice(0, 4);
   const priorityProblems = [...PROBLEMS].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 3);
   const recentFeedback = RAW_FEEDBACK_ITEMS.slice(0, 3);
 
+  const handleShare = () => {
+    setShowShareToast(true);
+    setTimeout(() => setShowShareToast(false), 2500);
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Personalized Greeting Header */}
+      {/* ─── UNIFIED HEADER: PERSONALIZED GREETING & CONTROLS ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#ECE8E0] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -26,28 +51,94 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             Good morning, {USER_PROFILE.name}
           </h1>
           <p className="text-xs text-[#71717A] mt-1">
-            Here's what changed in customer feedback signals across all sources this week.
+            Unified executive customer intelligence & live signal shifts across all sources.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Time range selector */}
+          <div className="flex items-center rounded-lg border border-[#E5E1D8] bg-white p-0.5 text-xs">
+            {["7d", "30d", "90d"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTimeframe(t)}
+                className={`px-3 py-1 rounded font-semibold transition-colors ${
+                  timeframe === t ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
+                }`}
+              >
+                {t.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={handleShare}
+            className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors flex items-center gap-1.5"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Share</span>
+          </button>
+
           <button
             onClick={() => onNavigate("problems")}
-            className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors"
+            className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors"
           >
-            Explore All 15 Problems
+            Explore 15 Problems
           </button>
+
           <button
             onClick={() => onNavigate("recommendations")}
-            className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5"
+            className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <span>Review 4 AI Recommendations</span>
+            <span>4 AI Recommendations</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* AI Brief (Section 7) */}
+      {showShareToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+          <span>Executive Dashboard snapshot link copied to clipboard!</span>
+        </div>
+      )}
+
+      {/* ─── EXECUTIVE METRICS BAR ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+            Total Feedback
+          </span>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">12,482</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ +14.2% volume surge</p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+            Negative Friction
+          </span>
+          <p className="text-2xl font-bold text-[#059669] mt-1">9.7%</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▼ -4.2% negative decrease</p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+            Active Problem Clusters
+          </span>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">15</p>
+          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">3 high-severity clusters</p>
+        </div>
+
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+            Emerging Signals
+          </span>
+          <p className="text-2xl font-bold text-[#D97706] mt-1">4</p>
+          <p className="text-[11px] text-[#D97706] mt-0.5 font-semibold">Fastest: Checkout crashes (+362%)</p>
+        </div>
+      </div>
+
+      {/* ─── AI BRIEF: 3 IMPORTANT SHIFTS DETECTED THIS WEEK ─── */}
       <div className="p-6 rounded-2xl bg-[#FBF9F5] border border-[#E5E1D8] shadow-sm relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-6 h-6 rounded-md bg-[#7C3AED] text-white flex items-center justify-center">
@@ -81,10 +172,10 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-[11px]">
-                <span className="font-semibold text-[#71717A]">{shift.impact}</span>
-                <span className="font-bold text-[#18181B] group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
-                  View evidence →
+              <div className="mt-4 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-[11px] text-[#71717A]">
+                <span className="font-mono text-[#E11D48] font-bold">{shift.sentiment}</span>
+                <span className="text-[#4F46E5] font-semibold flex items-center gap-1 group-hover:underline">
+                  Inspect evidence →
                 </span>
               </div>
             </div>
@@ -92,25 +183,24 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
       </div>
 
-      {/* Grid: Emerging Problems & Customer Health (Sections 8 & 9) */}
+      {/* ─── 2-COLUMN LAYOUT: EMERGING PROBLEMS + CUSTOMER HEALTH TRAJECTORY ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left (2 cols): Emerging Problems */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#E11D48]" />
-                Emerging & Accelerating Problems
+                <AlertTriangle className="w-4 h-4 text-[#D97706]" /> Emerging & Critical Problems
               </h2>
               <p className="text-xs text-[#71717A]">
-                Issues with accelerating growth requiring product team awareness
+                Problems with accelerating volume or high negative sentiment
               </p>
             </div>
             <button
               onClick={() => onNavigate("problems")}
               className="text-xs font-semibold text-[#4F46E5] hover:underline"
             >
-              See all problems &rarr;
+              View all 15 &rarr;
             </button>
           </div>
 
@@ -119,34 +209,32 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
               <div
                 key={prob.id}
                 onClick={() => onSelectProblem(prob.id)}
-                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] hover:shadow-sm cursor-pointer transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all hover:shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 group"
               >
-                <div className="space-y-1.5 max-w-md">
-                  <div className="flex items-center gap-2 flex-wrap">
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                      className={`w-2 h-2 rounded-full ${
                         prob.status === "critical"
-                          ? "bg-[#FFF1F2] text-[#E11D48]"
+                          ? "bg-[#E11D48]"
                           : prob.status === "emerging"
-                          ? "bg-[#FEF3C7] text-[#D97706]"
-                          : "bg-[#F1F5F9] text-[#64748B]"
+                          ? "bg-[#D97706]"
+                          : "bg-[#059669]"
                       }`}
-                    >
-                      {prob.status}
-                    </span>
-                    <span className="text-xs font-bold text-[#18181B] group-hover:text-[#4F46E5] transition-colors">
+                    />
+                    <h3 className="text-xs font-bold text-[#18181B] group-hover:text-[#4F46E5] transition-colors truncate">
                       {prob.name}
-                    </span>
+                    </h3>
                   </div>
-                  <p className="text-xs text-[#71717A] line-clamp-1">
-                    {prob.shortExplanation}
-                  </p>
-                  <div className="flex items-center gap-3 text-[11px] text-[#71717A]">
+                  <p className="text-xs text-[#71717A] line-clamp-1">{prob.summary}</p>
+                  <div className="flex items-center gap-2 text-[11px] text-[#71717A] pt-1">
+                    <span className="bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#ECE8E0] font-mono">
+                      {prob.platform}
+                    </span>
+                    <span>•</span>
                     <span>{prob.product}</span>
                     <span>•</span>
-                    <span>{prob.platform}</span>
-                    <span>•</span>
-                    <span>{prob.version}</span>
+                    <span className="font-mono">{prob.version}</span>
                   </div>
                 </div>
 
@@ -170,25 +258,13 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
           </div>
         </div>
 
-        {/* Right (1 col): Customer Health & Sentiment Trajectory (Section 9) */}
+        {/* Right (1 col): Customer Health & Sentiment Trajectory */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#059669]" /> Customer Health
             </h2>
-            <div className="flex items-center rounded-lg border border-[#E5E1D8] bg-white p-0.5 text-[11px]">
-              {["7d", "30d", "90d"].map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTimeframe(t)}
-                  className={`px-2 py-0.5 rounded font-semibold transition-colors ${
-                    timeframe === t ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
-                  }`}
-                >
-                  {t.toUpperCase()}
-                </button>
-              ))}
-            </div>
+            <span className="text-[11px] font-mono font-bold text-[#71717A]">{timeframe.toUpperCase()} Trend</span>
           </div>
 
           <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white space-y-5">
@@ -244,19 +320,17 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
       </div>
 
-      {/* Grid: Priority Areas & Recent Customer Voice (Sections 10 & 11) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Priority Areas with Explainability (Section 10) */}
+      {/* ─── 3-COLUMN BOTTOM GRID: PRIORITY AREAS, CONNECTED SOURCES & RECENT VOICE ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Col 1: Priority Areas with Explainability */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
-                Priority Areas (Ranked by Evidence Score)
-              </h2>
-              <p className="text-xs text-[#71717A]">
-                The system explains why each problem has become critical
-              </p>
-            </div>
+          <div>
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+              Priority Areas (Ranked by Evidence)
+            </h2>
+            <p className="text-xs text-[#71717A]">
+              Explainable weighting driving team attention
+            </p>
           </div>
 
           <div className="space-y-3">
@@ -264,7 +338,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
               <div
                 key={prob.id}
                 onClick={() => onSelectProblem(prob.id)}
-                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all flex items-start gap-4 group"
+                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all flex items-start gap-3.5 group"
               >
                 <div className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#ECE8E0] text-xs font-bold text-[#18181B] flex items-center justify-center shrink-0">
                   0{idx + 1}
@@ -275,14 +349,14 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                       {prob.name}
                     </p>
                     <span className="text-xs font-bold text-[#18181B] bg-[#F4F1EA] px-2 py-0.5 rounded">
-                      Score {prob.priorityScore}
+                      {prob.priorityScore}
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-[#E11D48]">
+                  <p className="text-xs font-medium text-[#E11D48] line-clamp-1">
                     {prob.whyItMatters}
                   </p>
                   <p className="text-[11px] text-[#71717A]">
-                    Driven by: High volume ({prob.feedbackCount}) · {prob.growthLabel} velocity · {Math.round(prob.negativeSentiment * 100)}% negative sentiment
+                    {prob.feedbackCount} items · {prob.growthLabel} velocity
                   </p>
                 </div>
               </div>
@@ -290,22 +364,73 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
           </div>
         </div>
 
-        {/* Recent Customer Voice (Section 11) */}
+        {/* Col 2: Volume Distribution by Connected Sources */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-[#0284C7]" /> Sources Distribution
+              </h2>
+              <p className="text-xs text-[#71717A]">
+                Live continuous pipelines
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate("sources")}
+              className="text-xs font-semibold text-[#4F46E5] hover:underline"
+            >
+              Manage &rarr;
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3.5">
+            {CONNECTED_SOURCES.map((src) => {
+              const count = src.totalFeedback ?? src.itemsCount ?? 0;
+              return (
+                <div key={src.id} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: src.accent || "#0284C7" }}
+                      />
+                      <span className="font-semibold text-[#18181B]">{src.name}</span>
+                    </div>
+                    <span className="font-mono text-[11px] text-[#71717A]">
+                      {count.toLocaleString()} items
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        backgroundColor: src.accent || "#0284C7",
+                        width: `${Math.min(100, Math.max(5, (count / 12482) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Col 3: Recent Customer Voice (Traceable Quotes) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-[#2563EB]" /> Recent Customer Voice
+                <MessageSquare className="w-4 h-4 text-[#2563EB]" /> Customer Voice
               </h2>
               <p className="text-xs text-[#71717A]">
-                Original customer text remains fully traceable at all times
+                Original customer text
               </p>
             </div>
             <button
               onClick={() => onNavigate("feedback")}
               className="text-xs font-semibold text-[#4F46E5] hover:underline"
             >
-              Explore feed &rarr;
+              Feed &rarr;
             </button>
           </div>
 
@@ -314,7 +439,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
               <div
                 key={fb.id}
                 onClick={() => onSelectFeedback(fb)}
-                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all space-y-2 group"
+                className="p-3.5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all space-y-2 group"
               >
                 <p className="text-xs font-serif italic text-[#18181B] leading-relaxed line-clamp-2">
                   “{fb.text}”
@@ -326,7 +451,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                     <span>{fb.source}</span>
                   </div>
                   <span className="text-[#4F46E5] font-semibold group-hover:underline flex items-center gap-1">
-                    Inspect evidence →
+                    Trace →
                   </span>
                 </div>
               </div>

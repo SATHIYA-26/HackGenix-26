@@ -3,5 +3,5 @@
 import DashboardShell from "../../components/dashboard/DashboardShell";
 
 export default function DashboardsPage() {
-  return <DashboardShell initialNav="dashboards" onNavigateLanding={() => (window.location.href = "/")} />;
+  return <DashboardShell initialNav="dashboard" onNavigateLanding={() => (window.location.href = "/")} />;
 }
