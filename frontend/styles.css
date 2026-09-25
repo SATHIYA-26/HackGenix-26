@@ -25,15 +25,18 @@
   --text-light: #A1A1AA;
   --text-white: #FFFFFF;
 
-  /* Brand Accents & Gradients */
+  /* Brand Accents & Chattermill Ambient Gradients */
   --primary: #18181B;
   --primary-hover: #27272A;
   --accent-purple: #7C3AED;
+  --accent-purple-light: #F5F3FF;
   --accent-indigo: #4F46E5;
-  --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.09) 0%, rgba(251, 249, 245, 0) 70%);
+  --gradient-glow: radial-gradient(circle at 50% -12%, rgba(124, 58, 237, 0.12) 0%, rgba(216, 180, 254, 0.06) 40%, rgba(251, 249, 245, 0) 75%),
+                   radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.08) 0%, rgba(251, 249, 245, 0) 50%),
+                   radial-gradient(circle at 15% 65%, rgba(124, 58, 237, 0.05) 0%, rgba(251, 249, 245, 0) 60%);
   --gradient-hero-card: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
   
-  /* Chattermill Sentiment Colors */
+  /* Chattermill Signature 3-Tier Sentiment Colors */
   --sentiment-pos: #059669;
   --sentiment-pos-bg: #ECFDF5;
   --sentiment-pos-border: #A7F3D0;
@@ -47,8 +50,9 @@
   --sentiment-neg-border: #FECDD3;
 
   /* Borders & Dividers */
-  --border-subtle: #E5E2DC;
-  --border-card: #ECE8E0;
+  --border-subtle: #ECE8E0;
+  --border-card: #E5E1D8;
+  --border-card-hover: #D6D1C6;
 
   /* Fonts */
   --font-serif: 'Fraunces', Georgia, serif;
@@ -80,15 +84,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  position: relative;
 }
 
-/* Ambient Glow */
+/* Chattermill Ambient Mesh Glow */
 .bg-glow-wrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 600px;
+  bottom: 0;
   background: var(--gradient-glow);
   pointer-events: none;
   z-index: 0;
