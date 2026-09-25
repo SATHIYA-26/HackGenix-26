@@ -2827,6 +2827,17 @@ body {
    Theme matched with warm sand, deep obsidian, violet, indigo & emerald
    ========================================================================== */
 
+/* Interactive Particle Canvas (Coins, Micro-Tokens & Numbers) */
+.dovetail-particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  z-index: 99990;
+}
+
 /* Ambient Spotlight Follower */
 .dovetail-cursor-spotlight {
   position: fixed;

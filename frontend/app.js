@@ -914,6 +914,7 @@ function handleDemoBooking(e) {
 
 // ==========================================================================
 // DOVETAIL-INSPIRED INTERACTIVE CURSOR & SPOTLIGHT CONTROLLER
+// Enhanced with Micro-Coins, VoC Metric Tokens & Special Glyphs
 // ==========================================================================
 
 function initDovetailCursor() {
@@ -921,11 +922,14 @@ function initDovetailCursor() {
   const ring = document.getElementById("cursorRing");
   const badge = document.getElementById("cursorBadge");
   const spotlight = document.getElementById("cursorSpotlight");
+  const canvas = document.getElementById("cursorParticleCanvas");
 
   if (!dot || !ring || !spotlight) return;
 
   let mouseX = -100;
   let mouseY = -100;
+  let prevMouseX = -100;
+  let prevMouseY = -100;
   let dotX = -100;
   let dotY = -100;
   let ringX = -100;
@@ -937,10 +941,178 @@ function initDovetailCursor() {
   let isHoveringInput = false;
   let currentBadgeText = "";
 
+  // ------------------------------------------------------------------------
+  // Particle Canvas Engine (Micro-Coins, VoC Metrics, Numbers & Glyphs)
+  // ------------------------------------------------------------------------
+  let ctx = null;
+  let particles = [];
+  let dpr = window.devicePixelRatio || 1;
+  let canvasWidth = window.innerWidth;
+  let canvasHeight = window.innerHeight;
+
+  const TOKEN_COINS = ["₿", "₹", "$", "€", "¥"];
+  const TOKEN_METRICS = ["+24%", "98.2%", "4.9★", "0.95", "+16%", "99.4%", "14.8x", "+41.8%", "VoC", "AI"];
+  const TOKEN_GLYPHS = ["✦", "▲", "§", "//", "✓", "•", "Ø", "#", "&", "⌘", "⌥", "⚡", "::", "→", "~", "<>", "+"];
+  const THEME_COLORS = ["#7C3AED", "#4F46E5", "#059669", "#D97706", "#18181B", "#6366F1"];
+
+  if (canvas && canvas.getContext) {
+    ctx = canvas.getContext("2d");
+    function resizeCanvas() {
+      canvasWidth = window.innerWidth;
+      canvasHeight = window.innerHeight;
+      dpr = window.devicePixelRatio || 1;
+      canvas.width = canvasWidth * dpr;
+      canvas.height = canvasHeight * dpr;
+      canvas.style.width = canvasWidth + "px";
+      canvas.style.height = canvasHeight + "px";
+      if (ctx) ctx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+  }
+
+  function spawnParticle(x, y, isBurst = false) {
+    if (!ctx) return;
+    if (particles.length > 50) return; // Prevent excess count
+
+    // Categorize particle type
+    const rand = Math.random();
+    let type = "glyph";
+    let text = "";
+    let color = THEME_COLORS[Math.floor(Math.random() * THEME_COLORS.length)];
+
+    if (rand < 0.35) {
+      type = "coin";
+      text = TOKEN_COINS[Math.floor(Math.random() * TOKEN_COINS.length)];
+      color = Math.random() > 0.4 ? "#D97706" : "#7C3AED"; // Gold or Violet coin
+    } else if (rand < 0.70) {
+      type = "metric";
+      text = TOKEN_METRICS[Math.floor(Math.random() * TOKEN_METRICS.length)];
+      color = text.startsWith("+") || text.includes("★") ? "#059669" : "#7C3AED";
+    } else {
+      type = "glyph";
+      text = TOKEN_GLYPHS[Math.floor(Math.random() * TOKEN_GLYPHS.length)];
+    }
+
+    const angle = isBurst ? Math.random() * Math.PI * 2 : (Math.random() * Math.PI * 2);
+    const speed = isBurst ? 1.5 + Math.random() * 3.0 : 0.6 + Math.random() * 1.4;
+
+    particles.push({
+      x: x + (Math.random() - 0.5) * 12,
+      y: y + (Math.random() - 0.5) * 12,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - (isBurst ? 0.8 : 0.4), // slight float up
+      type: type,
+      text: text,
+      color: color,
+      size: type === "metric" ? 9 : (type === "coin" ? 11 : 10),
+      alpha: 0.95,
+      life: isBurst ? 55 + Math.random() * 25 : 45 + Math.random() * 20,
+      maxLife: 60,
+      rotation: (Math.random() - 0.5) * 0.4,
+      rotSpeed: (Math.random() - 0.5) * 0.04
+    });
+  }
+
+  function updateAndDrawParticles() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.015; // gentle gravity
+      p.vx *= 0.98; // air drag
+      p.rotation += p.rotSpeed;
+      p.life--;
+      p.alpha = Math.max(0, p.life / p.maxLife);
+
+      if (p.life <= 0 || p.alpha <= 0.01) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = p.alpha;
+
+      if (p.type === "coin") {
+        // Draw Dovetail-styled miniature embossed crypto/fiat coin disc
+        const radius = p.size;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color === "#D97706" ? "rgba(254, 243, 199, 0.95)" : "rgba(245, 243, 255, 0.95)";
+        ctx.fill();
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = p.color;
+        ctx.stroke();
+
+        // Inner coin symbol
+        ctx.font = `700 ${Math.round(p.size * 1.1)}px 'Inter', sans-serif`;
+        ctx.fillStyle = p.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.text, 0, 0.5);
+      } else if (p.type === "metric") {
+        // Draw miniature pill chip with metric text
+        ctx.font = `600 ${p.size}px 'Inter', sans-serif`;
+        const textMetrics = ctx.measureText(p.text);
+        const paddingX = 6;
+        const pillWidth = textMetrics.width + paddingX * 2;
+        const pillHeight = p.size + 6;
+
+        ctx.beginPath();
+        ctx.roundRect(-pillWidth / 2, -pillHeight / 2, pillWidth, pillHeight, 9999);
+        ctx.fillStyle = p.color === "#059669" ? "rgba(236, 253, 245, 0.92)" : "rgba(245, 243, 255, 0.92)";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = p.color === "#059669" ? "rgba(5, 150, 105, 0.35)" : "rgba(124, 58, 237, 0.35)";
+        ctx.stroke();
+
+        ctx.fillStyle = p.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.text, 0, 0);
+      } else {
+        // Draw special character / gibberish glyph
+        ctx.font = `700 ${p.size}px 'Inter', monospace`;
+        ctx.fillStyle = p.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(p.text, 0, 0);
+      }
+
+      ctx.restore();
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // Mouse & Interaction Handlers
+  // ------------------------------------------------------------------------
+  let distAccumulator = 0;
+
   window.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     document.body.classList.add("cursor-active");
+
+    if (prevMouseX !== -100) {
+      const dx = mouseX - prevMouseX;
+      const dy = mouseY - prevMouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      distAccumulator += dist;
+
+      // Spawn micro-token trail on fluid movement
+      if (distAccumulator > 32) {
+        spawnParticle(mouseX, mouseY, false);
+        distAccumulator = 0;
+      }
+    }
+
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
   });
 
   window.addEventListener("mouseleave", () => {
@@ -951,8 +1123,12 @@ function initDovetailCursor() {
     document.body.classList.add("cursor-active");
   });
 
-  window.addEventListener("mousedown", () => {
+  window.addEventListener("mousedown", (e) => {
     document.body.classList.add("cursor-clicking");
+    // Emit playful burst of micro-tokens and coins on click
+    for (let i = 0; i < 6; i++) {
+      spawnParticle(e.clientX, e.clientY, true);
+    }
   });
 
   window.addEventListener("mouseup", () => {
@@ -964,7 +1140,6 @@ function initDovetailCursor() {
     const target = e.target;
     if (!target) return;
 
-    // Check for explicit badge or card elements
     const customBadgeEl = target.closest("[data-cursor-label]");
     const heroCard = target.closest(".hero-roi-card, .roi-header, .roi-metrics-grid");
     const showcaseCard = target.closest(".showcase-tab-card, .showcase-tabs-nav");
@@ -995,15 +1170,12 @@ function initDovetailCursor() {
       currentBadgeText = "";
     }
 
-    // Check for clickable elements
     const clickable = target.closest("button, a, .cm-btn, .roi-tf-btn, .tab-btn, .cm-nav-link, select, input[type='radio'], input[type='checkbox'], [role='button'], .clickable");
     isHoveringClickable = !!clickable && !isHoveringBadge;
 
-    // Check for text inputs
     const textInput = target.closest("input[type='text'], input[type='email'], input[type='search'], input[type='password'], textarea");
     isHoveringInput = !!textInput;
 
-    // Apply classes
     if (isHoveringBadge) {
       document.body.classList.add("cursor-hover-badge");
       document.body.classList.remove("cursor-hover-clickable", "cursor-hover-input");
@@ -1034,6 +1206,8 @@ function initDovetailCursor() {
     ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
     spotlight.style.transform = `translate3d(${spotX}px, ${spotY}px, 0)`;
 
+    updateAndDrawParticles();
+
     requestAnimationFrame(renderCursor);
   }
 
@@ -1046,6 +1220,7 @@ if (document.readyState === "loading") {
 } else {
   initDovetailCursor();
 }
+
 
 
 
