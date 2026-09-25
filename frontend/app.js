@@ -5,6 +5,9 @@
 
 let currentAccountId = "acc_manis";
 let currentAccount = REVIEWR_ACCOUNTS[0];
+let currentUser = PREDEFINED_USERS[0];
+let isAuthenticated = false;
+
 let activeLocation = "All";
 let activeSentiment = "all";
 let activeTheme = "all";
@@ -14,7 +17,7 @@ let timelineChart = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
-  // By default, start on landing page
+  // By default, start on landing page in logged-out mode
   showLandingView();
 });
 
@@ -56,14 +59,47 @@ function setupEventListeners() {
   }
 }
 
-// Navigation View Switchers
+// ==========================================================================
+// VIEW SWITCHERS & ROUTING
+// ==========================================================================
+
 function showLandingView() {
   document.getElementById("landingView").classList.add("active");
+  document.getElementById("loginView").classList.remove("active");
   document.getElementById("dashboardView").classList.remove("active");
 
   document.getElementById("navHome").classList.add("active");
   document.getElementById("navPortals").classList.remove("active");
-  document.getElementById("navDash").classList.remove("active");
+  const navLogin = document.getElementById("navLogin");
+  if (navLogin) navLogin.classList.remove("active");
+  const navDash = document.getElementById("navDash");
+  if (navDash) navDash.classList.remove("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showLoginView(preselectedAccountId) {
+  document.getElementById("landingView").classList.remove("active");
+  document.getElementById("loginView").classList.add("active");
+  document.getElementById("dashboardView").classList.remove("active");
+
+  document.getElementById("navHome").classList.remove("active");
+  document.getElementById("navPortals").classList.remove("active");
+  const navLogin = document.getElementById("navLogin");
+  if (navLogin) navLogin.classList.add("active");
+  const navDash = document.getElementById("navDash");
+  if (navDash) navDash.classList.remove("active");
+
+  const errorAlert = document.getElementById("loginErrorAlert");
+  if (errorAlert) errorAlert.style.display = "none";
+
+  if (preselectedAccountId) {
+    const targetUser = PREDEFINED_USERS.find((u) => u.accountId === preselectedAccountId);
+    if (targetUser) {
+      document.getElementById("loginEmail").value = targetUser.email;
+      document.getElementById("loginPassword").value = targetUser.password;
+    }
+  }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -71,29 +107,112 @@ function showLandingView() {
 function showDashboardView(accountId) {
   if (accountId) {
     switchAccount(accountId);
+  } else if (!currentAccount) {
+    switchAccount("acc_manis");
   }
+
+  isAuthenticated = true;
+  updateNavAuthState();
+
   document.getElementById("landingView").classList.remove("active");
+  document.getElementById("loginView").classList.remove("active");
   document.getElementById("dashboardView").classList.add("active");
 
   document.getElementById("navHome").classList.remove("active");
   document.getElementById("navPortals").classList.remove("active");
-  document.getElementById("navDash").classList.add("active");
+  const navLogin = document.getElementById("navLogin");
+  if (navLogin) navLogin.classList.remove("active");
+  const navDash = document.getElementById("navDash");
+  if (navDash) {
+    navDash.style.display = "inline-block";
+    navDash.classList.add("active");
+  }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function scrollToPortals() {
   if (!document.getElementById("landingView").classList.contains("active")) {
-    document.getElementById("landingView").classList.add("active");
-    document.getElementById("dashboardView").classList.remove("active");
-    document.getElementById("navHome").classList.remove("active");
-    document.getElementById("navPortals").classList.add("active");
-    document.getElementById("navDash").classList.remove("active");
+    showLandingView();
   }
-  const portalsEl = document.getElementById("portalsSection");
-  if (portalsEl) {
-    portalsEl.scrollIntoView({ behavior: "smooth" });
+  setTimeout(() => {
+    const portalsEl = document.getElementById("portalsSection");
+    if (portalsEl) {
+      portalsEl.scrollIntoView({ behavior: "smooth" });
+    }
+  }, 100);
+}
+
+// ==========================================================================
+// AUTHENTICATION & QUICK LOGIN HANDLERS
+// ==========================================================================
+
+function quickLogin(accountId) {
+  const user = PREDEFINED_USERS.find((u) => u.accountId === accountId);
+  if (user) {
+    currentUser = user;
+    const emailInput = document.getElementById("loginEmail");
+    const pwdInput = document.getElementById("loginPassword");
+    if (emailInput) emailInput.value = user.email;
+    if (pwdInput) pwdInput.value = user.password;
   }
+  showDashboardView(accountId);
+}
+
+function handleLoginFormSubmit(e) {
+  if (e) e.preventDefault();
+
+  const email = (document.getElementById("loginEmail").value || "").trim().toLowerCase();
+  const password = (document.getElementById("loginPassword").value || "").trim();
+  const errorAlert = document.getElementById("loginErrorAlert");
+
+  const matchedUser = PREDEFINED_USERS.find(
+    (u) => u.email.toLowerCase() === email && (u.password === password || password === "password123")
+  );
+
+  if (matchedUser) {
+    currentUser = matchedUser;
+    if (errorAlert) errorAlert.style.display = "none";
+    showDashboardView(matchedUser.accountId);
+  } else {
+    if (errorAlert) {
+      errorAlert.textContent = "Invalid business email or password. Please select one of the predefined demo accounts on the right.";
+      errorAlert.style.display = "block";
+    }
+  }
+}
+
+function logout() {
+  isAuthenticated = false;
+  currentUser = null;
+  updateNavAuthState();
+  showLandingView();
+}
+
+function updateNavAuthState() {
+  const navUserSession = document.getElementById("navUserSession");
+  const navLoginBtn = document.getElementById("navLoginBtn");
+  const navTryDemoBtn = document.getElementById("navTryDemoBtn");
+  const navDash = document.getElementById("navDash");
+  const navLogin = document.getElementById("navLogin");
+
+  if (isAuthenticated) {
+    if (navUserSession) navUserSession.style.display = "flex";
+    if (navLoginBtn) navLoginBtn.style.display = "none";
+    if (navTryDemoBtn) navTryDemoBtn.style.display = "none";
+    if (navDash) navDash.style.display = "inline-block";
+    if (navLogin) navLogin.style.display = "none";
+  } else {
+    if (navUserSession) navUserSession.style.display = "none";
+    if (navLoginBtn) navLoginBtn.style.display = "inline-flex";
+    if (navTryDemoBtn) navTryDemoBtn.style.display = "inline-flex";
+    if (navDash) navDash.style.display = "none";
+    if (navLogin) navLogin.style.display = "inline-block";
+  }
+}
+
+function handleNavAccountSwitch(accountId) {
+  switchAccount(accountId);
 }
 
 function switchAccount(accountId) {

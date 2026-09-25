@@ -30,26 +30,41 @@
       <nav class="cm-nav-links">
         <span class="cm-nav-link active" id="navHome" onclick="showLandingView()">Overview</span>
         <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Predefined Portals</span>
-        <span class="cm-nav-link" id="navDash" onclick="showDashboardView('acc_manis')">Live Dashboard</span>
+        <span class="cm-nav-link" id="navLogin" onclick="showLoginView()">Sign In</span>
+        <span class="cm-nav-link" id="navDash" onclick="showDashboardView()" style="display:none;">Dashboard</span>
       </nav>
 
       <div class="cm-nav-actions">
-        <!-- Account Switcher Dropdown in Top Nav -->
-        <div class="cm-account-switcher-bar">
-          <img id="navUserAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100" class="cm-acc-avatar" alt="Avatar" />
-          <select id="accountSelect" class="cm-acc-select" onchange="switchAccount(this.value)">
-            <option value="acc_manis">📍 Mani's Dum Biriyani (Google Maps)</option>
-            <option value="acc_chepauk">📍 Chepauk Sports Store (Google Maps)</option>
-            <option value="acc_hm">📍 H&M Mylapore Branch (Google Maps)</option>
-            <option value="acc_vj_sidhu">▶ VJ Sidhu Vlogs (YouTube Channel)</option>
-            <option value="acc_spotify">📱 Spotify (Google Play Store)</option>
-          </select>
-        </div>
-
-        <button id="openSyncModalBtn" class="cm-btn cm-btn-primary">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
-          Live Sync
+        <!-- Logged Out CTA -->
+        <button id="navLoginBtn" class="cm-btn cm-btn-outline" onclick="showLoginView()">
+          Log In
         </button>
+        <button id="navTryDemoBtn" class="cm-btn cm-btn-primary" onclick="showLoginView()">
+          Demo Accounts →
+        </button>
+
+        <!-- Logged In User State (Visible in Dashboard) -->
+        <div id="navUserSession" class="cm-user-session-bar" style="display:none; align-items:center; gap:12px;">
+          <div class="cm-account-switcher-bar">
+            <img id="navUserAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100" class="cm-acc-avatar" alt="Avatar" />
+            <select id="accountSelect" class="cm-acc-select" onchange="handleNavAccountSwitch(this.value)">
+              <option value="acc_manis">📍 Mani's Dum Biriyani (Google Maps)</option>
+              <option value="acc_chepauk">📍 Chepauk Sports Store (Google Maps)</option>
+              <option value="acc_hm">📍 H&M Mylapore Branch (Google Maps)</option>
+              <option value="acc_vj_sidhu">▶ VJ Sidhu Vlogs (YouTube Channel)</option>
+              <option value="acc_spotify">📱 Spotify (Google Play Store)</option>
+            </select>
+          </div>
+
+          <button id="openSyncModalBtn" class="cm-btn cm-btn-primary" onclick="document.getElementById('syncModal').classList.add('active');">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+            Live Sync
+          </button>
+
+          <button id="navLogoutBtn" class="cm-btn cm-btn-outline" onclick="logout()" title="Log out of current workspace">
+            Log Out
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -76,7 +91,7 @@
         </p>
 
         <div class="cm-hero-cta-row">
-          <button onclick="showDashboardView('acc_manis')" class="cm-btn cm-btn-primary">
+          <button onclick="quickLogin('acc_manis')" class="cm-btn cm-btn-primary">
             Launch Interactive Prototype →
           </button>
           <button onclick="scrollToPortals()" class="cm-btn cm-btn-outline">
@@ -95,7 +110,7 @@
 
         <div class="landing-portals-grid">
           <!-- 1. Mani's Dum Biriyani -->
-          <div class="portal-card" onclick="showDashboardView('acc_manis')">
+          <div class="portal-card" onclick="quickLogin('acc_manis')">
             <div>
               <div class="portal-header">
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100" class="portal-avatar" alt="Mani's Dum Biriyani" />
@@ -123,12 +138,12 @@
                   <span class="portal-stat-val">14,280</span>
                 </div>
               </div>
-              <button class="portal-action-btn" style="margin-top:14px;">Open Business Dashboard →</button>
+              <button class="portal-action-btn" style="margin-top:14px;">Sign In to Business Dashboard →</button>
             </div>
           </div>
 
           <!-- 2. Chepauk Sports Store -->
-          <div class="portal-card" onclick="showDashboardView('acc_chepauk')">
+          <div class="portal-card" onclick="quickLogin('acc_chepauk')">
             <div>
               <div class="portal-header">
                 <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=100" class="portal-avatar" alt="Chepauk Sports Store" />
@@ -156,12 +171,12 @@
                   <span class="portal-stat-val">3,890</span>
                 </div>
               </div>
-              <button class="portal-action-btn" style="margin-top:14px;">Open Store Dashboard →</button>
+              <button class="portal-action-btn" style="margin-top:14px;">Sign In to Store Dashboard →</button>
             </div>
           </div>
 
           <!-- 3. H&M Mylapore Branch -->
-          <div class="portal-card" onclick="showDashboardView('acc_hm')">
+          <div class="portal-card" onclick="quickLogin('acc_hm')">
             <div>
               <div class="portal-header">
                 <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=100" class="portal-avatar" alt="H&M Mylapore" />
@@ -189,12 +204,12 @@
                   <span class="portal-stat-val">5,410</span>
                 </div>
               </div>
-              <button class="portal-action-btn" style="margin-top:14px;">Open Showroom Dashboard →</button>
+              <button class="portal-action-btn" style="margin-top:14px;">Sign In to Showroom Dashboard →</button>
             </div>
           </div>
 
           <!-- 4. VJ Sidhu Vlogs -->
-          <div class="portal-card" onclick="showDashboardView('acc_vj_sidhu')">
+          <div class="portal-card" onclick="quickLogin('acc_vj_sidhu')">
             <div>
               <div class="portal-header">
                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="portal-avatar" alt="VJ Sidhu Vlogs" />
@@ -222,12 +237,12 @@
                   <span class="portal-stat-val">18.4%</span>
                 </div>
               </div>
-              <button class="portal-action-btn" style="margin-top:14px;">Open Creator Dashboard →</button>
+              <button class="portal-action-btn" style="margin-top:14px;">Sign In to Creator Dashboard →</button>
             </div>
           </div>
 
           <!-- 5. Spotify -->
-          <div class="portal-card" onclick="showDashboardView('acc_spotify')">
+          <div class="portal-card" onclick="quickLogin('acc_spotify')">
             <div>
               <div class="portal-header">
                 <img src="https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=100" class="portal-avatar" alt="Spotify" />
@@ -255,7 +270,7 @@
                   <span class="portal-stat-val">32.45M</span>
                 </div>
               </div>
-              <button class="portal-action-btn" style="margin-top:14px;">Open Publisher Dashboard →</button>
+              <button class="portal-action-btn" style="margin-top:14px;">Sign In to Publisher Dashboard →</button>
             </div>
           </div>
         </div>
@@ -286,7 +301,137 @@
   </section>
 
   <!-- ==========================================================================
-       VIEW 2: DEDICATED IN-APP CUSTOM DASHBOARD VIEW
+       VIEW 2: DEDICATED LOGIN PAGE (With Predefined Business Credentials)
+       ========================================================================== -->
+  <section id="loginView" class="view-section">
+    <div class="login-page-wrapper">
+      
+      <!-- Left Column: Traditional Login Form -->
+      <div class="login-left-card">
+        <div>
+          <div class="cm-pill-badge" style="margin-bottom:12px;">
+            <span class="dot"></span>
+            <span>Workspace Authentication</span>
+          </div>
+          <h2 class="login-form-title">Sign in to Reviewr</h2>
+          <p class="login-form-sub">Enter your business credentials to access your personalized customer feedback intelligence workspace.</p>
+        </div>
+
+        <div id="loginErrorAlert" style="display:none; background:var(--sentiment-neg-bg); border:1px solid var(--sentiment-neg-border); color:var(--sentiment-neg); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
+        </div>
+
+        <form class="login-form" id="loginForm" onsubmit="handleLoginFormSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Business Work Email</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="e.g. admin@manisbiriyani.com" required value="admin@manisbiriyani.com" />
+          </div>
+
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="form-label" for="loginPassword">Password</label>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Default: password123</span>
+            </div>
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required value="password123" />
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; color:var(--text-muted);">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" checked style="accent-color:var(--text-dark);" /> Remember this workspace
+            </label>
+            <a href="#" onclick="alert('For demo accounts, use password123'); return false;" style="color:var(--text-dark); text-decoration:none; font-weight:600;">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="login-submit-btn">
+            Sign In to Business Dashboard →
+          </button>
+        </form>
+
+        <div style="padding-top:16px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; font-size:0.84rem;">
+          <span style="color:var(--text-muted);">Need to review the landing page?</span>
+          <a href="#" onclick="showLandingView(); return false;" style="color:var(--text-dark); font-weight:700; text-decoration:none;">← Return to Overview</a>
+        </div>
+      </div>
+
+      <!-- Right Column: Predefined Demo Credentials Card -->
+      <div class="predefined-credentials-card">
+        <div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h3 class="predefined-creds-title">Predefined Demo Accounts</h3>
+            <span class="cm-src-badge google_maps" style="background:#F3E8FF; color:#7C3AED;">1-Click Instant Login</span>
+          </div>
+          <p style="font-size:0.86rem; color:var(--text-muted); margin-top:4px;">
+            Select any business persona below to auto-fill credentials and enter its customized intelligence dashboard:
+          </p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <!-- 1. Mani's Dum Biriyani -->
+          <div class="demo-account-btn" onclick="quickLogin('acc_manis')">
+            <div class="demo-acc-left">
+              <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100" class="demo-acc-avatar" alt="Mani's Dum Biriyani" />
+              <div>
+                <span class="demo-acc-name">Mani's Dum Biriyani</span>
+                <span class="demo-acc-email">admin@manisbiriyani.com · 4 Branches</span>
+              </div>
+            </div>
+            <span class="demo-acc-arrow">Login →</span>
+          </div>
+
+          <!-- 2. Chepauk Sports Store -->
+          <div class="demo-account-btn" onclick="quickLogin('acc_chepauk')">
+            <div class="demo-acc-left">
+              <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=100" class="demo-acc-avatar" alt="Chepauk Sports Store" />
+              <div>
+                <span class="demo-acc-name">Chepauk Sports Store</span>
+                <span class="demo-acc-email">murali@chepauksports.com · Retail Store</span>
+              </div>
+            </div>
+            <span class="demo-acc-arrow">Login →</span>
+          </div>
+
+          <!-- 3. H&M Mylapore Branch -->
+          <div class="demo-account-btn" onclick="quickLogin('acc_hm')">
+            <div class="demo-acc-left">
+              <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=100" class="demo-acc-avatar" alt="H&M Mylapore" />
+              <div>
+                <span class="demo-acc-name">H&M Mylapore Branch</span>
+                <span class="demo-acc-email">store.mylapore@hm.com · Fashion Showroom</span>
+              </div>
+            </div>
+            <span class="demo-acc-arrow">Login →</span>
+          </div>
+
+          <!-- 4. VJ Sidhu Vlogs -->
+          <div class="demo-account-btn" onclick="quickLogin('acc_vj_sidhu')">
+            <div class="demo-acc-left">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="demo-acc-avatar" alt="VJ Sidhu Vlogs" />
+              <div>
+                <span class="demo-acc-name">VJ Sidhu Vlogs</span>
+                <span class="demo-acc-email">sidhu@vjsidhuvlogs.com · YouTube Channel</span>
+              </div>
+            </div>
+            <span class="demo-acc-arrow">Login →</span>
+          </div>
+
+          <!-- 5. Spotify -->
+          <div class="demo-account-btn" onclick="quickLogin('acc_spotify')">
+            <div class="demo-acc-left">
+              <img src="https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=100" class="demo-acc-avatar" alt="Spotify" />
+              <div>
+                <span class="demo-acc-name">Spotify Android</span>
+                <span class="demo-acc-email">product.android@spotify.com · Play Store App</span>
+              </div>
+            </div>
+            <span class="demo-acc-arrow">Login →</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       VIEW 3: DEDICATED IN-APP CUSTOM DASHBOARD VIEW
        ========================================================================== -->
   <section id="dashboardView" class="view-section">
     <div class="dashboard-wrapper">

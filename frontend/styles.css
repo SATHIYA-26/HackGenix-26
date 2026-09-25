@@ -82,7 +82,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Background Glow */
+/* Ambient Glow */
 .bg-glow-wrapper {
   position: absolute;
   top: 0;
@@ -99,7 +99,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(251, 249, 245, 0.9);
+  background: rgba(251, 249, 245, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 14px 32px;
@@ -120,6 +120,7 @@ body {
   align-items: center;
   gap: 10px;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .cm-logo-mark {
@@ -173,6 +174,31 @@ body {
   gap: 12px;
 }
 
+/* User Session Badge in Nav */
+.cm-user-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 4px 14px 4px 6px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.cm-user-nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cm-user-nav-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
 /* Buttons */
 .cm-btn {
   display: inline-flex;
@@ -182,7 +208,7 @@ body {
   font-family: var(--font-sans);
   font-size: 0.88rem;
   font-weight: 600;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: var(--radius-full);
   cursor: pointer;
   text-decoration: none;
@@ -236,7 +262,7 @@ body {
 }
 
 /* ==========================================================================
-   LANDING PAGE STYLING (Chattermill Marketing Look & Feel)
+   VIEW 1: LANDING PAGE
    ========================================================================== */
 
 .landing-wrapper {
@@ -248,7 +274,6 @@ body {
   gap: 64px;
 }
 
-/* Hero */
 .landing-hero {
   display: flex;
   flex-direction: column;
@@ -303,7 +328,14 @@ body {
   line-height: 1.6;
 }
 
-/* Demo Business Portal Selector Grid */
+.cm-hero-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+/* Predefined Portals Grid on Landing */
 .landing-portals-section {
   display: flex;
   flex-direction: column;
@@ -343,7 +375,7 @@ body {
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 30px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -384,8 +416,8 @@ body {
 }
 
 .portal-avatar {
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--border-subtle);
@@ -469,7 +501,7 @@ body {
   background: var(--primary-hover);
 }
 
-/* Feature Highlights Grid */
+/* Feature Boxes */
 .landing-features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -512,7 +544,169 @@ body {
 }
 
 /* ==========================================================================
-   DASHBOARD VIEW STYLING (Customized per Business)
+   VIEW 2: DEDICATED LOGIN PAGE (Chattermill Auth UI)
+   ========================================================================== */
+
+.login-page-wrapper {
+  max-width: 1080px;
+  margin: 40px auto 100px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.login-left-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.login-form-title {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.login-form-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-input {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 11px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: all 0.15s;
+}
+
+.form-input:focus {
+  border-color: var(--text-dark);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  background: var(--bg-dark);
+  color: var(--text-white);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 4px 12px rgba(24, 24, 27, 0.15);
+}
+
+.login-submit-btn:hover {
+  background: var(--primary-hover);
+}
+
+/* Predefined Credentials Box (Right side) */
+.predefined-credentials-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.predefined-creds-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.demo-account-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.demo-account-btn:hover {
+  background: #EBE7DD;
+  border-color: #D4D0C5;
+  transform: translateX(3px);
+}
+
+.demo-acc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-acc-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.demo-acc-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  display: block;
+}
+
+.demo-acc-email {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+.demo-acc-arrow {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #7C3AED;
+}
+
+/* ==========================================================================
+   VIEW 3: IN-APP CUSTOMIZED DASHBOARD VIEW
    ========================================================================== */
 
 .dashboard-wrapper {
@@ -524,7 +718,7 @@ body {
   gap: 36px;
 }
 
-/* Active Business Top Banner */
+/* Header Banner */
 .dash-header-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
@@ -751,7 +945,7 @@ body {
 .cm-theme-trend.pos { color: var(--sentiment-pos); }
 .cm-theme-trend.neg { color: var(--sentiment-neg); }
 
-/* AI Recommendation Engine Grid */
+/* Recommendation Engine Grid */
 .cm-insights-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1083,34 +1277,6 @@ body {
   cursor: pointer;
 }
 
-.cm-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.cm-form-label {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-.cm-form-input {
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--text-dark);
-  outline: none;
-}
-
-.cm-form-input:focus {
-  border-color: var(--text-dark);
-  background: var(--bg-surface);
-}
-
 .cm-sync-steps-box {
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
@@ -1153,9 +1319,9 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 1024px) {
-  .landing-portals-grid, .landing-features-grid, .cm-kpi-grid, .cm-analytics-grid, .cm-insights-grid {
+  .login-page-wrapper, .landing-portals-grid, .landing-features-grid, .cm-kpi-grid, .cm-analytics-grid, .cm-insights-grid {
     grid-template-columns: 1fr;
   }
 }

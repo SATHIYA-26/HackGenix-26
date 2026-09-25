@@ -1,9 +1,59 @@
 /**
- * Reviewr - Chattermill-Inspired Mock Datasets for 3 Persona Types:
- * 1. Google Maps Businesses (Mani's Dum Biriyani, Chepauk Sports Store, H&M Mylapore)
- * 2. YouTube Channels (VJ Sidhu Vlogs)
- * 3. Play Store Applications (Spotify)
+ * Reviewr - Multi-Persona Mock Data & Predefined Credentials
  */
+
+const PREDEFINED_USERS = [
+  {
+    email: "admin@manisbiriyani.com",
+    password: "password123",
+    accountId: "acc_manis",
+    name: "Mani (Founder & Operations)",
+    businessName: "Mani's Dum Biriyani",
+    role: "Chain Owner",
+    type: "google_maps",
+    typeLabel: "Google Maps Business (Multi-Branch)"
+  },
+  {
+    email: "murali@chepauksports.com",
+    password: "password123",
+    accountId: "acc_chepauk",
+    name: "Murali Ranganathan",
+    businessName: "Chepauk Sports Store",
+    role: "Managing Director",
+    type: "google_maps",
+    typeLabel: "Google Maps Retail Store"
+  },
+  {
+    email: "store.mylapore@hm.com",
+    password: "password123",
+    accountId: "acc_hm",
+    name: "Divya Sharma",
+    businessName: "H&M Mylapore Branch",
+    role: "Showroom Store Lead",
+    type: "google_maps",
+    typeLabel: "Google Maps Fashion Retail"
+  },
+  {
+    email: "sidhu@vjsidhuvlogs.com",
+    password: "password123",
+    accountId: "acc_vj_sidhu",
+    name: "VJ Sidhu & Production Team",
+    businessName: "VJ Sidhu Vlogs",
+    role: "YouTube Creator Channel",
+    type: "youtube",
+    typeLabel: "YouTube Channel (Creator Studio)"
+  },
+  {
+    email: "product.android@spotify.com",
+    password: "password123",
+    accountId: "acc_spotify",
+    name: "Gustav Söderström",
+    businessName: "Spotify",
+    role: "Head of Mobile & CX",
+    type: "play_store",
+    typeLabel: "Google Play Store App"
+  }
+];
 
 const REVIEWR_ACCOUNTS = [
   {
@@ -13,6 +63,8 @@ const REVIEWR_ACCOUNTS = [
     category: "Food & Restaurant Chain",
     type: "google_maps",
     typeLabel: "Google Maps Business",
+    userEmail: "admin@manisbiriyani.com",
+    userName: "Mani (Founder)",
     avatar: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=120&auto=format&fit=crop&q=80",
     ratingAvg: 4.4,
     totalReviews: "14,280",
@@ -44,7 +96,7 @@ const REVIEWR_ACCOUNTS = [
         type: "positive_driver",
         badge: "Top Delight Factor",
         title: "Signature Mutton Biriyani Aromatics & Meat Portioning",
-        description: "Over 88% of Google Maps reviews for the T. Nagar and Velachery branches specifically praise the succulent meat pieces and consistent authentic spices.",
+        description: "Over 88% of Google Maps reviews for T. Nagar and Velachery branches specifically praise the succulent meat pieces and consistent authentic spices.",
         theme: "Mutton Biriyani & Meat Tenderness",
         impact: "+42% Star Rating Lift"
       },
@@ -140,6 +192,8 @@ const REVIEWR_ACCOUNTS = [
     category: "Sports & Cricket Retail",
     type: "google_maps",
     typeLabel: "Google Maps Business",
+    userEmail: "murali@chepauksports.com",
+    userName: "Murali Ranganathan",
     avatar: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=120&auto=format&fit=crop&q=80",
     ratingAvg: 4.7,
     totalReviews: "3,890",
@@ -234,6 +288,8 @@ const REVIEWR_ACCOUNTS = [
     category: "Fashion Retail Showroom",
     type: "google_maps",
     typeLabel: "Google Maps Retail",
+    userEmail: "store.mylapore@hm.com",
+    userName: "Divya Sharma",
     avatar: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=120&auto=format&fit=crop&q=80",
     ratingAvg: 4.2,
     totalReviews: "5,410",
@@ -328,10 +384,12 @@ const REVIEWR_ACCOUNTS = [
     category: "YouTube Creator & Media Channel",
     type: "youtube",
     typeLabel: "YouTube Channel",
+    userEmail: "sidhu@vjsidhuvlogs.com",
+    userName: "VJ Sidhu",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80",
     ratingAvg: null,
     totalReviews: "284,500",
-    locations: ["Channel-wide", "Ep 42: Midnight Food Hunt", "Ep 43: Village Village Tour", "Ep 44: Chennai to Munnar Roadtrip"],
+    locations: ["Channel-wide", "Ep 44: Chennai to Munnar Roadtrip", "Ep 43: Village Tour", "Ep 42: Midnight Food Hunt"],
     primaryMetricLabel: "Total Video Comments",
     primaryMetricValue: "284.5K",
     primaryMetricTrend: "▲ +28.4% vs last episode",
@@ -441,6 +499,8 @@ const REVIEWR_ACCOUNTS = [
     category: "Audio Streaming & Media App",
     type: "play_store",
     typeLabel: "Google Play Store App",
+    userEmail: "product.android@spotify.com",
+    userName: "Gustav Söderström",
     avatar: "https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=120&auto=format&fit=crop&q=80",
     ratingAvg: 4.3,
     totalReviews: "32,450,000",
