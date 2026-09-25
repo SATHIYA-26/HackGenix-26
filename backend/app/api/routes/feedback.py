@@ -87,3 +87,55 @@ def get_feedback(
         return service.get_by_id(feedback_id)
     except ResourceNotFoundException as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
+
+
+from sqlalchemy.orm import Session
+from sqlalchemy import delete
+from app.db.database import get_db
+from app.db.models import (
+    Action,
+    Insight,
+    Recommendation,
+    Trend,
+    problem_feedback,
+    ProblemCluster,
+    FeedbackEmbedding,
+    FeedbackAnalysis,
+    Feedback,
+)
+
+
+@router.post(
+    "/reset",
+    status_code=status.HTTP_200_OK,
+    summary="Purge All Feedback & Mock Data",
+    description="Wipes all feedback, problem clusters, trends, recommendations, and actions. Requires ?confirm=true.",
+)
+def reset_database(
+    confirm: bool = Query(False, description="Must be true to confirm database purge"),
+    db: Session = Depends(get_db),
+):
+    if not confirm:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Confirmation required. Pass ?confirm=true to purge all mock/testing data."
+        )
+
+    # Delete child records in topological order
+    db.query(Action).delete(synchronize_session=False)
+    db.query(Insight).delete(synchronize_session=False)
+    db.query(Recommendation).delete(synchronize_session=False)
+    db.query(Trend).delete(synchronize_session=False)
+    db.execute(delete(problem_feedback))
+    db.query(ProblemCluster).delete(synchronize_session=False)
+    db.query(FeedbackEmbedding).delete(synchronize_session=False)
+    db.query(FeedbackAnalysis).delete(synchronize_session=False)
+    deleted_count = db.query(Feedback).delete(synchronize_session=False)
+    db.commit()
+
+    return {
+        "status": "success",
+        "message": "All mock and testing feedback data has been purged. Database is 100% clean.",
+        "records_purged": deleted_count,
+    }
+

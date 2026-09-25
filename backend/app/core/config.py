@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     LLM_TEMPERATURE: float = 0.2
     LLM_TIMEOUT_SECONDS: int = 30
 
+    # YouTube Data API v3
+    YOUTUBE_API_KEY: str = "AIzaSyDzQb1VCSM7VQf47RnGPYHMq2bj6ZlVNJk"
+
     # NLP & Embedding Model Identifiers
     EMBEDDING_MODEL: str = "BAAI/bge-base-en-v1.5"
     EMBEDDING_DIMENSION: int = 768

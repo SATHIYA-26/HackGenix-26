@@ -39,7 +39,57 @@ def ingest_source_batch(
     payloads: List[Dict[str, Any]] = ...,
     db: Session = Depends(get_db),
 ):
-    """Batch ingest raw source-specific payloads through the connector boundary."""
     canonical_inputs = connector_registry.normalize_batch(source, payloads)
     service = FeedbackService(db)
     return service.ingest_batch(canonical_inputs)
+
+
+from pydantic import BaseModel, Field
+from typing import Optional
+from fastapi import HTTPException
+from app.services.youtube_live_service import YouTubeLiveService
+
+
+class YouTubeLiveSyncRequest(BaseModel):
+    url: Optional[str] = Field(None, description="YouTube Video URL or ID (e.g. https://www.youtube.com/watch?v=...)")
+    channel: Optional[str] = Field(None, description="YouTube Channel Handle or URL (e.g. @MrBeast)")
+    max_comments: int = Field(50, ge=1, le=500, description="Max comments to fetch (1-500)")
+    max_videos: int = Field(5, ge=1, le=20, description="Max videos if channel is specified")
+    run_nlp: bool = Field(True, description="Automatically run NLP processing and problem discovery")
+    api_key: Optional[str] = Field(None, description="Optional override for YouTube Data API v3 key")
+
+
+@router.post(
+    "/youtube/live-sync",
+    status_code=status.HTTP_200_OK,
+    summary="Live YouTube Comments & Replies Ingestion",
+    description="Fetches 100% of real comments and replies from a YouTube video URL or Channel, normalizes them, and runs full NLP and Intelligence pipelines."
+)
+def sync_live_youtube_feedback(
+    request: YouTubeLiveSyncRequest,
+    db: Session = Depends(get_db),
+):
+    """Real-Time YouTube Extraction & Intelligence Sync."""
+    if not request.url and not request.channel:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Either 'url' (video link) or 'channel' (channel handle) must be provided."
+        )
+
+    try:
+        service = YouTubeLiveService(api_key=request.api_key)
+        result = service.sync_youtube_feedback(
+            db=db,
+            video_url=request.url,
+            channel=request.channel,
+            max_comments=request.max_comments,
+            max_videos=request.max_videos,
+            run_nlp=request.run_nlp,
+        )
+        return result
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"YouTube extraction failed: {str(exc)}"
+        )
+
