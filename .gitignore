@@ -1,3 +1,14 @@
+# Node & Next.js
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+out/
+build/
+dist/
+*.node
+!frontend/lib/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -7,32 +18,43 @@ __pycache__/
 env/
 venv/
 .venv/
-build/
+ENV/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-!frontend/lib/
-
 parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Environment
+# Celery & Redis
+celerybeat-schedule
+celerybeat.pid
+dump.rdb
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+pgdata/
+
+# Environment & Secrets
 .env
 .env.local
+.env.*.local
+*.env.local
 
 # Testing & Coverage
 .pytest_cache/
 .coverage
 htmlcov/
+coverage.xml
 
 # IDE & OS
 .vscode/
@@ -41,8 +63,3 @@ htmlcov/
 *.swo
 .DS_Store
 Thumbs.db
-
-# Node / Next.js
-node_modules/
-.next/
-

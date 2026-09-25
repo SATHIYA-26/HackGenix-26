@@ -1,10 +1,27 @@
 version: '3.8'
 
 services:
-  # Redis Message Broker for Celery
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: feedback_intelligence_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: feedback_user
+      POSTGRES_PASSWORD: feedback_password
+      POSTGRES_DB: feedback_intelligence
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U feedback_user -d feedback_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis:7-alpine
-    container_name: reviewr-redis
+    container_name: feedback_intelligence_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -12,44 +29,64 @@ services:
       - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
 
-  # Celery Worker for YouTube Scheduled Ingestion
-  celery_worker:
+  backend:
     build:
-      context: .
-      dockerfile: Dockerfile.celery
-    container_name: reviewr-celery-worker
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: feedback_intelligence_api
     restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
     environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql+asyncpg://feedback_user:feedback_password@postgres:5432/feedback_intelligence
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-AIzaSyDzQb1VCSM7VQf47RnGPYHMq2bj6ZlVNJk}
-      - YOUTUBE_CHANNEL_HANDLE=${YOUTUBE_CHANNEL_HANDLE:-@VJ_Sidhu_Vlogs}
-      - BACKEND_NLP_URL=http://backend:8000/api/nlp/process-youtube
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A celery_tasks worker --loglevel=info
 
-  # Celery Beat Scheduler (Triggers 2-Hour Cron)
-  celery_beat:
+  worker:
     build:
-      context: .
-      dockerfile: Dockerfile.celery
-    container_name: reviewr-celery-beat
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: feedback_intelligence_worker
     restart: unless-stopped
+    command: celery -A app.workers.celery_app.celery worker --loglevel=info -c 2
+    volumes:
+      - ./backend:/app
     environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - DATABASE_URL=postgresql://feedback_user:feedback_password@postgres:5432/feedback_intelligence
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-AIzaSyDzQb1VCSM7VQf47RnGPYHMq2bj6ZlVNJk}
-      - YOUTUBE_CHANNEL_HANDLE=${YOUTUBE_CHANNEL_HANDLE:-@VJ_Sidhu_Vlogs}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
+      - EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
-    command: celery -A celery_tasks beat --loglevel=info
 
 volumes:
+  postgres_data:
   redis_data:
