@@ -85,13 +85,151 @@
           The unified customer voice platform for multi-location Google Maps businesses, YouTube creators, and mobile apps. Automatically discover emerging sentiment themes, track branch ratings, and trigger actionable operational improvements.
         </p>
 
-        <div class="cm-hero-cta-row">
-          <button onclick="quickLogin('acc_manis')" class="cm-btn cm-btn-primary">
-            Launch Interactive Prototype →
-          </button>
-          <button onclick="scrollToPortals()" class="cm-btn cm-btn-outline">
-            View Predefined Business Portals
-          </button>
+        <!-- Live VoC Revenue & Financial Growth Graph Animation -->
+        <div class="hero-roi-container">
+          <div class="hero-roi-card">
+            
+            <!-- Top Controls & Live Pulse -->
+            <div class="roi-header">
+              <div class="roi-header-left">
+                <span class="roi-live-dot"></span>
+                <span class="roi-header-title">Real-Time VoC Revenue Attribution & Churn Mitigation Engine</span>
+              </div>
+              <div class="roi-timeframe-selector">
+                <button class="roi-tf-btn" onclick="updateHeroFinancialModel('30d', this)">30D</button>
+                <button class="roi-tf-btn active" onclick="updateHeroFinancialModel('90d', this)">90D</button>
+                <button class="roi-tf-btn" onclick="updateHeroFinancialModel('1y', this)">Annual YoY</button>
+              </div>
+            </div>
+
+            <!-- 3 Key Metric Blocks with Money/Growth Counters -->
+            <div class="roi-metrics-grid">
+              <div class="roi-metric-item">
+                <div class="roi-metric-label">
+                  <span>Net Revenue Lift</span>
+                  <span class="roi-tag-pos">+24.6% ARR</span>
+                </div>
+                <div class="roi-metric-val" id="heroMetricRevenue">₹24,80,000</div>
+                <div class="roi-metric-sub">Attributed to proactive VoC issue resolution</div>
+              </div>
+
+              <div class="roi-metric-item">
+                <div class="roi-metric-label">
+                  <span>Customer Churn Prevented</span>
+                  <span class="roi-tag-pos">98.2% Saved</span>
+                </div>
+                <div class="roi-metric-val" id="heroMetricChurn">₹9,45,000</div>
+                <div class="roi-metric-sub">Negative review escalations deflected</div>
+              </div>
+
+              <div class="roi-metric-item">
+                <div class="roi-metric-label">
+                  <span>VoC ROI Multiplier</span>
+                  <span class="roi-tag-violet">14.8x Return</span>
+                </div>
+                <div class="roi-metric-val" id="heroMetricRoi">14.8x</div>
+                <div class="roi-metric-sub">₹1 invested = ₹14.80 retained business value</div>
+              </div>
+            </div>
+
+            <!-- Dynamic Animated Graph Stage -->
+            <div class="roi-graph-stage">
+              <!-- Background Grid -->
+              <div class="roi-graph-grid">
+                <div class="roi-grid-line"><span>₹30L</span></div>
+                <div class="roi-grid-line"><span>₹20L</span></div>
+                <div class="roi-grid-line"><span>₹10L</span></div>
+                <div class="roi-grid-line"><span>₹0L</span></div>
+              </div>
+
+              <!-- Animated SVG Curve -->
+              <svg class="roi-svg-canvas" viewBox="0 0 900 240" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="roiGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)" />
+                    <stop offset="100%" stop-color="rgba(16, 185, 129, 0.0)" />
+                  </linearGradient>
+                  <linearGradient id="roiLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#3B82F6" />
+                    <stop offset="40%" stop-color="#7C3AED" />
+                    <stop offset="100%" stop-color="#10B981" />
+                  </linearGradient>
+                  <filter id="roiGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="glow" />
+                    <feComposite in="SourceGraphic" in2="glow" operator="over" />
+                  </filter>
+                </defs>
+                <!-- Area Fill -->
+                <path id="heroAreaPath" class="roi-area-path" d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30 L 870,230 L 30,230 Z" fill="url(#roiGradient)"></path>
+                <!-- Animated Line -->
+                <path id="heroLinePath" class="roi-line-path" d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30" fill="none" stroke="url(#roiLineGrad)" stroke-width="4.5" stroke-linecap="round" filter="url(#roiGlow)"></path>
+                
+                <!-- Pulsing Nodes along the trajectory -->
+                <g class="roi-node" transform="translate(180, 180)">
+                  <circle r="7" class="roi-node-pulse" fill="#3B82F6"></circle>
+                  <circle r="4.5" fill="#FFFFFF" stroke="#3B82F6" stroke-width="2.5"></circle>
+                </g>
+                <g class="roi-node" transform="translate(480, 115)">
+                  <circle r="7" class="roi-node-pulse" fill="#7C3AED"></circle>
+                  <circle r="4.5" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.5"></circle>
+                </g>
+                <g class="roi-node" transform="translate(870, 30)">
+                  <circle r="8" class="roi-node-pulse" fill="#10B981"></circle>
+                  <circle r="5" fill="#FFFFFF" stroke="#10B981" stroke-width="3"></circle>
+                </g>
+              </svg>
+
+              <!-- Interactive Milestone Annotations -->
+              <div class="roi-milestone m-left">
+                <span class="m-icon">🎯</span>
+                <div class="m-text">
+                  <strong>Food Quality Alert Solved</strong>
+                  <small>+₹3.2L Recurring Saved</small>
+                </div>
+              </div>
+
+              <div class="roi-milestone m-mid">
+                <span class="m-icon">⚡</span>
+                <div class="m-text">
+                  <strong>Queue Bottleneck Fixed</strong>
+                  <small>+₹8.5L Branch Lift</small>
+                </div>
+              </div>
+
+              <div class="roi-milestone m-right">
+                <span class="m-icon">🚀</span>
+                <div class="m-text">
+                  <strong>Loyalty Surge</strong>
+                  <small>+₹24.8L ARR Peak</small>
+                </div>
+              </div>
+
+              <!-- Floating Live Ticker Chips with micro animations -->
+              <div class="roi-floating-chip chip-1">
+                <span class="chip-dot"></span>
+                <span>✨ <strong>+₹45,000/wk</strong> saved on Biryani spice feedback</span>
+              </div>
+              <div class="roi-floating-chip chip-2">
+                <span class="chip-dot" style="background:#7C3AED;"></span>
+                <span>📊 <strong>NPS +38 pts</strong> ➔ +18.4% Repeat Orders</span>
+              </div>
+            </div>
+
+            <!-- Bottom Live Event Activity Bar -->
+            <div class="roi-footer-ticker">
+              <span class="ticker-label">LIVE FINANCIAL SIGNALS:</span>
+              <div class="ticker-marquee">
+                <div class="ticker-track" id="roiTickerTrack">
+                  <span class="ticker-item">🟢 Mani's Dum Biriyani: Brinjal Curry recipe tweak saved <strong>+₹92,400</strong> in churned orders</span>
+                  <span class="ticker-item">🟣 Chepauk Sports: English Willow bat stock alert recovered <strong>+₹1,85,000</strong> in lost sales</span>
+                  <span class="ticker-item">🔵 H&M Mylapore: Trial room queue fix boosted footfall conversion by <strong>+14.2%</strong></span>
+                  <span class="ticker-item">🟠 VJ Sidhu Vlogs: Audio mic adjustment increased sponsor retention by <strong>+28.0%</strong></span>
+                  <span class="ticker-item">🟢 Spotify: Tamil playlist shuffle algorithm patch recovered <strong>+12,400</strong> premium renewals</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 

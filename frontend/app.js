@@ -15,6 +15,94 @@ let searchQuery = "";
 
 let timelineChart = null;
 
+// ==========================================================================
+// HERO VOC FINANCIAL & GRAPH ANIMATION MODEL
+// ==========================================================================
+
+const HERO_FINANCIAL_MODELS = {
+  "30d": {
+    revenue: "₹8,40,000",
+    revenueLift: "+16.2% MoM",
+    churn: "₹3,10,000",
+    churnRate: "96.5% Saved",
+    roi: "11.4x",
+    lineD: "M 30,210 Q 200,190 350,170 T 620,120 T 870,70",
+    areaD: "M 30,210 Q 200,190 350,170 T 620,120 T 870,70 L 870,230 L 30,230 Z"
+  },
+  "90d": {
+    revenue: "₹24,80,000",
+    revenueLift: "+24.6% ARR",
+    churn: "₹9,45,000",
+    churnRate: "98.2% Saved",
+    roi: "14.8x",
+    lineD: "M 30,210 Q 180,180 320,150 T 600,80 T 870,30",
+    areaD: "M 30,210 Q 180,180 320,150 T 600,80 T 870,30 L 870,230 L 30,230 Z"
+  },
+  "1y": {
+    revenue: "₹1,12,50,000",
+    revenueLift: "+41.8% YoY",
+    churn: "₹38,20,000",
+    churnRate: "99.4% Saved",
+    roi: "22.6x",
+    lineD: "M 30,220 Q 150,190 300,130 T 580,50 T 870,15",
+    areaD: "M 30,220 Q 150,190 300,130 T 580,50 T 870,15 L 870,230 L 30,230 Z"
+  }
+};
+
+function updateHeroFinancialModel(timeframe, btnElement) {
+  if (btnElement) {
+    document.querySelectorAll(".roi-tf-btn").forEach(b => b.classList.remove("active"));
+    btnElement.classList.add("active");
+  }
+
+  const model = HERO_FINANCIAL_MODELS[timeframe] || HERO_FINANCIAL_MODELS["90d"];
+  
+  const revEl = document.getElementById("heroMetricRevenue");
+  const churnEl = document.getElementById("heroMetricChurn");
+  const roiEl = document.getElementById("heroMetricRoi");
+  const lineEl = document.getElementById("heroLinePath");
+  const areaEl = document.getElementById("heroAreaPath");
+
+  if (revEl) {
+    revEl.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+    revEl.style.opacity = "0.3";
+    revEl.style.transform = "translateY(2px)";
+    setTimeout(() => {
+      revEl.textContent = model.revenue;
+      revEl.style.opacity = "1";
+      revEl.style.transform = "translateY(0)";
+    }, 120);
+  }
+  if (churnEl) {
+    churnEl.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+    churnEl.style.opacity = "0.3";
+    churnEl.style.transform = "translateY(2px)";
+    setTimeout(() => {
+      churnEl.textContent = model.churn;
+      churnEl.style.opacity = "1";
+      churnEl.style.transform = "translateY(0)";
+    }, 120);
+  }
+  if (roiEl) {
+    roiEl.style.transition = "opacity 0.15s ease, transform 0.15s ease";
+    roiEl.style.opacity = "0.3";
+    roiEl.style.transform = "translateY(2px)";
+    setTimeout(() => {
+      roiEl.textContent = model.roi;
+      roiEl.style.opacity = "1";
+      roiEl.style.transform = "translateY(0)";
+    }, 120);
+  }
+
+  if (lineEl && areaEl) {
+    lineEl.setAttribute("d", model.lineD);
+    areaEl.setAttribute("d", model.areaD);
+    lineEl.style.animation = "none";
+    void lineEl.offsetWidth; // trigger reflow
+    lineEl.style.animation = "drawLine 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards";
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
   // By default, start on landing page in logged-out mode
