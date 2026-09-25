@@ -758,3 +758,46 @@ function renderNlpResults(data) {
   if (recText) recText.textContent = data.recText;
 }
 
+// ==========================================================================
+// BOOK A DEMO MODAL HANDLERS
+// ==========================================================================
+
+function openDemoModal(planName) {
+  const modal = document.getElementById("demoModal");
+  if (!modal) return;
+
+  const successAlert = document.getElementById("demoBookingSuccess");
+  if (successAlert) successAlert.style.display = "none";
+
+  const submitBtn = document.getElementById("demoBookingSubmitBtn");
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = planName ? `Book Demo for ${planName} Plan →` : "Confirm Demo Booking →";
+  }
+
+  modal.classList.add("active");
+}
+
+function handleDemoBooking(e) {
+  if (e) e.preventDefault();
+
+  const successAlert = document.getElementById("demoBookingSuccess");
+  const submitBtn = document.getElementById("demoBookingSubmitBtn");
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="cm-spinner"></span> Confirming...`;
+  }
+
+  setTimeout(() => {
+    if (successAlert) successAlert.style.display = "block";
+    if (submitBtn) submitBtn.innerHTML = "✓ Demo Scheduled!";
+
+    setTimeout(() => {
+      const modal = document.getElementById("demoModal");
+      if (modal) modal.classList.remove("active");
+    }, 1800);
+  }, 700);
+}
+
+

@@ -28,11 +28,9 @@
 
       <nav class="cm-nav-links">
         <span class="cm-nav-link active" id="navHome" onclick="showLandingView()">Overview</span>
-        <span class="cm-nav-link" id="navSolution" onclick="scrollToSection('solutionSection')">Solution</span>
-        <span class="cm-nav-link" id="navPipeline" onclick="scrollToSection('pipelineSection')">NLP Pipeline</span>
-        <span class="cm-nav-link" id="navTechStack" onclick="scrollToSection('techStackSection')">Tech Stack</span>
-        <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Demo Portals</span>
-        <span class="cm-nav-link" id="navLogin" onclick="showLoginView()">Sign In</span>
+        <span class="cm-nav-link" id="navWhatWeDo" onclick="scrollToSection('solutionSection')">What we do?</span>
+        <span class="cm-nav-link" id="navPricing" onclick="scrollToSection('pricingSection')">Pricing</span>
+        <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Demo</span>
         <span class="cm-nav-link" id="navDash" onclick="showDashboardView()" style="display:none;">Dashboard</span>
       </nav>
 
@@ -41,8 +39,8 @@
         <button id="navLoginBtn" class="cm-btn cm-btn-outline" onclick="showLoginView()">
           Log In
         </button>
-        <button id="navTryDemoBtn" class="cm-btn cm-btn-primary" onclick="showLoginView()">
-          Demo Accounts →
+        <button id="navTryDemoBtn" class="cm-btn cm-btn-primary" onclick="openDemoModal()">
+          Book a Demo
         </button>
 
         <!-- Logged In User State (Visible in Dashboard) -->
@@ -527,6 +525,87 @@
         </div>
       </div>
 
+      <!-- =====================================================================
+           SECTION: PRICING PLANS
+           ===================================================================== -->
+      <div class="landing-section-block" id="pricingSection">
+        <div class="landing-section-title-wrap">
+          <span class="landing-section-tag">Flexible Plans</span>
+          <h2 class="landing-section-title">Transparent Pricing for Every Business Scale</h2>
+          <p class="cm-section-desc">From independent stores and creator studios to multi-branch restaurant chains and global mobile apps.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- 1. Starter -->
+          <div class="pricing-card">
+            <div>
+              <div class="pricing-header">
+                <span class="cm-branch-tag">Creator & Retail</span>
+                <h3 class="pricing-plan-name">Starter Plan</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Ideal for single stores, local gyms, and YouTube creators.</p>
+              </div>
+              <div class="pricing-price-row">
+                <span class="pricing-currency">₹</span>
+                <span class="pricing-val">2,999</span>
+                <span class="pricing-period">/ month</span>
+              </div>
+              <ul class="pricing-features-list" style="margin-top:20px;">
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 5,000 feedback/mo</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> 1 Google Maps or YouTube source</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Automated sentiment classification</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Weekly digest summary email</li>
+              </ul>
+            </div>
+            <button onclick="openDemoModal('Starter')" class="cm-btn cm-btn-outline" style="width:100%; margin-top:20px;">Start Free Trial →</button>
+          </div>
+
+          <!-- 2. Growth (Featured) -->
+          <div class="pricing-card featured">
+            <div>
+              <div class="pricing-header">
+                <span class="cm-branch-tag" style="background:#F3E8FF; color:#7C3AED;">Multi-Branch & Apps</span>
+                <h3 class="pricing-plan-name">Growth Business</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">For multi-location chains like Mani's Biriyani, H&M, and sports stores.</p>
+              </div>
+              <div class="pricing-price-row">
+                <span class="pricing-currency">₹</span>
+                <span class="pricing-val">9,999</span>
+                <span class="pricing-period">/ month</span>
+              </div>
+              <ul class="pricing-features-list" style="margin-top:20px;">
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 50,000 feedback/mo</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 10 branch locations / sources</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Aspect-Based Sentiment (ABSA)</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> AI Theme Clustering & Insights</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> React Native Smartphone Mobile App</li>
+              </ul>
+            </div>
+            <button onclick="openDemoModal('Growth')" class="cm-btn cm-btn-primary" style="width:100%; margin-top:20px;">Get Started with Growth →</button>
+          </div>
+
+          <!-- 3. Enterprise -->
+          <div class="pricing-card">
+            <div>
+              <div class="pricing-header">
+                <span class="cm-branch-tag" style="background:#ECFDF5; color:#059669;">Enterprise & Publishers</span>
+                <h3 class="pricing-plan-name">Enterprise Scale</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">For high-volume publishers like Spotify and national retail brands.</p>
+              </div>
+              <div class="pricing-price-row">
+                <span class="pricing-val" style="font-size:2rem;">Custom</span>
+              </div>
+              <ul class="pricing-features-list" style="margin-top:20px;">
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Unlimited reviews & comments</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom LLM fine-tuning & embeddings</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Dedicated Account Manager & 99.9% SLA</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom Webhooks & ERP integrations</li>
+              </ul>
+            </div>
+            <button onclick="openDemoModal('Enterprise')" class="cm-btn cm-btn-outline" style="width:100%; margin-top:20px;">Talk to Enterprise Team →</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Feature Capabilities Showcase -->
       <div class="landing-features-grid">
         <div class="feature-box">
@@ -862,6 +941,50 @@
         <button onclick="document.getElementById('syncModal').classList.remove('active');" class="cm-btn cm-btn-outline">Cancel</button>
         <button id="runSyncBtn" class="cm-btn cm-btn-primary">Start Live Ingestion</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Interactive Book a Demo Modal -->
+  <div id="demoModal" class="cm-modal-backdrop">
+    <div class="cm-modal-card">
+      <div class="cm-modal-header">
+        <h3 class="cm-modal-title">Book a Live Reviewr Demo</h3>
+        <button onclick="document.getElementById('demoModal').classList.remove('active');" class="cm-close-btn">×</button>
+      </div>
+
+      <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
+        Schedule a 15-minute personalized walkthrough tailored to your business locations, YouTube channel, or Play Store mobile app.
+      </p>
+
+      <form onsubmit="handleDemoBooking(event)" style="display:flex; flex-direction:column; gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="demoBookingName" placeholder="e.g. Mani R" required value="Mani (Founder)" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Work Email</label>
+          <input type="email" class="form-input" id="demoBookingEmail" placeholder="admin@manisbiriyani.com" required value="admin@manisbiriyani.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Business Type / Target Channel</label>
+          <select class="form-input" id="demoBookingType">
+            <option value="google_maps">Multi-Branch Google Maps Chain (e.g. Restaurants, Retail)</option>
+            <option value="youtube">YouTube Creator Channel</option>
+            <option value="play_store">Google Play Store Mobile App</option>
+          </select>
+        </div>
+
+        <div id="demoBookingSuccess" style="display:none; background:var(--sentiment-pos-bg); border:1px solid var(--sentiment-pos-border); color:var(--sentiment-pos); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
+          ✓ Demo booking request received! Our VoC specialist will contact you shortly.
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+          <button type="button" onclick="document.getElementById('demoModal').classList.remove('active');" class="cm-btn cm-btn-outline">Cancel</button>
+          <button type="submit" id="demoBookingSubmitBtn" class="cm-btn cm-btn-primary">Confirm Demo Booking →</button>
+        </div>
+      </form>
     </div>
   </div>
 
