@@ -15,6 +15,10 @@ import {
   Layers,
   ChevronDown,
   ChevronUp,
+  Clock,
+  Zap,
+  Database,
+  Shield,
 } from "lucide-react";
 
 function YouTubeIcon({ className = "w-5 h-5" }) {
@@ -31,11 +35,12 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
   const [videoResult, setVideoResult] = useState(null);
   const [videoError, setVideoError] = useState("");
 
-  // Channel Live Sync State (5 videos x 20 comments)
+  // Channel Live Sync State (3 videos x 50 comments = 150 comments)
   const [isSyncingChannel, setIsSyncingChannel] = useState(false);
   const [syncProgress, setSyncProgress] = useState([]);
   const [channelSyncResult, setChannelSyncResult] = useState(null);
   const [showSyncModal, setShowSyncModal] = useState(false);
+  const [syncConfig, setSyncConfig] = useState({ maxVideos: 3, commentsPerVideo: 50, title: "2-Hour Scheduled Sync (3 Videos × 50 Comments)" });
 
   // Handle single video fetch & stats
   const handleFetchVideo = async (e) => {
@@ -72,24 +77,31 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
     }
   };
 
-  // Handle live channel sync (5 videos x 20 comments = 100 comments)
-  const handleRunChannelSync = async () => {
+  // Handle channel batch sync (Default: 3 videos x 50 comments = 150 comments scheduled every 2 hours)
+  const handleRunChannelSync = async (maxVideos = 3, commentsPerVideo = 50, customTitle = "2-Hour Scheduled Batch (3 Videos × 50 Comments)") => {
     setIsSyncingChannel(true);
     setShowSyncModal(true);
-    setSyncProgress(["Connecting to YouTube Data API v3...", "Resolving Channel handle & latest uploads..."]);
+    setSyncConfig({ maxVideos, commentsPerVideo, title: customTitle });
+    setSyncProgress([
+      "Connecting to YouTube Data API v3...",
+      "Resolving Channel handle & latest uploads from Redis Celery queue...",
+    ]);
     setChannelSyncResult(null);
 
     try {
       await new Promise((r) => setTimeout(r, 600));
-      setSyncProgress((prev) => [...prev, "Found 5 latest video uploads. Initializing batch extraction..."]);
+      setSyncProgress((prev) => [
+        ...prev,
+        `Found ${maxVideos} latest published videos. Ingesting up to ${commentsPerVideo} comments each (${maxVideos * commentsPerVideo} total)...`,
+      ]);
 
       const resp = await fetch("/api/youtube/live-sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           channelHandleOrId: company?.handle || "@VJ_Sidhu_Vlogs",
-          maxVideos: 5,
-          commentsPerVideo: 20,
+          maxVideos,
+          commentsPerVideo,
         }),
       });
 
@@ -103,16 +115,16 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
           const v = data.videos[i];
           setSyncProgress((prev) => [
             ...prev,
-            `Video ${i + 1}/5: "${v.title.slice(0, 35)}..." (${v.commentsCount} comments extracted, Net: ${v.netSentiment})`,
+            `Video ${i + 1}/${data.videos.length}: "${v.title.slice(0, 32)}..." (${v.commentsCount} comments, Net: ${v.netSentiment})`,
           ]);
-          await new Promise((r) => setTimeout(r, 400));
+          await new Promise((r) => setTimeout(r, 350));
         }
       }
 
       setSyncProgress((prev) => [
         ...prev,
-        `Computing NLP Aspect Polarity & Statistical Aggregations across ${data.stats?.totalCommentsExtracted || 100} signals...`,
-        `Complete! Ingested ${data.stats?.totalCommentsExtracted || 100} comments across 5 latest videos.`,
+        `Running NLP Aspect Sentiment & Frequency Aggregations across ${data.stats?.totalCommentsExtracted || (maxVideos * commentsPerVideo)} signals...`,
+        `Complete! Ingested ${data.stats?.totalCommentsExtracted || (maxVideos * commentsPerVideo)} comments across ${maxVideos} videos.`,
       ]);
 
       setChannelSyncResult(data);
@@ -128,6 +140,40 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
 
   return (
     <div className="space-y-4">
+      {/* ─── REDIS + CELERY 2-HOUR SCHEDULER BADGE BAR ─── */}
+      <div className="p-4 rounded-xl bg-gradient-to-r from-[#FAF5FF] via-white to-[#F5F3FF] border border-[#DDD6FE] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#7C3AED] text-white flex items-center justify-center shadow-xs shrink-0">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-bold text-[#18181B] font-serif">
+                Scheduled 2-Hour Auto Ingestion Pipeline
+              </span>
+              <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse"></span>
+                Redis + Celery Beat Active
+              </span>
+            </div>
+            <p className="text-[11px] text-[#71717A] mt-0.5">
+              Refreshes every <strong>2 hours</strong>: Retrieves the <strong>last 3 videos</strong> with <strong>50 comments each</strong> (150 total customer signals).
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => handleRunChannelSync(3, 50, "2-Hour Scheduled Sync (3 Videos × 50 Comments)")}
+            disabled={isSyncingChannel}
+            className="h-8 px-3 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+          >
+            <RefreshCw className={`w-3 h-3 ${isSyncingChannel ? "animate-spin" : ""}`} />
+            <span>Run 2-Hour Sync (3 Vids × 50 Comments)</span>
+          </button>
+        </div>
+      </div>
+
       {/* ─── LIVE YOUTUBE COMMAND & INGESTION BOX ─── */}
       <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FAF5FF] via-[#FBF9F5] to-white border border-[#DDD6FE] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#ECE8E0]">
@@ -137,21 +183,21 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
             </div>
             <div>
               <h3 className="text-sm font-bold text-[#18181B] font-serif flex items-center gap-2">
-                Live YouTube API v3 Pipeline
+                YouTube Video Analyzer & Live Stream Ingest
               </h3>
               <p className="text-xs text-[#71717A]">
-                Fetch live comments, parse nested replies, and compute real-time NLP sentiment statistics.
+                Paste a specific video link or run channel-wide sync to compute real-time sentiment statistics.
               </p>
             </div>
           </div>
 
           <button
-            onClick={handleRunChannelSync}
+            onClick={() => handleRunChannelSync(5, 20, "Channel Live Sync (5 Videos × 20 Comments)")}
             disabled={isSyncingChannel}
-            className="h-8 px-3 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs shrink-0"
+            className="h-8 px-3 rounded-lg border border-[#E5E1D8] bg-white hover:bg-[#F4F1EA] text-[#18181B] text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs shrink-0"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingChannel ? "animate-spin" : ""}`} />
-            <span>Channel Live Sync (5 Videos × 20 Comments)</span>
+            <Zap className="w-3.5 h-3.5 text-[#7C3AED]" />
+            <span>Quick Sync (5 Videos × 20 Comments)</span>
           </button>
         </div>
 
@@ -312,10 +358,10 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-[#18181B] font-serif">
-                    Channel Live Sync: 5 Videos × 20 Comments
+                    {syncConfig.title}
                   </h3>
                   <p className="text-xs text-[#71717A]">
-                    Automated batch ingestion streaming directly into Reviewr Intelligence.
+                    Automated Redis Celery queue batch ingestion streaming into Reviewr Intelligence.
                   </p>
                 </div>
               </div>

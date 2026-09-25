@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Redis Message Broker for Celery
+  redis:
+    image: redis:7-alpine
+    container_name: reviewr-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Celery Worker for YouTube Scheduled Ingestion
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: reviewr-celery-worker
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-AIzaSyDzQb1VCSM7VQf47RnGPYHMq2bj6ZlVNJk}
+      - YOUTUBE_CHANNEL_HANDLE=${YOUTUBE_CHANNEL_HANDLE:-@VJ_Sidhu_Vlogs}
+      - BACKEND_NLP_URL=http://backend:8000/api/nlp/process-youtube
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A celery_tasks worker --loglevel=info
+
+  # Celery Beat Scheduler (Triggers 2-Hour Cron)
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: reviewr-celery-beat
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-AIzaSyDzQb1VCSM7VQf47RnGPYHMq2bj6ZlVNJk}
+      - YOUTUBE_CHANNEL_HANDLE=${YOUTUBE_CHANNEL_HANDLE:-@VJ_Sidhu_Vlogs}
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A celery_tasks beat --loglevel=info
+
+volumes:
+  redis_data:
