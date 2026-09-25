@@ -419,12 +419,14 @@ class YouTubeLiveService:
         analyzed_count = 0
         problems_count = 0
         intelligence_summary = {}
+        analysis_map = {}
 
         if run_nlp and feedback_ids:
             logger.info(f"Running NLP Pipeline on {len(feedback_ids)} live YouTube comments...")
             pipeline = NLPPipeline(db)
             analyses = pipeline.process_batch(feedback_ids)
             analyzed_count = len(analyses)
+            analysis_map = {a.feedback_id: a for a in analyses}
 
             # Discover problems using HDBSCAN & BERTopic
             discovered_problems = pipeline.discover_problems()
@@ -433,6 +435,38 @@ class YouTubeLiveService:
             # Re-calculate trends, priorities, recommendations, and executive LLM insights
             coordinator = IntelligenceCoordinator(db)
             intelligence_summary = coordinator.run_full_intelligence_cycle()
+
+        # Calculate sentiment breakdown and stats
+        pos_count = sum(1 for a in analysis_map.values() if getattr(a, "sentiment", None) == "positive")
+        neu_count = sum(1 for a in analysis_map.values() if getattr(a, "sentiment", None) == "neutral")
+        neg_count = sum(1 for a in analysis_map.values() if getattr(a, "sentiment", None) == "negative")
+        total_for_stats = analyzed_count if analyzed_count > 0 else len(all_raw_comments) or 1
+
+        pos_pct = round((pos_count / total_for_stats) * 100)
+        neu_pct = round((neu_count / total_for_stats) * 100)
+        neg_pct = round((neg_count / total_for_stats) * 100)
+        net_ratio = (pos_count - neg_count) / total_for_stats
+        net_str = f"{net_ratio:+.0%}"
+
+        total_likes = sum(c.get("like_count", 0) for c in all_raw_comments)
+        avg_likes = round(total_likes / (len(all_raw_comments) or 1), 1)
+
+        formatted_comments = []
+        for c in all_raw_comments:
+            a = analysis_map.get(c["id"])
+            formatted_comments.append({
+                "id": c["id"],
+                "authorName": c.get("author", "Anonymous"),
+                "authorAvatar": c.get("author_avatar", ""),
+                "text": c["text"],
+                "likeCount": c.get("like_count", 0),
+                "sentiment": getattr(a, "sentiment", "negative") if a else "negative",
+                "sentimentScore": getattr(a, "sentiment_score", -0.5) if a else -0.5,
+                "intent": getattr(a, "intent", "feedback") if a else "feedback",
+                "isReply": c.get("is_reply", False),
+                "createdAt": c.get("created_at"),
+                "sourceUrl": c.get("source_url"),
+            })
 
         return {
             "status": "success",
@@ -444,8 +478,29 @@ class YouTubeLiveService:
             "analyzed_count": analyzed_count,
             "problems_discovered": problems_count,
             "intelligence_cycle": intelligence_summary,
+            "video": {
+                "id": video_url or "",
+                "title": video_meta.get("title", channel or "YouTube Video"),
+                "channelTitle": video_meta.get("channelTitle", channel or "YouTube"),
+                "viewCount": video_meta.get("viewCount", 0),
+                "likeCount": video_meta.get("likeCount", 0),
+                "commentCount": video_meta.get("commentCount", len(all_raw_comments)),
+            },
+            "stats": {
+                "totalCommentsExtracted": len(all_raw_comments),
+                "positiveCount": pos_count,
+                "positivePct": pos_pct,
+                "neutralCount": neu_count,
+                "neutralPct": neu_pct,
+                "negativeCount": neg_count,
+                "negativePct": neg_pct,
+                "netSentiment": net_str,
+                "avgLikesPerComment": avg_likes,
+            },
+            "comments": formatted_comments,
             "sample_comments": [
                 {"id": c["id"], "author": c.get("author"), "text": c["text"][:100]}
                 for c in all_raw_comments[:5]
             ],
         }
+

@@ -66,6 +66,37 @@ export async function POST(request) {
     const { channelHandleOrId = "@VJ_Sidhu_Vlogs", apiKey: customApiKey, maxVideos = 5, commentsPerVideo = 20 } = body;
 
     const apiKey = resolveApiKey(customApiKey);
+
+    // 1. Forward directly to FastAPI Backend for real-time live ingestion and NLP pipeline
+    const backendApiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
+    try {
+      const fastApiResp = await fetch(`${backendApiBase}/connectors/youtube/live-sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          channel: channelHandleOrId,
+          max_videos: maxVideos || 5,
+          max_comments: commentsPerVideo || 20,
+          run_nlp: true,
+          api_key: apiKey || undefined,
+        }),
+      });
+
+      if (fastApiResp.ok) {
+        const fastApiData = await fastApiResp.json();
+        return NextResponse.json({
+          success: true,
+          stats: fastApiData.stats,
+          comments: fastApiData.comments,
+          problemsDiscovered: fastApiData.problems_discovered,
+          intelligenceCycle: fastApiData.intelligence_cycle,
+          backendStatus: "fastapi_nlp_live",
+        });
+      }
+    } catch (backendErr) {
+      console.warn("FastAPI live-sync channel offline, executing built-in fallback:", backendErr.message);
+    }
+
     if (!apiKey) {
       return NextResponse.json(
         { error: "YouTube API Key not found. Please set YOUTUBE_API_KEY in your .env or pass in request." },
@@ -75,7 +106,7 @@ export async function POST(request) {
 
     const channelHandle = extractChannelHandle(channelHandleOrId);
 
-    // 1. Resolve Channel
+    // 2. Built-in Fallback: Resolve Channel
     const searchUrl = `${YOUTUBE_API_BASE}/search?part=snippet&q=${encodeURIComponent(channelHandle)}&type=channel&maxResults=1&key=${apiKey}`;
     const searchResp = await fetch(searchUrl);
     const searchData = await searchResp.json();

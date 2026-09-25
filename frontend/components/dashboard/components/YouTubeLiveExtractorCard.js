@@ -245,9 +245,22 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
           <div className="p-4 rounded-xl bg-white border border-[#E5E1D8] shadow-2xs space-y-4 animate-in fade-in">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#ECE8E0]">
               <div>
-                <span className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-wider bg-[#F5F3FF] px-2 py-0.5 rounded border border-[#DDD6FE]">
-                  Live Video Intelligence
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-wider bg-[#F5F3FF] px-2 py-0.5 rounded border border-[#DDD6FE]">
+                    Live Video Intelligence
+                  </span>
+                  {videoResult.backendStatus === "fastapi_nlp_live" && (
+                    <span className="text-[10px] font-bold text-[#059669] uppercase tracking-wider bg-[#ECFDF5] px-2 py-0.5 rounded border border-[#A7F3D0] flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#059669]"></span>
+                      FastAPI RoBERTa & DistilBERT
+                    </span>
+                  )}
+                  {videoResult.problemsDiscovered > 0 && (
+                    <span className="text-[10px] font-bold text-[#7C3AED] bg-[#FAF5FF] border border-[#DDD6FE] px-2 py-0.5 rounded">
+                      {videoResult.problemsDiscovered} Problems Clustered
+                    </span>
+                  )}
+                </div>
                 <h4 className="text-sm font-bold text-[#18181B] mt-1 font-serif">
                   {videoResult.video?.title}
                 </h4>

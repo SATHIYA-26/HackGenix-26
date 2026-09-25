@@ -65,6 +65,37 @@ export async function POST(request) {
     const { videoUrlOrId, apiKey: customApiKey, maxComments = 50 } = body;
 
     const apiKey = resolveApiKey(customApiKey);
+
+    // 1. Forward directly to FastAPI Backend for real-time live ingestion and NLP pipeline
+    const backendApiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
+    try {
+      const fastApiResp = await fetch(`${backendApiBase}/connectors/youtube/live-sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: videoUrlOrId,
+          max_comments: maxComments || 50,
+          run_nlp: true,
+          api_key: apiKey || undefined,
+        }),
+      });
+
+      if (fastApiResp.ok) {
+        const fastApiData = await fastApiResp.json();
+        return NextResponse.json({
+          success: true,
+          video: fastApiData.video,
+          stats: fastApiData.stats,
+          comments: fastApiData.comments,
+          problemsDiscovered: fastApiData.problems_discovered,
+          intelligenceCycle: fastApiData.intelligence_cycle,
+          backendStatus: "fastapi_nlp_live",
+        });
+      }
+    } catch (backendErr) {
+      console.warn("FastAPI live-sync offline, executing built-in fallback:", backendErr.message);
+    }
+
     if (!apiKey) {
       return NextResponse.json(
         { error: "YouTube API Key not found. Please add YOUTUBE_API_KEY to your .env file or pass apiKey in request." },
@@ -77,7 +108,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid YouTube Video URL or ID." }, { status: 400 });
     }
 
-    // 1. Fetch Video Metadata
+    // 2. Built-in Fallback: Fetch Video Metadata directly
     const videoResp = await fetch(
       `${YOUTUBE_API_BASE}/videos?part=snippet,statistics&id=${videoId}&key=${apiKey}`
     );
