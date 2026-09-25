@@ -4,7 +4,7 @@ import { useState } from "react";
 import { User, Users, Sparkles, FolderTree, Shield, CheckCircle2, Plus } from "lucide-react";
 import { USER_PROFILE, PRODUCT_TAXONOMY } from "../data/intelligenceMockData";
 
-export default function SettingsView() {
+export default function SettingsView({ company }) {
   const [activeTab, setActiveTab] = useState("taxonomy");
   const [taxonomy, setTaxonomy] = useState(PRODUCT_TAXONOMY);
   const [isSaved, setIsSaved] = useState(false);
@@ -183,10 +183,21 @@ export default function SettingsView() {
 
           <div className="divide-y divide-[#ECE8E0] text-xs">
             {[
-              { name: "Sathiya", email: "sathiya@reviewr.ai", role: "Owner / Lead PM" },
-              { name: "Priya Nair", email: "priya@reviewr.ai", role: "Payments PM" },
-              { name: "Karthik R", email: "karthik@reviewr.ai", role: "Mobile Engineering Lead" },
-              { name: "Store Lead (T. Nagar)", email: "tnagar@manisbiriyani.com", role: "Store Operations Manager" },
+              {
+                name: company?.ownerName || "Mani",
+                email: company?.email || "admin@manisbiriyani.com",
+                role: company?.ownerRole || "Founder & Operations",
+              },
+              {
+                name: "Customer Operations Lead",
+                email: `support@${company?.handle ? company.handle.replace("@", "") + ".com" : "reviewr.ai"}`,
+                role: "CX & VoC Manager",
+              },
+              {
+                name: "Product & Growth Lead",
+                email: `product@${company?.handle ? company.handle.replace("@", "") + ".com" : "reviewr.ai"}`,
+                role: "Decision Workspace Lead",
+              },
             ].map((m, idx) => (
               <div key={idx} className="py-3 flex items-center justify-between">
                 <div>
@@ -209,8 +220,9 @@ export default function SettingsView() {
             <label className="font-bold text-[#18181B]">Workspace Organization Name</label>
             <input
               type="text"
+              key={company?.id}
               className="w-full bg-[#FBF9F5] border border-[#E5E1D8] rounded-xl px-3 py-2 text-xs text-[#18181B] outline-none"
-              defaultValue="Reviewr Enterprise Workspace"
+              defaultValue={company ? `${company.name} Workspace` : "Reviewr Enterprise Workspace"}
             />
           </div>
 

@@ -79,9 +79,11 @@ export default function CreateActionModal({ isOpen, problem, onClose, onActionCr
                 value={owner}
                 onChange={(e) => setOwner(e.target.value)}
               >
-                <option value="Priya Nair (Payments Engineering)">Priya Nair (Payments)</option>
-                <option value="Karthik R (Android Core Lead)">Karthik R (Mobile Core)</option>
-                <option value="Sathiya (Lead PM)">Sathiya (Product Lead)</option>
+                <option value="Mani (Founder & Operations)">Mani (Founder & Operations)</option>
+                <option value="Murali (Store General Manager)">Murali (Chepauk Store GM)</option>
+                <option value="Pooja Sundaram (Store CX Lead)">Pooja Sundaram (H&M CX Lead)</option>
+                <option value="VJ Sidhu (Creator & Producer)">VJ Sidhu (Creator & Producer)</option>
+                <option value="Elena Rostova (Android Core PM)">Elena Rostova (Spotify PM)</option>
                 <option value="Operations & Kitchen Team">Store Operations Team</option>
               </select>
             </div>

@@ -121,7 +121,13 @@ export default function ReviewrApp({ initialView = "landing" }) {
     return (
       <>
         <DovetailCursor />
-        <DashboardShell onNavigateLanding={() => handleNavigate("landing")} />
+        <DashboardShell
+          currentAccount={currentAccount}
+          currentAccountId={currentAccountId}
+          accounts={accounts}
+          onAccountChange={handleAccountChange}
+          onNavigateLanding={() => handleNavigate("landing")}
+        />
       </>
     );
   }

@@ -4,13 +4,18 @@ import { useState } from "react";
 import { Search, Filter, MessageSquare, ExternalLink, ThumbsUp } from "lucide-react";
 import { getFullFeedbackDatabase } from "../data/intelligenceMockData";
 
-export default function FeedbackView({ onSelectFeedback }) {
+export default function FeedbackView({ onSelectFeedback, company }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSource, setSelectedSource] = useState("all");
   const [selectedSentiment, setSelectedSentiment] = useState("all");
   const [selectedPlatform, setSelectedPlatform] = useState("all");
 
-  const allFeedback = getFullFeedbackDatabase();
+  const companyFeedback = company?.recentFeedback && company.recentFeedback.length > 0 ? company.recentFeedback : [];
+  const baseFeedback = getFullFeedbackDatabase();
+  const allFeedback = [
+    ...companyFeedback,
+    ...baseFeedback.filter((b) => !companyFeedback.some((c) => c.id === b.id)),
+  ];
 
   const filteredItems = allFeedback.filter((item) => {
     if (selectedSource !== "all" && item.source !== selectedSource) return false;

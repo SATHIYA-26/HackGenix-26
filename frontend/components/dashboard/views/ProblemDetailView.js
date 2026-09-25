@@ -4,11 +4,13 @@ import { useState } from "react";
 import { ArrowLeft, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, ExternalLink, Activity, ArrowRight, Sparkles, User, Layers, Share2, Plus } from "lucide-react";
 import { PROBLEMS, RAW_FEEDBACK_ITEMS, RECOMMENDATIONS } from "../data/intelligenceMockData";
 
-export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction }) {
+export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction, company }) {
   const [activeTab, setActiveTab] = useState("overview"); // "overview", "evidence", "analytics"
 
-  const problem = PROBLEMS.find((p) => p.id === problemId) || PROBLEMS[0];
-  const relatedFeedback = RAW_FEEDBACK_ITEMS.filter((f) => f.problemId === problem.id);
+  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  const problem = problemsList.find((p) => p.id === problemId) || PROBLEMS.find((p) => p.id === problemId) || problemsList[0] || PROBLEMS[0];
+  const allFeedback = [...(company?.recentFeedback || []), ...RAW_FEEDBACK_ITEMS];
+  const relatedFeedback = allFeedback.filter((f) => f.problemId === problem.id);
   const recommendation = RECOMMENDATIONS.find((r) => r.problemId === problem.id) || RECOMMENDATIONS[0];
 
   return (

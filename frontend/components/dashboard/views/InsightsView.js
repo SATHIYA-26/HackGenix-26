@@ -3,7 +3,9 @@
 import { Sparkles, ShieldCheck, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
 import { RECOMMENDATIONS, PROBLEMS } from "../data/intelligenceMockData";
 
-export default function InsightsView({ onSelectProblem, onSelectFeedback }) {
+export default function InsightsView({ onSelectProblem, onSelectFeedback, company }) {
+  const compProblems = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header */}
@@ -16,7 +18,7 @@ export default function InsightsView({ onSelectProblem, onSelectFeedback }) {
 
       {/* Feed of High-Value Insights */}
       <div className="space-y-4">
-        {PROBLEMS.slice(0, 5).map((prob) => (
+        {compProblems.slice(0, 5).map((prob) => (
           <div
             key={prob.id}
             className="p-6 rounded-2xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-all space-y-4 shadow-xs"

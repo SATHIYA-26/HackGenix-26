@@ -4,26 +4,28 @@ import { useState } from "react";
 import { AlertTriangle, ArrowRight, Filter, Search, LayoutGrid, List, ChevronRight } from "lucide-react";
 import { PROBLEMS } from "../data/intelligenceMockData";
 
-export default function ProblemsView({ onSelectProblem }) {
+export default function ProblemsView({ onSelectProblem, company }) {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("table"); // "table" or "grid"
 
-  const filteredProblems = PROBLEMS.filter((p) => {
+  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+
+  const filteredProblems = problemsList.filter((p) => {
     if (activeTab !== "all" && p.status !== activeTab) return false;
     if (selectedProduct !== "all" && p.category !== selectedProduct) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      const matchName = p.name.toLowerCase().includes(q);
-      const matchExpl = p.shortExplanation.toLowerCase().includes(q);
-      const matchProd = p.product.toLowerCase().includes(q);
+      const matchName = (p.name || "").toLowerCase().includes(q);
+      const matchExpl = (p.shortExplanation || "").toLowerCase().includes(q);
+      const matchProd = (p.product || "").toLowerCase().includes(q);
       if (!matchName && !matchExpl && !matchProd) return false;
     }
     return true;
   });
 
-  const categories = Array.from(new Set(PROBLEMS.map((p) => p.category)));
+  const categories = Array.from(new Set(problemsList.map((p) => p.category)));
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">

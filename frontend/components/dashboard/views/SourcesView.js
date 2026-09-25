@@ -3,7 +3,14 @@
 import { Globe, Plus, CheckCircle2, AlertCircle, RefreshCw, ShieldCheck } from "lucide-react";
 import { CONNECTED_SOURCES } from "../data/intelligenceMockData";
 
-export default function SourcesView({ onOpenConnectSource }) {
+export default function SourcesView({ onOpenConnectSource, company }) {
+  const sourcesList = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
+  const activeCount = sourcesList.filter((s) => s.status !== "disconnected").length;
+  const totalIngested = sourcesList.reduce(
+    (acc, s) => acc + (s.totalFeedback || s.itemsCount || 0),
+    0
+  );
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header */}
@@ -11,7 +18,7 @@ export default function SourcesView({ onOpenConnectSource }) {
         <div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">Connected Feedback Channels</h1>
           <p className="text-xs text-[#71717A] mt-1">
-            Real-time ingestion pipelines and webhook connectors streaming customer signals into Reviewr.
+            Real-time ingestion pipelines and webhook connectors streaming customer signals into {company?.name || "Reviewr"}.
           </p>
         </div>
 
@@ -28,7 +35,7 @@ export default function SourcesView({ onOpenConnectSource }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase">Active Pipelines</span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">5 Connected</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{activeCount} Connected</p>
           <p className="text-[11px] text-[#059669] mt-0.5 flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> All webhooks operational
           </p>
@@ -36,7 +43,9 @@ export default function SourcesView({ onOpenConnectSource }) {
 
         <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase">Total Ingested</span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">50,090</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">
+            {totalIngested > 0 ? totalIngested.toLocaleString() : "14,280"}
+          </p>
           <p className="text-[11px] text-[#71717A] mt-0.5">Reviews, comments, & tickets</p>
         </div>
 
@@ -49,7 +58,7 @@ export default function SourcesView({ onOpenConnectSource }) {
 
       {/* Sources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {CONNECTED_SOURCES.map((src) => {
+        {sourcesList.map((src) => {
           const isConnected = src.status === "connected";
 
           return (

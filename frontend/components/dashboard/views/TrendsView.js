@@ -3,10 +3,11 @@
 import { TrendingUp, TrendingDown, Sparkles, ArrowRight, AlertTriangle, Activity } from "lucide-react";
 import { PROBLEMS } from "../data/intelligenceMockData";
 
-export default function TrendsView({ onSelectProblem }) {
-  const risingProblems = PROBLEMS.filter((p) => p.growthRate > 0.2).sort((a, b) => b.growthRate - a.growthRate);
-  const decliningProblems = PROBLEMS.filter((p) => p.growthRate < 0).sort((a, b) => a.growthRate - b.growthRate);
-  const emergingSignals = PROBLEMS.filter((p) => p.status === "emerging");
+export default function TrendsView({ onSelectProblem, company }) {
+  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  const risingProblems = problemsList.filter((p) => p.growthRate > 0.1).sort((a, b) => b.growthRate - a.growthRate);
+  const decliningProblems = problemsList.filter((p) => p.growthRate < 0).sort((a, b) => a.growthRate - b.growthRate);
+  const emergingSignals = problemsList.filter((p) => p.status === "emerging");
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">

@@ -21,15 +21,29 @@ import {
   PROBLEMS,
   RAW_FEEDBACK_ITEMS,
   CONNECTED_SOURCES,
+  getCompanyIntelligence,
 } from "../data/intelligenceMockData";
 
-export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate }) {
+export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate, company }) {
   const [timeframe, setTimeframe] = useState("30d");
   const [showShareToast, setShowShareToast] = useState(false);
 
-  const emergingProblems = PROBLEMS.filter((p) => p.status === "emerging" || p.status === "critical").slice(0, 4);
-  const priorityProblems = [...PROBLEMS].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 3);
-  const recentFeedback = RAW_FEEDBACK_ITEMS.slice(0, 3);
+  const comp = company || getCompanyIntelligence("acc_manis");
+  const compProblems = comp.problems && comp.problems.length > 0 ? comp.problems : PROBLEMS;
+  const emergingProblems = compProblems.filter((p) => p.status === "emerging" || p.status === "critical").slice(0, 4);
+  const priorityProblems = [...compProblems].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 3);
+  const recentFeedback = comp.recentFeedback && comp.recentFeedback.length > 0 ? comp.recentFeedback : RAW_FEEDBACK_ITEMS.slice(0, 3);
+  const sourcesList = comp.sources && comp.sources.length > 0 ? comp.sources : CONNECTED_SOURCES;
+  const aiBrief = comp.aiBrief || AI_BRIEF;
+  const metrics = comp.metrics || {
+    totalFeedback: "14,280",
+    totalFeedbackDelta: "+12.4% review surge",
+    ratingAvg: "4.4 ★",
+    netSentiment: "+78%",
+    negativePct: "9.7%",
+    activeProblemsCount: 8,
+    emergingSignalsCount: 3,
+  };
 
   const handleShare = () => {
     setShowShareToast(true);
@@ -38,20 +52,20 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* ─── UNIFIED HEADER: PERSONALIZED GREETING & CONTROLS ─── */}
+      {/* ─── UNIFIED HEADER: COMPANY PERSONA GREETING & CONTROLS ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#ECE8E0] pb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
             <span className="text-xs font-semibold text-[#059669] uppercase tracking-wider">
-              Continuous Intelligence Engine Active
+              Continuous Intelligence Engine Active · {comp.category}
             </span>
           </div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">
-            Good morning, {USER_PROFILE.name}
+            Welcome back, {comp.name}
           </h1>
           <p className="text-xs text-[#71717A] mt-1">
-            Unified executive customer intelligence & live signal shifts across all sources.
+            {comp.ownerName} ({comp.ownerRole}) · Executive Voice of Customer Intelligence for {comp.typeLabel}
           </p>
         </div>
 
@@ -83,14 +97,14 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             onClick={() => onNavigate("problems")}
             className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors"
           >
-            Explore 15 Problems
+            Explore {compProblems.length} Problems
           </button>
 
           <button
             onClick={() => onNavigate("recommendations")}
             className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <span>4 AI Recommendations</span>
+            <span>Recommendations</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -99,7 +113,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
       {showShareToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
-          <span>Executive Dashboard snapshot link copied to clipboard!</span>
+          <span>{comp.name} Dashboard snapshot link copied to clipboard!</span>
         </div>
       )}
 
@@ -107,54 +121,54 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Total Feedback
+            Total Customer Voice
           </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">12,482</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ +14.2% volume surge</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{metrics.totalFeedback}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {metrics.totalFeedbackDelta}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Negative Friction
+            Net Sentiment
           </span>
-          <p className="text-2xl font-bold text-[#059669] mt-1">9.7%</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▼ -4.2% negative decrease</p>
+          <p className="text-2xl font-bold text-[#059669] mt-1">{metrics.netSentiment}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">Average: {metrics.ratingAvg}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Active Problem Clusters
           </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">15</p>
-          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">3 high-severity clusters</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{metrics.activeProblemsCount}</p>
+          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">Tracked issues</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Emerging Signals
           </span>
-          <p className="text-2xl font-bold text-[#D97706] mt-1">4</p>
-          <p className="text-[11px] text-[#D97706] mt-0.5 font-semibold">Fastest: Checkout crashes (+362%)</p>
+          <p className="text-2xl font-bold text-[#D97706] mt-1">{metrics.emergingSignalsCount}</p>
+          <p className="text-[11px] text-[#D97706] mt-0.5 font-semibold">Velocity surges</p>
         </div>
       </div>
 
-      {/* ─── AI BRIEF: 3 IMPORTANT SHIFTS DETECTED THIS WEEK ─── */}
+      {/* ─── AI BRIEF: COMPANY-SPECIFIC SHIFTS DETECTED THIS WEEK ─── */}
       <div className="p-6 rounded-2xl bg-[#FBF9F5] border border-[#E5E1D8] shadow-sm relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-6 h-6 rounded-md bg-[#7C3AED] text-white flex items-center justify-center">
             <Sparkles className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
-            {AI_BRIEF.headline}
+            {aiBrief.headline}
           </span>
         </div>
 
         <h2 className="text-base font-bold text-[#18181B] mb-4 font-serif">
-          {AI_BRIEF.subheadline}
+          {aiBrief.subheadline}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {AI_BRIEF.shifts.map((shift) => (
+          {aiBrief.shifts.map((shift) => (
             <div
               key={shift.id}
               onClick={() => onSelectProblem(shift.problemId)}
@@ -384,7 +398,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
           </div>
 
           <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3.5">
-            {CONNECTED_SOURCES.map((src) => {
+            {sourcesList.map((src) => {
               const count = src.totalFeedback ?? src.itemsCount ?? 0;
               return (
                 <div key={src.id} className="space-y-1.5">

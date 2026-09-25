@@ -4,10 +4,12 @@ import { useState } from "react";
 import { CheckCircle2, Clock, Calendar, ArrowRight, User, TrendingDown, ShieldCheck, Activity } from "lucide-react";
 import { ACTIONS } from "../data/intelligenceMockData";
 
-export default function ActionsView({ onSelectProblem }) {
+export default function ActionsView({ onSelectProblem, company }) {
   const [filterStatus, setFilterStatus] = useState("all");
 
-  const filteredActions = ACTIONS.filter((a) => {
+  const actionsList = company?.actions && company.actions.length > 0 ? company.actions : ACTIONS;
+
+  const filteredActions = actionsList.filter((a) => {
     if (filterStatus !== "all" && a.status !== filterStatus) return false;
     return true;
   });

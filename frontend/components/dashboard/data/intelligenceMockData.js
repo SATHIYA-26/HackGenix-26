@@ -1,14 +1,12 @@
-/**
- * Feedback Intelligence SaaS - Comprehensive Mock Data & Intelligence Layer
- * Structured around evidence-backed customer feedback decision workflows.
- */
+export * from "./companyData";
+import { COMPANY_INTELLIGENCE } from "./companyData";
 
 export const USER_PROFILE = {
-  name: "Sathiya",
-  title: "Lead Product Manager",
-  workspace: "Reviewr Enterprise Workspace",
-  email: "sathiya@reviewr.ai",
-  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
+  name: "Mani's Dum Biriyani",
+  title: "Founder & Operations",
+  workspace: "Mani's Dum Biriyani (4 Branches)",
+  email: "admin@manisbiriyani.com",
+  avatar: "/assets/logos/manis_dum_biriyani.png",
   notifications: [
     {
       id: "notif-1",
@@ -588,7 +586,7 @@ export const RECOMMENDATIONS = [
       "2. Lazy load cross-sell recommendations after initial cart render.",
     ],
     status: "Investigating",
-    owner: "Sathiya (Lead PM)",
+    owner: "Mani (Founder & Operations)",
   },
   {
     id: "rec-4",

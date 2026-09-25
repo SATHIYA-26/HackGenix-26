@@ -3,7 +3,28 @@
 import { Lightbulb, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Plus } from "lucide-react";
 import { RECOMMENDATIONS, PROBLEMS } from "../data/intelligenceMockData";
 
-export default function RecommendationsView({ onSelectProblem, onOpenCreateAction }) {
+export default function RecommendationsView({ onSelectProblem, onOpenCreateAction, company }) {
+  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+
+  const recommendationsList = company?.problems && company.problems.length > 0
+    ? company.problems.map((prob, idx) => ({
+        id: `rec-${prob.id}`,
+        problemId: prob.id,
+        problemName: prob.name,
+        title: `Resolution Plan: ${prob.name}`,
+        evidenceSummary: `${prob.feedbackCount} customer voices · ${(prob.negativeSentiment * 100).toFixed(0)}% negative · ${prob.growthLabel} velocity`,
+        priorityScore: prob.priorityScore,
+        affectedArea: `${prob.category} · ${prob.platform} (${prob.version})`,
+        rationale: prob.shortExplanation,
+        actionItems: [
+          `1. Address root issue: ${prob.whyItMatters}`,
+          `2. Continuous VoC sentiment monitoring on ${prob.sources?.join(", ") || "review channels"}.`,
+        ],
+        status: prob.status === "critical" ? "Needs Review" : "In Evaluation",
+        owner: company.ownerName || "Operations Lead",
+      }))
+    : RECOMMENDATIONS;
+
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Header */}
@@ -16,8 +37,8 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
 
       {/* Recommendations Feed */}
       <div className="space-y-4">
-        {RECOMMENDATIONS.map((rec) => {
-          const associatedProb = PROBLEMS.find((p) => p.id === rec.problemId);
+        {recommendationsList.map((rec) => {
+          const associatedProb = problemsList.find((p) => p.id === rec.problemId);
 
           return (
             <div
