@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Chattermill-Inspired Design System & Theme
+   Reviewr — AI Customer Feedback Analysis & Voice of Customer Platform
+   Design System Reference: Chattermill.com
    Typography: Fraunces (Editorial Display Serif) + Inter (Precision UI Sans)
    Palette: Warm Sand (#FBF9F5), Crisp White (#FFFFFF), Deep Obsidian (#18181B),
             Subtle Borders (#E5E2DC), Sentiment Accents (Emerald, Slate, Crimson)
@@ -84,13 +85,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(251, 249, 245, 0.85);
+  background: rgba(251, 249, 245, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 16px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 14px 32px;
 }
 
 .cm-nav-container {
@@ -100,6 +98,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
 }
 
 .cm-logo-wrap {
@@ -110,8 +109,8 @@ body {
 }
 
 .cm-logo-mark {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   background: var(--bg-dark);
   color: var(--text-white);
   border-radius: var(--radius-sm);
@@ -119,15 +118,24 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.05em;
 }
 
 .cm-logo-text {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   color: var(--text-dark);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+}
+
+.cm-logo-tagline {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: block;
+  line-height: 1;
 }
 
 .cm-nav-links {
@@ -154,6 +162,48 @@ body {
   gap: 14px;
 }
 
+/* Account Switcher Bar (Chattermill Persona Switcher) */
+.cm-account-switcher-bar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-full);
+  padding: 6px 14px 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-subtle);
+  cursor: pointer;
+}
+
+.cm-acc-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cm-acc-select {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+}
+
+.cm-acc-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
 /* Chattermill Buttons */
 .cm-btn {
   display: inline-flex;
@@ -161,9 +211,9 @@ body {
   justify-content: center;
   gap: 8px;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: var(--radius-full);
   cursor: pointer;
   text-decoration: none;
@@ -209,10 +259,10 @@ body {
 .cm-page-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 48px 32px 100px;
+  padding: 40px 32px 100px;
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: 56px;
 }
 
 /* Hero Section (Chattermill Editorial Aesthetic) */
@@ -223,7 +273,7 @@ body {
   text-align: center;
   max-width: 960px;
   margin: 0 auto;
-  gap: 20px;
+  gap: 18px;
 }
 
 .cm-pill-badge {
@@ -263,9 +313,9 @@ body {
 }
 
 .cm-hero-sub {
-  font-size: 1.15rem;
+  font-size: 1.12rem;
   color: var(--text-muted);
-  max-width: 720px;
+  max-width: 760px;
   line-height: 1.6;
 }
 
@@ -273,29 +323,89 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
-/* Problem Statement & Solution Showcase Section */
+/* Persona Selector Quick Bar */
+.cm-persona-quickbar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.cm-persona-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: var(--bg-subtle);
+  text-decoration: none;
+  flex: 1;
+}
+
+.cm-persona-tab:hover {
+  background: var(--bg-muted);
+}
+
+.cm-persona-tab.active {
+  background: var(--bg-dark);
+  color: var(--text-white);
+  border-color: var(--bg-dark);
+}
+
+.cm-persona-tab.active .cm-persona-sub {
+  color: #A1A1AA;
+}
+
+.cm-persona-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cm-persona-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: block;
+}
+
+.cm-persona-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+/* Problem Statement vs. Solution Section */
 .cm-solution-section {
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 40px;
+  padding: 36px 40px;
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
 }
 
 .cm-section-header {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .cm-section-tag {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   text-transform: uppercase;
   color: #7C3AED;
@@ -304,7 +414,7 @@ body {
 
 .cm-section-heading {
   font-family: var(--font-serif);
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-weight: 600;
   color: var(--text-dark);
   letter-spacing: -0.02em;
@@ -312,22 +422,22 @@ body {
 
 .cm-section-desc {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
-/* 2-Column Problem vs Solution Comparison Grid */
+/* 2-Column Problem vs Solution Grid */
 .cm-ps-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 
 .cm-ps-card {
-  padding: 28px;
+  padding: 24px;
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .cm-ps-card.problem {
@@ -345,7 +455,7 @@ body {
   align-items: center;
   gap: 10px;
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-dark);
 }
@@ -354,15 +464,15 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .cm-ps-list li {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 0.92rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
 .cm-ps-list.problem li span.icon {
@@ -375,23 +485,21 @@ body {
   font-weight: 700;
 }
 
-/* 4-Step Architecture Pipeline Visualizer */
+/* 4-Step Architecture Pipeline */
 .cm-pipeline-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-top: 12px;
 }
 
 .cm-step-card {
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 22px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  position: relative;
+  gap: 8px;
 }
 
 .cm-step-number {
@@ -415,36 +523,62 @@ body {
   line-height: 1.45;
 }
 
-/* Live Interactive Dashboard Section */
-.cm-dashboard-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.cm-dash-topbar {
+/* Active Persona Banner */
+.cm-active-persona-banner {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  box-shadow: var(--shadow-card);
+  gap: 24px;
 }
 
-.cm-business-select {
-  background: var(--bg-surface);
+.cm-persona-main-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.cm-persona-big-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-subtle);
+}
+
+.cm-persona-title {
+  font-family: var(--font-serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.cm-persona-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cm-branch-select {
+  background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
-  padding: 9px 18px;
+  padding: 8px 16px;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-dark);
   outline: none;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
 }
 
-/* Executive Metric KPI Row */
+/* Executive KPI Grid */
 .cm-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -469,7 +603,7 @@ body {
 }
 
 .cm-kpi-label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -537,25 +671,10 @@ body {
   font-size: 1.1rem;
 }
 
-.cm-source-icon.youtube {
-  background: #FEE2E2;
-  color: #DC2626;
-}
-
-.cm-source-icon.google_maps {
-  background: #DBEAFE;
-  color: #2563EB;
-}
-
-.cm-source-icon.play_store {
-  background: #D1FAE5;
-  color: #059669;
-}
-
-.cm-source-icon.instagram {
-  background: #FCE7F3;
-  color: #DB2777;
-}
+.cm-source-icon.google_maps { background: #DBEAFE; color: #2563EB; }
+.cm-source-icon.youtube { background: #FEE2E2; color: #DC2626; }
+.cm-source-icon.play_store { background: #D1FAE5; color: #059669; }
+.cm-source-icon.instagram { background: #FCE7F3; color: #DB2777; }
 
 .cm-source-info {
   display: flex;
@@ -581,7 +700,7 @@ body {
   color: var(--sentiment-pos);
 }
 
-/* Analytics Row: Chart & Themes */
+/* Analytics Row */
 .cm-analytics-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -681,7 +800,7 @@ body {
 .cm-theme-trend.pos { color: var(--sentiment-pos); }
 .cm-theme-trend.neg { color: var(--sentiment-neg); }
 
-/* AI Insights Cards */
+/* AI Insights Grid */
 .cm-insights-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -740,7 +859,7 @@ body {
   line-height: 1.5;
 }
 
-/* Feedback Feed Explorer */
+/* Feedback Feed Section */
 .cm-feed-section {
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
@@ -894,6 +1013,15 @@ body {
 .cm-src-badge.play_store { background: #D1FAE5; color: #059669; }
 .cm-src-badge.instagram { background: #FCE7F3; color: #DB2777; }
 
+.cm-stars-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #D97706;
+  background: #FEF3C7;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
 .cm-sentiment-badge {
   font-size: 0.72rem;
   font-weight: 700;
@@ -930,6 +1058,15 @@ body {
   border-radius: var(--radius-full);
   font-weight: 600;
   font-size: 0.75rem;
+}
+
+.cm-branch-tag {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.72rem;
 }
 
 /* Modal */
@@ -1059,10 +1196,10 @@ body {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .cm-ps-grid, .cm-pipeline-container, .cm-kpi-grid, .cm-analytics-grid, .cm-insights-grid {
+  .cm-ps-grid, .cm-pipeline-container, .cm-kpi-grid, .cm-analytics-grid, .cm-insights-grid, .cm-persona-quickbar {
     grid-template-columns: 1fr;
   }
-  .cm-sources-strip {
+  .cm-sources-strip, .cm-active-persona-banner {
     flex-direction: column;
     align-items: flex-start;
   }
