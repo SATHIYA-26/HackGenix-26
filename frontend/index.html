@@ -28,7 +28,7 @@
 
       <nav class="cm-nav-links">
         <span class="cm-nav-link active" id="navHome" onclick="showLandingView()">Overview</span>
-        <span class="cm-nav-link" id="navWhatWeDo" onclick="scrollToSection('solutionSection')">What we do?</span>
+        <span class="cm-nav-link" id="navWhatWeDo" onclick="scrollToSection('whatWeDoSection')">What we do?</span>
         <span class="cm-nav-link" id="navPricing" onclick="scrollToSection('pricingSection')">Pricing</span>
         <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Demo</span>
         <span class="cm-nav-link" id="navDash" onclick="showDashboardView()" style="display:none;">Dashboard</span>
@@ -231,6 +231,118 @@
 
           </div>
         </div>
+      <!-- =====================================================================
+           SECTION: WHAT WE DO (Simple, Human Explanation)
+           ===================================================================== -->
+      <div class="landing-section-block" id="whatWeDoSection">
+        <div class="landing-section-title-wrap">
+          <span class="landing-section-tag">What We Do · Made Simple</span>
+          <h2 class="landing-section-title">We Turn Customer Feedback Into More Revenue</h2>
+          <p class="cm-section-desc">Thousands of reviews are written about your business every week. We make it dead simple to understand what customers love, what makes them angry, and how to fix it immediately.</p>
+        </div>
+
+        <!-- 3 Simple Pillars -->
+        <div class="what-we-do-grid">
+          <!-- Step 1 -->
+          <div class="wwd-card">
+            <div class="wwd-badge-row">
+              <div class="wwd-step-pill">Step 1</div>
+              <div class="wwd-icon-circle" style="background:#EFF6FF; color:#3B82F6;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </div>
+            </div>
+            <h3 class="wwd-title">1. Connect & Gather Everything</h3>
+            <p class="wwd-desc">
+              Connect your Google Maps branches, YouTube channel, or Mobile App with 1 click. Reviewr automatically pulls every review, rating, and comment in real-time. No manual copying, no messy spreadsheets.
+            </p>
+            <div class="wwd-highlight-box">
+              <span class="wwd-highlight-label">In simple terms:</span>
+              <span class="wwd-highlight-text">All your customer feedback across the internet in one clean screen.</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="wwd-card">
+            <div class="wwd-badge-row">
+              <div class="wwd-step-pill" style="background:#F5F3FF; color:#7C3AED; border-color:rgba(124,58,237,0.2);">Step 2</div>
+              <div class="wwd-icon-circle" style="background:#F5F3FF; color:#7C3AED;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+            </div>
+            <h3 class="wwd-title">2. AI Reads & Understands Details</h3>
+            <p class="wwd-desc">
+              Star ratings don't explain the full story. Our AI reads every sentence to separate different aspects — like food taste, staff politeness, waiting queues, or video audio quality — so you know exactly what is working.
+            </p>
+            <div class="wwd-highlight-box">
+              <span class="wwd-highlight-label">In simple terms:</span>
+              <span class="wwd-highlight-text">You don't need to read 10,000 comments. AI highlights the exact reasons.</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="wwd-card">
+            <div class="wwd-badge-row">
+              <div class="wwd-step-pill" style="background:#ECFDF5; color:#059669; border-color:rgba(16,185,129,0.2);">Step 3</div>
+              <div class="wwd-icon-circle" style="background:#ECFDF5; color:#059669;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+            </div>
+            <h3 class="wwd-title">3. Actionable Fixes & Revenue Growth</h3>
+            <p class="wwd-desc">
+              Reviewr gives you clear instructions on what to fix right now to stop customers from leaving for competitors. Resolving negative feedback protects your brand rating and directly increases sales.
+            </p>
+            <div class="wwd-highlight-box">
+              <span class="wwd-highlight-label">In simple terms:</span>
+              <span class="wwd-highlight-text">Fix complaints fast ➔ Turn 1-star critics into loyal repeat customers.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-World Example Comparison Card -->
+        <div class="wwd-example-card">
+          <div class="wwd-example-header">
+            <span class="wwd-example-tag">REAL LIFE EXAMPLE</span>
+            <h3 class="wwd-example-title">How Reviewr understands a mixed customer review</h3>
+          </div>
+          
+          <div class="wwd-review-sample">
+            <span class="wwd-quote-icon">“</span>
+            <p class="wwd-quote-text">
+              The biryani was <mark class="pos-highlight">super flavorful and tender</mark>, but we had to <mark class="neg-highlight">wait 45 minutes for a table</mark> and the <mark class="neg-highlight">car parking was full</mark>.
+            </p>
+            <span class="wwd-sample-author">— Real Google Maps Customer (Rated 3 ★)</span>
+          </div>
+
+          <div class="wwd-breakdown-grid">
+            <div class="wwd-breakdown-col before">
+              <div class="wwd-col-header">
+                <span class="col-icon">❌</span>
+                <strong>What Traditional Tools See:</strong>
+              </div>
+              <div class="wwd-col-body">
+                <p>Just counts as a generic <strong>"3.0 Star Rating"</strong>. The manager has no idea what went wrong or what went right.</p>
+              </div>
+            </div>
+
+            <div class="wwd-breakdown-col after">
+              <div class="wwd-col-header">
+                <span class="col-icon">✅</span>
+                <strong>What Reviewr AI Instantly Does:</strong>
+              </div>
+              <div class="wwd-col-body">
+                <div class="wwd-aspect-tag-list">
+                  <span class="aspect-badge pos">🍗 Taste & Meat Quality: +94% (High Delight)</span>
+                  <span class="aspect-badge neg">⏱ Waiting Queue Time: -88% (Operational Bottleneck)</span>
+                  <span class="aspect-badge neg">🚗 Parking Facility: -72% (Location Friction)</span>
+                </div>
+                <div class="wwd-action-callout">
+                  ⚡ <strong>Action Alert Sent to Branch Manager:</strong> <em>"Add weekend queue pager system to save an estimated ₹1.8L/month in walkaways."</em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Predefined Business Portals (Login Simulator) -->
