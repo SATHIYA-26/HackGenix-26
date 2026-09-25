@@ -1325,3 +1325,311 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   LANDING PAGE: SOLUTION, NLP PIPELINE & TECH STACK SHOWCASE
+   ========================================================================== */
+
+.landing-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Solution Split Grid */
+.solution-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.solution-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.solution-card.problem-side {
+  border-top: 4px solid var(--sentiment-neg);
+}
+
+.solution-card.solution-side {
+  border-top: 4px solid var(--sentiment-pos);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
+}
+
+.solution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.solution-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-body);
+}
+
+.solution-list-item strong {
+  color: var(--text-dark);
+}
+
+.solution-icon-bullet {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.solution-icon-bullet.neg {
+  background: var(--sentiment-neg-bg);
+  color: var(--sentiment-neg);
+  border: 1px solid var(--sentiment-neg-border);
+}
+
+.solution-icon-bullet.pos {
+  background: var(--sentiment-pos-bg);
+  color: var(--sentiment-pos);
+  border: 1px solid var(--sentiment-pos-border);
+}
+
+/* NLP & AI Pipeline Visual Flow */
+.pipeline-flow-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  position: relative;
+}
+
+.pipeline-step-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-subtle);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.pipeline-step-box:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+  border-color: #D4D0C5;
+}
+
+.pipeline-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  color: var(--text-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.pipeline-step-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+
+.pipeline-step-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.pipeline-step-tag {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  color: #7C3AED;
+  margin-top: auto;
+}
+
+/* Packages & Tech Stack Category Grid */
+.tech-packages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.tech-cat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.tech-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tech-cat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.tech-cat-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.tech-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.tech-chip .tech-version {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Interactive NLP Sandbox Widget */
+.nlp-sandbox-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.nlp-sandbox-input-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.nlp-sandbox-textarea {
+  flex: 1;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.15s ease;
+}
+
+.nlp-sandbox-textarea:focus {
+  border-color: var(--text-dark);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.08);
+}
+
+.sandbox-quick-samples {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.sandbox-sample-btn {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sandbox-sample-btn:hover {
+  background: var(--bg-muted);
+  color: var(--text-dark);
+}
+
+.nlp-result-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.nlp-result-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nlp-result-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1024px) {
+  .pipeline-flow-container, .solution-split-grid, .tech-packages-grid, .nlp-result-container {
+    grid-template-columns: 1fr;
+  }
+}
+

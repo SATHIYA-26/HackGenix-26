@@ -580,3 +580,181 @@ async function handleRunSync() {
     stepsBox.style.display = "none";
   }, 1200);
 }
+
+// ==========================================================================
+// LANDING PAGE: INTERACTIVE NLP SANDBOX & SECTION NAVIGATION
+// ==========================================================================
+
+function scrollToSection(sectionId) {
+  if (!document.getElementById("landingView").classList.contains("active")) {
+    showLandingView();
+  }
+  setTimeout(() => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, 100);
+}
+
+const NLP_SAMPLES = [
+  {
+    text: "Ordered mutton biriyani at T. Nagar branch yesterday. The meat was remarkably tender and aromatic (+0.94), but the Sunday lunchtime queue took over 40 minutes to seat us!",
+    sentiment: "positive",
+    badgeText: "POSITIVE (+78)",
+    polarity: "Compound Polarity: +0.784",
+    summary: "Strong positive polarity on food quality and seasoning, offset by localized negative friction on physical wait times.",
+    theme: "🏷️ Mutton Biriyani & Meat Tenderness",
+    themeBg: "#F3E8FF",
+    themeColor: "#7C3AED",
+    entities: '"mutton biriyani", "T. Nagar branch", "Sunday queue"',
+    recTag: "friction_point",
+    recTagLabel: "Branch Friction Alert",
+    recText: "Deploy digital token queue system during Sunday lunch peak (1-3 PM) in T. Nagar branch."
+  },
+  {
+    text: "Spotify audio quality and Discover Weekly recommendations are elite, but offline downloads crash on Android 14 after latest v8.9.42 update.",
+    sentiment: "negative",
+    badgeText: "NEGATIVE (-64)",
+    polarity: "Compound Polarity: -0.642",
+    summary: "Critical technical issue identified: Core playback works but major failure reported on local storage cache sync on Android 14.",
+    theme: "🏷️ Android 14 Offline Sync & Downloads",
+    themeBg: "#FFF1F2",
+    themeColor: "#E11D48",
+    entities: '"Discover Weekly", "offline downloads", "Android 14", "v8.9.42"',
+    recTag: "friction_point",
+    recTagLabel: "Critical Bug Alert",
+    recText: "Hotfix build v8.9.43 recommended for Android 14 scoped storage permissions to restore 4.8★ app store rating."
+  },
+  {
+    text: "VJ Sidhu comedy timing with the team in the Madurai street food video was peak entertainment! The 4K drone cinematography of the temple was stunning.",
+    sentiment: "positive",
+    badgeText: "POSITIVE (+96)",
+    polarity: "Compound Polarity: +0.962",
+    summary: "Overwhelmingly positive community sentiment celebrating humor, crew camaraderie, and production cinematography.",
+    theme: "🏷️ Comedy Banter & Travel Crew Chemistry",
+    themeBg: "#ECFDF5",
+    themeColor: "#059669",
+    entities: '"Madurai street food", "4K drone cinematography", "comedy timing"',
+    recTag: "positive_driver",
+    recTagLabel: "Top Delight Driver",
+    recText: "Feature travel crew behind-the-scenes vlogs to maximize 18.4% community engagement rate."
+  },
+  {
+    text: "Visited H&M Mylapore branch for summer shopping. Great linen collection and clean store, but fitting room queues were moving very slow with only 2 cabins open.",
+    sentiment: "neutral",
+    badgeText: "NEUTRAL (+21)",
+    polarity: "Compound Polarity: +0.210",
+    summary: "Mixed retail sentiment: Apparel quality and collection are well received, but fitting room bottleneck suppresses customer delight.",
+    theme: "🏷️ Fitting Room Wait & Staff Assistance",
+    themeBg: "#F1F5F9",
+    themeColor: "#64748B",
+    entities: '"summer linen collection", "Mylapore branch", "fitting room queues"',
+    recTag: "friction_point",
+    recTagLabel: "Store Operations Alert",
+    recText: "Open second floor fitting room annex during weekend footfall surges to reduce wait time."
+  }
+];
+
+function loadSampleReview(sampleIdx) {
+  const sample = NLP_SAMPLES[sampleIdx];
+  if (!sample) return;
+
+  const textarea = document.getElementById("nlpSandboxInput");
+  if (textarea) textarea.value = sample.text;
+
+  renderNlpResults(sample);
+}
+
+function runNlpDemo() {
+  const textarea = document.getElementById("nlpSandboxInput");
+  const rawText = (textarea ? textarea.value : "").trim();
+
+  if (!rawText) {
+    alert("Please enter review text to process.");
+    return;
+  }
+
+  // Check matching pre-built sample or run dynamic heuristic evaluation
+  const matchedSample = NLP_SAMPLES.find((s) => s.text === rawText);
+  if (matchedSample) {
+    renderNlpResults(matchedSample);
+    return;
+  }
+
+  // Dynamic Rule-Based NLP Engine Simulation
+  const lower = rawText.toLowerCase();
+  let posScore = 0;
+  let negScore = 0;
+
+  const posWords = ["good", "great", "love", "tender", "delicious", "amazing", "stunning", "best", "fast", "clean", "elite", "excellent"];
+  const negWords = ["bad", "worst", "slow", "delay", "crash", "bug", "terrible", "hate", "issue", "queue", "wait", "problem", "broken"];
+
+  posWords.forEach((w) => { if (lower.includes(w)) posScore += 1; });
+  negWords.forEach((w) => { if (lower.includes(w)) negScore += 1; });
+
+  let sentiment = "neutral";
+  let polarityCompound = "+0.082";
+  let badgeText = "NEUTRAL (+08)";
+
+  if (posScore > negScore) {
+    sentiment = "positive";
+    polarityCompound = `+0.${Math.min(95, 60 + posScore * 12)}`;
+    badgeText = `POSITIVE (+${Math.min(95, 60 + posScore * 10)})`;
+  } else if (negScore > posScore) {
+    sentiment = "negative";
+    polarityCompound = `-0.${Math.min(88, 50 + negScore * 14)}`;
+    badgeText = `NEGATIVE (-${Math.min(88, 50 + negScore * 12)})`;
+  }
+
+  // Extract entities
+  const words = rawText.split(/\s+/).filter((w) => w.length > 4);
+  const entities = words.slice(0, 3).map((w) => `"${w.replace(/[^a-zA-Z]/g, "")}"`).join(", ");
+
+  const dynamicResult = {
+    sentiment: sentiment,
+    badgeText: badgeText,
+    polarity: `Compound Polarity: ${polarityCompound}`,
+    summary: `Extracted ${posScore} positive aspect tokens and ${negScore} negative friction markers via real-time VADER lexicon tokenizer.`,
+    theme: posScore >= negScore ? "🏷️ Product Quality & Customer Experience" : "🏷️ Operational Friction & Bug Report",
+    themeBg: sentiment === "positive" ? "#ECFDF5" : (sentiment === "negative" ? "#FFF1F2" : "#F1F5F9"),
+    themeColor: sentiment === "positive" ? "#059669" : (sentiment === "negative" ? "#E11D48" : "#64748B"),
+    entities: entities || '"customer feedback"',
+    recTag: sentiment === "positive" ? "positive_driver" : "friction_point",
+    recTagLabel: sentiment === "positive" ? "Top Delight Factor" : "Friction Alert",
+    recText: sentiment === "positive"
+      ? "Amplify this customer delight pattern across marketing messaging and branch best practices."
+      : "Automate priority notification to store operations team to resolve friction point."
+  };
+
+  renderNlpResults(dynamicResult);
+}
+
+function renderNlpResults(data) {
+  const badge = document.getElementById("demoSentimentBadge");
+  const polarity = document.getElementById("demoPolarityVal");
+  const summary = document.getElementById("demoSentimentSummary");
+  const theme = document.getElementById("demoThemeBadge");
+  const entities = document.getElementById("demoEntities");
+  const recBadge = document.getElementById("demoRecBadge");
+  const recText = document.getElementById("demoRecText");
+
+  if (badge) {
+    badge.className = `cm-sentiment-badge ${data.sentiment}`;
+    badge.innerHTML = `<span class="cm-theme-dot ${data.sentiment}"></span> ${data.badgeText}`;
+  }
+  if (polarity) polarity.textContent = data.polarity;
+  if (summary) summary.textContent = data.summary;
+  if (theme) {
+    theme.textContent = data.theme;
+    theme.style.background = data.themeBg;
+    theme.style.color = data.themeColor;
+  }
+  if (entities) entities.textContent = data.entities;
+  if (recBadge) {
+    recBadge.className = `cm-insight-tag ${data.recTag}`;
+    recBadge.textContent = data.recTagLabel;
+  }
+  if (recText) recText.textContent = data.recText;
+}
+

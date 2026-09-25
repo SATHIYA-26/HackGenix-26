@@ -29,7 +29,10 @@
 
       <nav class="cm-nav-links">
         <span class="cm-nav-link active" id="navHome" onclick="showLandingView()">Overview</span>
-        <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Predefined Portals</span>
+        <span class="cm-nav-link" id="navSolution" onclick="scrollToSection('solutionSection')">Solution</span>
+        <span class="cm-nav-link" id="navPipeline" onclick="scrollToSection('pipelineSection')">NLP Pipeline</span>
+        <span class="cm-nav-link" id="navTechStack" onclick="scrollToSection('techStackSection')">Tech Stack</span>
+        <span class="cm-nav-link" id="navPortals" onclick="scrollToPortals()">Demo Portals</span>
         <span class="cm-nav-link" id="navLogin" onclick="showLoginView()">Sign In</span>
         <span class="cm-nav-link" id="navDash" onclick="showDashboardView()" style="display:none;">Dashboard</span>
       </nav>
@@ -271,6 +274,260 @@
                 </div>
               </div>
               <button class="portal-action-btn" style="margin-top:14px;">Sign In to Publisher Dashboard →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SECTION: THE SOLUTION VS THE PROBLEM
+           ===================================================================== -->
+      <div class="landing-section-block" id="solutionSection">
+        <div class="landing-section-title-wrap">
+          <span class="landing-section-tag">Why Reviewr Exists</span>
+          <h2 class="landing-section-title">The Feedback Fragmentation Problem & Our Solution</h2>
+          <p class="cm-section-desc">How Reviewr transforms chaotic, multi-channel customer noise into quantified operational growth.</p>
+        </div>
+
+        <div class="solution-split-grid">
+          <!-- The Problem -->
+          <div class="solution-card problem-side">
+            <div>
+              <span class="portal-type-badge youtube" style="background:#FFE4E6; color:#E11D48;">The Legacy Problem</span>
+              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Fragmented Customer Feedback Chaos</h3>
+            </div>
+
+            <div class="solution-list">
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet neg">✕</span>
+                <div><strong>Siloed Data Channels:</strong> Reviews scattered across Google Maps locations, YouTube videos, Play Store versions, and Instagram reels without a central data lake.</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet neg">✕</span>
+                <div><strong>Unstructured Text Overload:</strong> Thousands of free-form customer comments with slang, emojis, mixed languages, and nuanced sarcasm that traditional keyword alerts miss.</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet neg">✕</span>
+                <div><strong>Zero Branch Attribution:</strong> Executives cannot isolate whether dining delays belong to the T. Nagar branch or Velachery branch without manual reading.</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet neg">✕</span>
+                <div><strong>Stale Sentiment Metrics:</strong> Static average star ratings mask emerging operational crises (e.g. food quality dips or software update crashes).</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Reviewr Solution -->
+          <div class="solution-card solution-side">
+            <div>
+              <span class="portal-type-badge play_store" style="background:#ECFDF5; color:#059669;">The Reviewr Solution</span>
+              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Unified VoC & NLP Intelligence Engine</h3>
+            </div>
+
+            <div class="solution-list">
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet pos">✓</span>
+                <div><strong>Multi-Source Automated Ingestion:</strong> Official REST API connectors ingest Google Places reviews, YouTube comment threads/replies, and Play Store reviews into a unified schema.</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet pos">✓</span>
+                <div><strong>Aspect-Based Sentiment (ABSA):</strong> Sub-sentence polarity scoring decomposes comments into specific attributes (e.g. <em>"Food was great (+0.92)"</em> vs <em>"Waiting queue was slow (-0.78)"</em>).</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet pos">✓</span>
+                <div><strong>Chattermill AI Theme Clustering:</strong> Semantic embeddings cluster millions of reviews into real-time operational themes with quantified trajectory curves.</div>
+              </div>
+              <div class="solution-list-item">
+                <span class="solution-icon-bullet pos">✓</span>
+                <div><strong>Automated Recommendation Engine:</strong> Discovers delight drivers, alerts branch managers of friction points, and recommends revenue-expanding fixes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SECTION: HOW WE PROCESS REVIEWS & NLP PIPELINE ARCHITECTURE
+           ===================================================================== -->
+      <div class="landing-section-block" id="pipelineSection">
+        <div class="landing-section-title-wrap">
+          <span class="landing-section-tag">End-to-End Processing Architecture</span>
+          <h2 class="landing-section-title">How Reviewr Ingests & Processes Unstructured Feedback</h2>
+          <p class="cm-section-desc">From raw API ingestion to aspect-level sentiment classification and executive action triggers.</p>
+        </div>
+
+        <div class="pipeline-flow-container">
+          <!-- Step 1 -->
+          <div class="pipeline-step-box">
+            <div class="pipeline-step-num">1</div>
+            <h3 class="pipeline-step-title">Multi-Source API Fetch</h3>
+            <p class="pipeline-step-desc">Asynchronous HTTPX client fetches public reviews and nested comment replies via official REST APIs with quota tracking.</p>
+            <span class="pipeline-step-tag">HTTPX / AsyncIO</span>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="pipeline-step-box">
+            <div class="pipeline-step-num">2</div>
+            <h3 class="pipeline-step-title">Normalization & Dedup</h3>
+            <p class="pipeline-step-desc">Standardizes dates, author avatars, star ratings, and enforces composite uniqueness on <code>(business_id, source, external_id)</code>.</p>
+            <span class="pipeline-step-tag">PostgreSQL JSONB</span>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="pipeline-step-box">
+            <div class="pipeline-step-num">3</div>
+            <h3 class="pipeline-step-title">NLP Cleaning & Tokens</h3>
+            <p class="pipeline-step-desc">Strips HTML markup, handles emoji polarity mapping, detects language, and performs lemmatization on review text.</p>
+            <span class="pipeline-step-tag">NLTK / RegEx</span>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="pipeline-step-box">
+            <div class="pipeline-step-num">4</div>
+            <h3 class="pipeline-step-title">Aspect-Based Sentiment</h3>
+            <p class="pipeline-step-desc">VADER and fine-tuned Transformer models calculate continuous polarity (-1.0 to +1.0) and map to Positive, Neutral, or Negative tiers.</p>
+            <span class="pipeline-step-tag">VADER / ABSA</span>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="pipeline-step-box">
+            <div class="pipeline-step-num">5</div>
+            <h3 class="pipeline-step-title">Themes & Actions</h3>
+            <p class="pipeline-step-desc">Semantic topic clustering groups feedback into high-impact business themes and synthesizes automated operational recommendations.</p>
+            <span class="pipeline-step-tag">BERTopic & Rules</span>
+          </div>
+        </div>
+
+        <!-- Interactive Live NLP Sandbox -->
+        <div class="nlp-sandbox-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div class="cm-pill-badge" style="margin-bottom:6px;">
+                <span class="dot"></span>
+                <span>Interactive Live NLP Sandbox</span>
+              </div>
+              <h3 class="pipeline-step-title" style="font-size:1.4rem;">Test The Feedback Processing Engine</h3>
+              <p style="font-size:0.86rem; color:var(--text-muted);">Type or select any customer review below to run it through Reviewr's real-time NLP pipeline:</p>
+            </div>
+            <button onclick="runNlpDemo()" class="cm-btn cm-btn-primary">
+              ⚡ Process with NLP Engine
+            </button>
+          </div>
+
+          <!-- Quick Samples -->
+          <div class="sandbox-quick-samples">
+            <span style="font-weight:700; color:var(--text-dark);">Try Pre-built Samples:</span>
+            <button class="sandbox-sample-btn" onclick="loadSampleReview(0)">📍 Mani's Biriyani Review</button>
+            <button class="sandbox-sample-btn" onclick="loadSampleReview(1)">📱 Spotify Android Bug</button>
+            <button class="sandbox-sample-btn" onclick="loadSampleReview(2)">▶ VJ Sidhu Video Comment</button>
+            <button class="sandbox-sample-btn" onclick="loadSampleReview(3)">📍 H&M Trail Room Review</button>
+          </div>
+
+          <!-- Input Textarea -->
+          <textarea id="nlpSandboxInput" class="nlp-sandbox-textarea" placeholder="Paste any customer review or comment here...">Ordered mutton biriyani at T. Nagar branch yesterday. The meat was remarkably tender and aromatic (+0.94), but the Sunday lunchtime queue took over 40 minutes to seat us!</textarea>
+
+          <!-- NLP Results Box -->
+          <div id="nlpResultContainer" class="nlp-result-container">
+            <div class="nlp-result-box">
+              <span class="nlp-result-title">1. Sentiment & Polarity Score</span>
+              <div style="display:flex; align-items:center; gap:10px; margin-top:2px;">
+                <span id="demoSentimentBadge" class="cm-sentiment-badge positive" style="font-size:0.85rem; padding:4px 12px;">
+                  <span class="cm-theme-dot positive"></span>
+                  POSITIVE (+78)
+                </span>
+                <span id="demoPolarityVal" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Compound Polarity: +0.784</span>
+              </div>
+              <p id="demoSentimentSummary" style="font-size:0.8rem; color:var(--text-body); margin-top:4px;">
+                Strong positive polarity on food quality and seasoning, offset by localized negative friction on physical wait times.
+              </p>
+            </div>
+
+            <div class="nlp-result-box">
+              <span class="nlp-result-title">2. Detected AI Theme & Aspect</span>
+              <div>
+                <span id="demoThemeBadge" class="cm-theme-tag" style="font-size:0.82rem; padding:4px 12px; background:#F3E8FF; color:#7C3AED; font-weight:700;">
+                  🏷️ Mutton Biriyani & Meat Tenderness
+                </span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">
+                <strong>Extracted Entities:</strong> <span id="demoEntities">"mutton biriyani", "T. Nagar branch", "Sunday queue"</span>
+              </div>
+            </div>
+
+            <div class="nlp-result-box">
+              <span class="nlp-result-title">3. Generated Recommendation</span>
+              <div style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px 12px;">
+                <span id="demoRecBadge" class="cm-insight-tag friction_point" style="font-size:0.68rem; padding:2px 6px;">Friction Alert</span>
+                <p id="demoRecText" style="font-size:0.82rem; font-weight:600; color:var(--text-dark); margin-top:4px; line-height:1.35;">
+                  Deploy digital token queue system during Sunday lunch peak (1-3 PM) in T. Nagar branch.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SECTION: PACKAGES & TECHNOLOGY STACK SHOWCASE
+           ===================================================================== -->
+      <div class="landing-section-block" id="techStackSection">
+        <div class="landing-section-title-wrap">
+          <span class="landing-section-tag">Production Stack Reference</span>
+          <h2 class="landing-section-title">Built with Production-Grade Python & Web Technologies</h2>
+          <p class="cm-section-desc">Engineered for asynchronous ingestion speed, schema safety, and sub-millisecond sentiment queries.</p>
+        </div>
+
+        <div class="tech-packages-grid">
+          <!-- Backend & Database -->
+          <div class="tech-cat-card">
+            <div class="tech-cat-header">
+              <div class="tech-cat-icon">⚙️</div>
+              <h3 class="tech-cat-title">Backend & Database</h3>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Asynchronous Python REST services, ORM schema modeling, and relational PostgreSQL storage.</p>
+            <div class="tech-chips-wrap">
+              <span class="tech-chip">🐍 Python <span class="tech-version">v3.11+</span></span>
+              <span class="tech-chip">⚡ FastAPI <span class="tech-version">v0.110.0</span></span>
+              <span class="tech-chip">🐘 PostgreSQL <span class="tech-version">v16 (JSONB)</span></span>
+              <span class="tech-chip">📦 SQLAlchemy <span class="tech-version">v2.0 ORM</span></span>
+              <span class="tech-chip">🛡️ Pydantic <span class="tech-version">V2 Core</span></span>
+              <span class="tech-chip">🌐 HTTPX <span class="tech-version">v0.27.0 (Async)</span></span>
+              <span class="tech-chip">🔄 Alembic <span class="tech-version">Migrations</span></span>
+              <span class="tech-chip">🧪 Pytest <span class="tech-version">Test Suite</span></span>
+            </div>
+          </div>
+
+          <!-- NLP & Data Science -->
+          <div class="tech-cat-card">
+            <div class="tech-cat-header">
+              <div class="tech-cat-icon">🧠</div>
+              <h3 class="tech-cat-title">NLP & Intelligence</h3>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Natural Language Processing pipelines, sentiment lexicon scoring, and unsupervised topic discovery.</p>
+            <div class="tech-chips-wrap">
+              <span class="tech-chip">📊 NLTK / VADER <span class="tech-version">Lexicon ABSA</span></span>
+              <span class="tech-chip">🤖 Transformers <span class="tech-version">RoBERTa</span></span>
+              <span class="tech-chip">🔬 Scikit-Learn <span class="tech-version">TF-IDF & Clust</span></span>
+              <span class="tech-chip">🏷️ BERTopic <span class="tech-version">Theme Discovery</span></span>
+              <span class="tech-chip">📈 NumPy & Pandas <span class="tech-version">Vector Ops</span></span>
+              <span class="tech-chip">💬 Emoji-Map <span class="tech-version">Sentiment Weights</span></span>
+            </div>
+          </div>
+
+          <!-- Frontend & Design System -->
+          <div class="tech-cat-card">
+            <div class="tech-cat-header">
+              <div class="tech-cat-icon">🎨</div>
+              <h3 class="tech-cat-title">Frontend & Aesthetics</h3>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Custom Chattermill-inspired design system, typography hierarchy, and interactive visual charts.</p>
+            <div class="tech-chips-wrap">
+              <span class="tech-chip">🖋️ Plus Jakarta Sans <span class="tech-version">Brand Logo</span></span>
+              <span class="tech-chip">📰 Fraunces <span class="tech-version">Editorial Serif</span></span>
+              <span class="tech-chip">🔤 Inter <span class="tech-version">UI Sans</span></span>
+              <span class="tech-chip">📊 Chart.js <span class="tech-version">v4.4.2 Visuals</span></span>
+              <span class="tech-chip">🎨 Vanilla CSS3 <span class="tech-version">Chattermill Tokens</span></span>
+              <span class="tech-chip">⚡ Vanilla ES6+ <span class="tech-version">Reactive State</span></span>
             </div>
           </div>
         </div>
