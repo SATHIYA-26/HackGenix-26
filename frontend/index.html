@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reviewr — AI Customer Feedback Intelligence & Voice of Customer SaaS</title>
-  
+  <title>Reviewr</title>
+
   <!-- Typography: Fraunces & Inter (Editorial VoC Standard) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- Chart.js for Interactive Data Visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-  
+
   <!-- Favicon Configuration -->
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="manifest" href="site.webmanifest">
-  
+
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <!-- Ambient Gradient Glow -->
   <div class="bg-glow-wrapper"></div>
@@ -53,7 +57,8 @@
         <!-- Logged In User State (Visible in Dashboard) -->
         <div id="navUserSession" class="cm-user-session-bar" style="display:none; align-items:center; gap:12px;">
           <div class="cm-account-switcher-bar">
-            <img id="navUserAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100" class="cm-acc-avatar" alt="Avatar" />
+            <img id="navUserAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=100"
+              class="cm-acc-avatar" alt="Avatar" />
             <select id="accountSelect" class="cm-acc-select" onchange="handleNavAccountSwitch(this.value)">
               <option value="acc_manis">📍 Mani's Dum Biriyani (Google Maps)</option>
               <option value="acc_chepauk">📍 Chepauk Sports Store (Google Maps)</option>
@@ -63,12 +68,19 @@
             </select>
           </div>
 
-          <button id="openSyncModalBtn" class="cm-btn cm-btn-primary" onclick="document.getElementById('syncModal').classList.add('active');">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          <button id="openSyncModalBtn" class="cm-btn cm-btn-primary"
+            onclick="document.getElementById('syncModal').classList.add('active');">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 21h5v-5" />
+            </svg>
             Live Sync
           </button>
 
-          <button id="navLogoutBtn" class="cm-btn cm-btn-outline" onclick="logout()" title="Log out of current workspace">
+          <button id="navLogoutBtn" class="cm-btn cm-btn-outline" onclick="logout()"
+            title="Log out of current workspace">
             Log Out
           </button>
         </div>
@@ -81,7 +93,7 @@
        ========================================================================== -->
   <section id="landingView" class="view-section active">
     <div class="landing-wrapper">
-      
+
       <!-- Hero Section -->
       <div class="landing-hero">
         <h1 class="landing-hero-title">
@@ -89,19 +101,19 @@
         </h1>
 
         <p class="landing-hero-sub">
-          The unified customer voice platform for multi-location Google Maps businesses, YouTube creators, and mobile apps. Automatically discover emerging sentiment themes, track branch ratings, and trigger actionable operational improvements.
+          The unified customer voice platform for multi-location Google Maps businesses, YouTube creators, and mobile
+          apps. Automatically discover emerging sentiment themes, track branch ratings, and trigger actionable
+          operational improvements.
         </p>
 
         <!-- Live VoC Revenue & Financial Growth Graph Animation -->
         <div class="hero-roi-container">
           <div class="hero-roi-card">
-            
+
             <!-- Top Controls & Live Pulse -->
-            <div class="roi-header">
-              <div class="roi-header-left">
-                <span class="roi-live-dot"></span>
-                <span class="roi-header-title">The trust that we have captured</span>
-              </div>
+            <div class="roi-header centered">
+              <div class="roi-header-spacer"></div>
+              <span class="roi-header-title">The trust that we have captured</span>
               <div class="roi-timeframe-selector">
                 <button class="roi-tf-btn" onclick="updateHeroFinancialModel('30d', this)">30D</button>
                 <button class="roi-tf-btn active" onclick="updateHeroFinancialModel('90d', this)">90D</button>
@@ -167,10 +179,13 @@
                   </filter>
                 </defs>
                 <!-- Area Fill -->
-                <path id="heroAreaPath" class="roi-area-path" d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30 L 870,230 L 30,230 Z" fill="url(#roiGradient)"></path>
+                <path id="heroAreaPath" class="roi-area-path"
+                  d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30 L 870,230 L 30,230 Z" fill="url(#roiGradient)"></path>
                 <!-- Animated Line -->
-                <path id="heroLinePath" class="roi-line-path" d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30" fill="none" stroke="url(#roiLineGrad)" stroke-width="4.5" stroke-linecap="round" filter="url(#roiGlow)"></path>
-                
+                <path id="heroLinePath" class="roi-line-path" d="M 30,210 Q 180,180 320,150 T 600,80 T 870,30"
+                  fill="none" stroke="url(#roiLineGrad)" stroke-width="4.5" stroke-linecap="round"
+                  filter="url(#roiGlow)"></path>
+
                 <!-- Pulsing Nodes along the trajectory -->
                 <g class="roi-node" transform="translate(180, 180)">
                   <circle r="7" class="roi-node-pulse" fill="#3B82F6"></circle>
@@ -227,130 +242,159 @@
               <span class="ticker-label">LIVE FINANCIAL SIGNALS:</span>
               <div class="ticker-marquee">
                 <div class="ticker-track" id="roiTickerTrack">
-                  <span class="ticker-item">🟢 Mani's Dum Biriyani: Brinjal Curry recipe tweak saved <strong>+₹92,400</strong> in churned orders</span>
-                  <span class="ticker-item">🟣 Chepauk Sports: English Willow bat stock alert recovered <strong>+₹1,85,000</strong> in lost sales</span>
-                  <span class="ticker-item">🔵 H&M Mylapore: Trial room queue fix boosted footfall conversion by <strong>+14.2%</strong></span>
-                  <span class="ticker-item">🟠 VJ Sidhu Vlogs: Audio mic adjustment increased sponsor retention by <strong>+28.0%</strong></span>
-                  <span class="ticker-item">🟢 Spotify: Tamil playlist shuffle algorithm patch recovered <strong>+12,400</strong> premium renewals</span>
+                  <span class="ticker-item">🟢 Mani's Dum Biriyani: Brinjal Curry recipe tweak saved
+                    <strong>+₹92,400</strong> in churned orders</span>
+                  <span class="ticker-item">🟣 Chepauk Sports: English Willow bat stock alert recovered
+                    <strong>+₹1,85,000</strong> in lost sales</span>
+                  <span class="ticker-item">🔵 H&M Mylapore: Trial room queue fix boosted footfall conversion by
+                    <strong>+14.2%</strong></span>
+                  <span class="ticker-item">🟠 VJ Sidhu Vlogs: Audio mic adjustment increased sponsor retention by
+                    <strong>+28.0%</strong></span>
+                  <span class="ticker-item">🟢 Spotify: Tamil playlist shuffle algorithm patch recovered
+                    <strong>+12,400</strong> premium renewals</span>
                 </div>
               </div>
             </div>
 
           </div>
         </div>
-      <!-- =====================================================================
+        <!-- =====================================================================
            SECTION: WHAT WE DO (Simple, Human Explanation)
            ===================================================================== -->
-      <div class="landing-section-block" id="whatWeDoSection">
-        <div class="landing-section-title-wrap">
-          <span class="landing-section-tag">What We Do · Made Simple</span>
-          <h2 class="landing-section-title">We Turn Customer Feedback Into More Revenue</h2>
-          <p class="cm-section-desc">Thousands of reviews are written about your business every week. We make it dead simple to understand what customers love, what makes them angry, and how to fix it immediately.</p>
-        </div>
-
-        <!-- 3 Simple Pillars -->
-        <div class="what-we-do-grid">
-          <!-- Step 1 -->
-          <div class="wwd-card">
-            <div class="wwd-badge-row">
-              <div class="wwd-step-pill">Step 1</div>
-              <div class="wwd-icon-circle" style="background:#EFF6FF; color:#3B82F6;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              </div>
-            </div>
-            <h3 class="wwd-title">1. Connect & Gather Everything</h3>
-            <p class="wwd-desc">
-              Connect your Google Maps branches, YouTube channel, or Mobile App with 1 click. Reviewr automatically pulls every review, rating, and comment in real-time. No manual copying, no messy spreadsheets.
-            </p>
-            <div class="wwd-highlight-box">
-              <span class="wwd-highlight-label">In simple terms:</span>
-              <span class="wwd-highlight-text">All your customer feedback across the internet in one clean screen.</span>
-            </div>
+        <div class="landing-section-block" id="whatWeDoSection">
+          <div class="landing-section-title-wrap">
+            <span class="landing-section-tag">What We Do · Made Simple</span>
+            <h2 class="landing-section-title">We Turn Customer Feedback Into More Revenue</h2>
+            <p class="cm-section-desc">Thousands of reviews are written about your business every week. We make it dead
+              simple to understand what customers love, what makes them angry, and how to fix it immediately.</p>
           </div>
 
-          <!-- Step 2 -->
-          <div class="wwd-card">
-            <div class="wwd-badge-row">
-              <div class="wwd-step-pill" style="background:#F5F3FF; color:#7C3AED; border-color:rgba(124,58,237,0.2);">Step 2</div>
-              <div class="wwd-icon-circle" style="background:#F5F3FF; color:#7C3AED;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              </div>
-            </div>
-            <h3 class="wwd-title">2. AI Reads & Understands Details</h3>
-            <p class="wwd-desc">
-              Star ratings don't explain the full story. Our AI reads every sentence to separate different aspects — like food taste, staff politeness, waiting queues, or video audio quality — so you know exactly what is working.
-            </p>
-            <div class="wwd-highlight-box">
-              <span class="wwd-highlight-label">In simple terms:</span>
-              <span class="wwd-highlight-text">You don't need to read 10,000 comments. AI highlights the exact reasons.</span>
-            </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="wwd-card">
-            <div class="wwd-badge-row">
-              <div class="wwd-step-pill" style="background:#ECFDF5; color:#059669; border-color:rgba(16,185,129,0.2);">Step 3</div>
-              <div class="wwd-icon-circle" style="background:#ECFDF5; color:#059669;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              </div>
-            </div>
-            <h3 class="wwd-title">3. Actionable Fixes & Revenue Growth</h3>
-            <p class="wwd-desc">
-              Reviewr gives you clear instructions on what to fix right now to stop customers from leaving for competitors. Resolving negative feedback protects your brand rating and directly increases sales.
-            </p>
-            <div class="wwd-highlight-box">
-              <span class="wwd-highlight-label">In simple terms:</span>
-              <span class="wwd-highlight-text">Fix complaints fast ➔ Turn 1-star critics into loyal repeat customers.</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Real-World Example Comparison Card -->
-        <div class="wwd-example-card">
-          <div class="wwd-example-header">
-            <span class="wwd-example-tag">REAL LIFE EXAMPLE</span>
-            <h3 class="wwd-example-title">How Reviewr understands a mixed customer review</h3>
-          </div>
-          
-          <div class="wwd-review-sample">
-            <span class="wwd-quote-icon">“</span>
-            <p class="wwd-quote-text">
-              The biryani was <mark class="pos-highlight">super flavorful and tender</mark>, but we had to <mark class="neg-highlight">wait 45 minutes for a table</mark> and the <mark class="neg-highlight">car parking was full</mark>.
-            </p>
-            <span class="wwd-sample-author">— Real Google Maps Customer (Rated 3 ★)</span>
-          </div>
-
-          <div class="wwd-breakdown-grid">
-            <div class="wwd-breakdown-col before">
-              <div class="wwd-col-header">
-                <span class="col-icon">❌</span>
-                <strong>What Traditional Tools See:</strong>
-              </div>
-              <div class="wwd-col-body">
-                <p>Just counts as a generic <strong>"3.0 Star Rating"</strong>. The manager has no idea what went wrong or what went right.</p>
-              </div>
-            </div>
-
-            <div class="wwd-breakdown-col after">
-              <div class="wwd-col-header">
-                <span class="col-icon">✅</span>
-                <strong>What Reviewr AI Instantly Does:</strong>
-              </div>
-              <div class="wwd-col-body">
-                <div class="wwd-aspect-tag-list">
-                  <span class="aspect-badge pos">🍗 Taste & Meat Quality: +94% (High Delight)</span>
-                  <span class="aspect-badge neg">⏱ Waiting Queue Time: -88% (Operational Bottleneck)</span>
-                  <span class="aspect-badge neg">🚗 Parking Facility: -72% (Location Friction)</span>
-                </div>
-                <div class="wwd-action-callout">
-                  ⚡ <strong>Action Alert Sent to Branch Manager:</strong> <em>"Add weekend queue pager system to save an estimated ₹1.8L/month in walkaways."</em>
+          <!-- 3 Simple Pillars -->
+          <div class="what-we-do-grid">
+            <!-- Step 1 -->
+            <div class="wwd-card">
+              <div class="wwd-badge-row">
+                <div class="wwd-step-pill">Step 1</div>
+                <div class="wwd-icon-circle" style="background:#EFF6FF; color:#3B82F6;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
                 </div>
               </div>
+              <h3 class="wwd-title">1. Connect & Gather Everything</h3>
+              <p class="wwd-desc">
+                Connect your Google Maps branches, YouTube channel, or Mobile App with 1 click. No manual copying, no
+                messy spreadsheets.
+              </p>
+              <div class="wwd-highlight-box">
+                <span class="wwd-highlight-label">In simple terms:</span>
+                <span class="wwd-highlight-text">All your customer feedback across the internet in one clean
+                  screen.</span>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="wwd-card">
+              <div class="wwd-badge-row">
+                <div class="wwd-step-pill"
+                  style="background:#F5F3FF; color:#7C3AED; border-color:rgba(124,58,237,0.2);">Step 2</div>
+                <div class="wwd-icon-circle" style="background:#F5F3FF; color:#7C3AED;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="wwd-title">2. AI Reads & Understands Details</h3>
+              <p class="wwd-desc">
+                Star ratings don't explain the full story. Our AI reads every sentence to separate different aspects —
+                like food taste, staff politeness, waiting queues, or video audio quality — so you know exactly what is
+                working.
+              </p>
+              <div class="wwd-highlight-box">
+                <span class="wwd-highlight-label">In simple terms:</span>
+                <span class="wwd-highlight-text">You don't need to read 10,000 comments. AI highlights the exact
+                  reasons.</span>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="wwd-card">
+              <div class="wwd-badge-row">
+                <div class="wwd-step-pill"
+                  style="background:#ECFDF5; color:#059669; border-color:rgba(16,185,129,0.2);">Step 3</div>
+                <div class="wwd-icon-circle" style="background:#ECFDF5; color:#059669;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </div>
+              </div>
+              <h3 class="wwd-title">3. Actionable Fixes & Revenue Growth</h3>
+              <p class="wwd-desc">
+                Reviewr gives you clear instructions on what to fix right now to stop customers from leaving for
+                competitors. Resolving negative feedback protects your brand rating and directly increases sales.
+              </p>
+              <div class="wwd-highlight-box">
+                <span class="wwd-highlight-label">In simple terms:</span>
+                <span class="wwd-highlight-text">Fix complaints fast ➔ Turn 1-star critics into loyal repeat
+                  customers.</span>
+              </div>
             </div>
           </div>
-        </div>
 
-      </div>
+          <!-- Real-World Example Comparison Card -->
+          <div class="wwd-example-card">
+            <div class="wwd-example-header">
+              <span class="wwd-example-tag">REAL LIFE EXAMPLE</span>
+              <h3 class="wwd-example-title">How Reviewr understands a mixed customer review</h3>
+            </div>
+
+            <div class="wwd-review-sample">
+              <span class="wwd-quote-icon">“</span>
+              <p class="wwd-quote-text">
+                The biryani was <mark class="pos-highlight">super flavorful and tender</mark>, but we had to <mark
+                  class="neg-highlight">wait 45 minutes for a table</mark> and the <mark class="neg-highlight">car
+                  parking was full</mark>.
+              </p>
+              <span class="wwd-sample-author">— Real Google Maps Customer (Rated 3 ★)</span>
+            </div>
+
+            <div class="wwd-breakdown-grid">
+              <div class="wwd-breakdown-col before">
+                <div class="wwd-col-header">
+                  <span class="col-icon">❌</span>
+                  <strong>What Traditional Tools See:</strong>
+                </div>
+                <div class="wwd-col-body">
+                  <p>Just counts as a generic <strong>"3.0 Star Rating"</strong>. The manager has no idea what went
+                    wrong or what went right.</p>
+                </div>
+              </div>
+
+              <div class="wwd-breakdown-col after">
+                <div class="wwd-col-header">
+                  <span class="col-icon">✅</span>
+                  <strong>What Reviewr AI Instantly Does:</strong>
+                </div>
+                <div class="wwd-col-body">
+                  <div class="wwd-aspect-tag-list">
+                    <span class="aspect-badge pos">🍗 Taste & Meat Quality: +94% (High Delight)</span>
+                    <span class="aspect-badge neg">⏱ Waiting Queue Time: -88% (Operational Bottleneck)</span>
+                    <span class="aspect-badge neg">🚗 Parking Facility: -72% (Location Friction)</span>
+                  </div>
+                  <div class="wwd-action-callout">
+                    ⚡ <strong>Action Alert Sent to Branch Manager:</strong> <em>"Add weekend queue pager system to save
+                      an estimated ₹1.8L/month in walkaways."</em>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
 
       </div>
 
@@ -361,33 +405,40 @@
         <div class="landing-section-title-wrap">
           <span class="landing-section-tag">Why Reviewr Exists</span>
           <h2 class="landing-section-title">The Feedback Fragmentation Problem & Our Solution</h2>
-          <p class="cm-section-desc">How Reviewr transforms chaotic, multi-channel customer noise into quantified operational growth.</p>
+          <p class="cm-section-desc">How Reviewr transforms chaotic, multi-channel customer noise into quantified
+            operational growth.</p>
         </div>
 
         <div class="solution-split-grid">
           <!-- The Problem -->
           <div class="solution-card problem-side">
             <div>
-              <span class="portal-type-badge youtube" style="background:#FFE4E6; color:#E11D48;">The Legacy Problem</span>
-              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Fragmented Customer Feedback Chaos</h3>
+              <span class="portal-type-badge youtube" style="background:#FFE4E6; color:#E11D48;">The Legacy
+                Problem</span>
+              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Fragmented Customer Feedback
+                Chaos</h3>
             </div>
 
             <div class="solution-list">
               <div class="solution-list-item">
                 <span class="solution-icon-bullet neg">✕</span>
-                <div><strong>Siloed Data Channels:</strong> Reviews scattered across Google Maps locations, YouTube videos, Play Store versions, and Instagram reels without a central data lake.</div>
+                <div><strong>Siloed Data Channels:</strong> Reviews scattered across Google Maps locations, YouTube
+                  videos, Play Store versions, and Instagram reels without a central data lake.</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet neg">✕</span>
-                <div><strong>Unstructured Text Overload:</strong> Thousands of free-form customer comments with slang, emojis, mixed languages, and nuanced sarcasm that traditional keyword alerts miss.</div>
+                <div><strong>Unstructured Text Overload:</strong> Thousands of free-form customer comments with slang,
+                  emojis, mixed languages, and nuanced sarcasm that traditional keyword alerts miss.</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet neg">✕</span>
-                <div><strong>Zero Branch Attribution:</strong> Executives cannot isolate whether dining delays belong to the T. Nagar branch or Velachery branch without manual reading.</div>
+                <div><strong>Zero Branch Attribution:</strong> Executives cannot isolate whether dining delays belong to
+                  the T. Nagar branch or Velachery branch without manual reading.</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet neg">✕</span>
-                <div><strong>Stale Sentiment Metrics:</strong> Static average star ratings mask emerging operational crises (e.g. food quality dips or software update crashes).</div>
+                <div><strong>Stale Sentiment Metrics:</strong> Static average star ratings mask emerging operational
+                  crises (e.g. food quality dips or software update crashes).</div>
               </div>
             </div>
           </div>
@@ -395,26 +446,33 @@
           <!-- The Reviewr Solution -->
           <div class="solution-card solution-side">
             <div>
-              <span class="portal-type-badge play_store" style="background:#ECFDF5; color:#059669;">The Reviewr Solution</span>
-              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Unified VoC & NLP Intelligence Engine</h3>
+              <span class="portal-type-badge play_store" style="background:#ECFDF5; color:#059669;">The Reviewr
+                Solution</span>
+              <h3 class="pipeline-step-title" style="margin-top:10px; font-size:1.35rem;">Unified VoC & NLP Intelligence
+                Engine</h3>
             </div>
 
             <div class="solution-list">
               <div class="solution-list-item">
                 <span class="solution-icon-bullet pos">✓</span>
-                <div><strong>Multi-Source Automated Ingestion:</strong> Official REST API connectors ingest Google Places reviews, YouTube comment threads/replies, and Play Store reviews into a unified schema.</div>
+                <div><strong>Multi-Source Automated Ingestion:</strong> Official REST API connectors ingest Google
+                  Places reviews, YouTube comment threads/replies, and Play Store reviews into a unified schema.</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet pos">✓</span>
-                <div><strong>Aspect-Based Sentiment (ABSA):</strong> Sub-sentence polarity scoring decomposes comments into specific attributes (e.g. <em>"Food was great (+0.92)"</em> vs <em>"Waiting queue was slow (-0.78)"</em>).</div>
+                <div><strong>Aspect-Based Sentiment (ABSA):</strong> Sub-sentence polarity scoring decomposes comments
+                  into specific attributes (e.g. <em>"Food was great (+0.92)"</em> vs <em>"Waiting queue was slow
+                    (-0.78)"</em>).</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet pos">✓</span>
-                <div><strong>Reviewr AI Theme Clustering:</strong> Semantic embeddings cluster millions of reviews into real-time operational themes with quantified trajectory curves.</div>
+                <div><strong>Reviewr AI Theme Clustering:</strong> Semantic embeddings cluster millions of reviews into
+                  real-time operational themes with quantified trajectory curves.</div>
               </div>
               <div class="solution-list-item">
                 <span class="solution-icon-bullet pos">✓</span>
-                <div><strong>Automated Recommendation Engine:</strong> Discovers delight drivers, alerts branch managers of friction points, and recommends revenue-expanding fixes.</div>
+                <div><strong>Automated Recommendation Engine:</strong> Discovers delight drivers, alerts branch managers
+                  of friction points, and recommends revenue-expanding fixes.</div>
               </div>
             </div>
           </div>
@@ -428,7 +486,8 @@
         <div class="landing-section-title-wrap">
           <span class="landing-section-tag">End-to-End Processing Architecture</span>
           <h2 class="landing-section-title">How Reviewr Ingests & Processes Unstructured Feedback</h2>
-          <p class="cm-section-desc">From raw API ingestion to aspect-level sentiment classification and executive action triggers.</p>
+          <p class="cm-section-desc">From raw API ingestion to aspect-level sentiment classification and executive
+            action triggers.</p>
         </div>
 
         <div class="pipeline-flow-container">
@@ -436,7 +495,8 @@
           <div class="pipeline-step-box">
             <div class="pipeline-step-num">1</div>
             <h3 class="pipeline-step-title">Multi-Source API Fetch</h3>
-            <p class="pipeline-step-desc">Asynchronous HTTPX client fetches public reviews and nested comment replies via official REST APIs with quota tracking.</p>
+            <p class="pipeline-step-desc">Asynchronous HTTPX client fetches public reviews and nested comment replies
+              via official REST APIs with quota tracking.</p>
             <span class="pipeline-step-tag">HTTPX / AsyncIO</span>
           </div>
 
@@ -444,7 +504,8 @@
           <div class="pipeline-step-box">
             <div class="pipeline-step-num">2</div>
             <h3 class="pipeline-step-title">Normalization & Dedup</h3>
-            <p class="pipeline-step-desc">Standardizes dates, author avatars, star ratings, and enforces composite uniqueness on <code>(business_id, source, external_id)</code>.</p>
+            <p class="pipeline-step-desc">Standardizes dates, author avatars, star ratings, and enforces composite
+              uniqueness on <code>(business_id, source, external_id)</code>.</p>
             <span class="pipeline-step-tag">PostgreSQL JSONB</span>
           </div>
 
@@ -452,7 +513,8 @@
           <div class="pipeline-step-box">
             <div class="pipeline-step-num">3</div>
             <h3 class="pipeline-step-title">NLP Cleaning & Tokens</h3>
-            <p class="pipeline-step-desc">Strips HTML markup, handles emoji polarity mapping, detects language, and performs lemmatization on review text.</p>
+            <p class="pipeline-step-desc">Strips HTML markup, handles emoji polarity mapping, detects language, and
+              performs lemmatization on review text.</p>
             <span class="pipeline-step-tag">NLTK / RegEx</span>
           </div>
 
@@ -460,7 +522,8 @@
           <div class="pipeline-step-box">
             <div class="pipeline-step-num">4</div>
             <h3 class="pipeline-step-title">Aspect-Based Sentiment</h3>
-            <p class="pipeline-step-desc">VADER and fine-tuned Transformer models calculate continuous polarity (-1.0 to +1.0) and map to Positive, Neutral, or Negative tiers.</p>
+            <p class="pipeline-step-desc">VADER and fine-tuned Transformer models calculate continuous polarity (-1.0 to
+              +1.0) and map to Positive, Neutral, or Negative tiers.</p>
             <span class="pipeline-step-tag">VADER / ABSA</span>
           </div>
 
@@ -468,144 +531,12 @@
           <div class="pipeline-step-box">
             <div class="pipeline-step-num">5</div>
             <h3 class="pipeline-step-title">Themes & Actions</h3>
-            <p class="pipeline-step-desc">Semantic topic clustering groups feedback into high-impact business themes and synthesizes automated operational recommendations.</p>
+            <p class="pipeline-step-desc">Semantic topic clustering groups feedback into high-impact business themes and
+              synthesizes automated operational recommendations.</p>
             <span class="pipeline-step-tag">BERTopic & Rules</span>
           </div>
         </div>
 
-        <!-- Interactive Live NLP Sandbox -->
-        <div class="nlp-sandbox-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-            <div>
-              <div class="cm-pill-badge" style="margin-bottom:6px;">
-                <span class="dot"></span>
-                <span>Interactive Live NLP Sandbox</span>
-              </div>
-              <h3 class="pipeline-step-title" style="font-size:1.4rem;">Test The Feedback Processing Engine</h3>
-              <p style="font-size:0.86rem; color:var(--text-muted);">Type or select any customer review below to run it through Reviewr's real-time NLP pipeline:</p>
-            </div>
-            <button onclick="runNlpDemo()" class="cm-btn cm-btn-primary">
-              ⚡ Process with NLP Engine
-            </button>
-          </div>
-
-          <!-- Quick Samples -->
-          <div class="sandbox-quick-samples">
-            <span style="font-weight:700; color:var(--text-dark);">Try Pre-built Samples:</span>
-            <button class="sandbox-sample-btn" onclick="loadSampleReview(0)">📍 Mani's Biriyani Review</button>
-            <button class="sandbox-sample-btn" onclick="loadSampleReview(1)">📱 Spotify Android Bug</button>
-            <button class="sandbox-sample-btn" onclick="loadSampleReview(2)">▶ VJ Sidhu Video Comment</button>
-            <button class="sandbox-sample-btn" onclick="loadSampleReview(3)">📍 H&M Trail Room Review</button>
-          </div>
-
-          <!-- Input Textarea -->
-          <textarea id="nlpSandboxInput" class="nlp-sandbox-textarea" placeholder="Paste any customer review or comment here...">Ordered mutton biriyani at T. Nagar branch yesterday. The meat was remarkably tender and aromatic (+0.94), but the Sunday lunchtime queue took over 40 minutes to seat us!</textarea>
-
-          <!-- NLP Results Box -->
-          <div id="nlpResultContainer" class="nlp-result-container">
-            <div class="nlp-result-box">
-              <span class="nlp-result-title">1. Sentiment & Polarity Score</span>
-              <div style="display:flex; align-items:center; gap:10px; margin-top:2px;">
-                <span id="demoSentimentBadge" class="cm-sentiment-badge positive" style="font-size:0.85rem; padding:4px 12px;">
-                  <span class="cm-theme-dot positive"></span>
-                  POSITIVE (+78)
-                </span>
-                <span id="demoPolarityVal" style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">Compound Polarity: +0.784</span>
-              </div>
-              <p id="demoSentimentSummary" style="font-size:0.8rem; color:var(--text-body); margin-top:4px;">
-                Strong positive polarity on food quality and seasoning, offset by localized negative friction on physical wait times.
-              </p>
-            </div>
-
-            <div class="nlp-result-box">
-              <span class="nlp-result-title">2. Detected AI Theme & Aspect</span>
-              <div>
-                <span id="demoThemeBadge" class="cm-theme-tag" style="font-size:0.82rem; padding:4px 12px; background:#F3E8FF; color:#7C3AED; font-weight:700;">
-                  🏷️ Mutton Biriyani & Meat Tenderness
-                </span>
-              </div>
-              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">
-                <strong>Extracted Entities:</strong> <span id="demoEntities">"mutton biriyani", "T. Nagar branch", "Sunday queue"</span>
-              </div>
-            </div>
-
-            <div class="nlp-result-box">
-              <span class="nlp-result-title">3. Generated Recommendation</span>
-              <div style="background:#FFFFFF; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px 12px;">
-                <span id="demoRecBadge" class="cm-insight-tag friction_point" style="font-size:0.68rem; padding:2px 6px;">Friction Alert</span>
-                <p id="demoRecText" style="font-size:0.82rem; font-weight:600; color:var(--text-dark); margin-top:4px; line-height:1.35;">
-                  Deploy digital token queue system during Sunday lunch peak (1-3 PM) in T. Nagar branch.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- =====================================================================
-           SECTION: PACKAGES & TECHNOLOGY STACK SHOWCASE
-           ===================================================================== -->
-      <div class="landing-section-block" id="techStackSection">
-        <div class="landing-section-title-wrap">
-          <span class="landing-section-tag">Production Stack Reference</span>
-          <h2 class="landing-section-title">Built with Production-Grade Python & Web Technologies</h2>
-          <p class="cm-section-desc">Engineered for asynchronous ingestion speed, schema safety, and sub-millisecond sentiment queries.</p>
-        </div>
-
-        <div class="tech-packages-grid">
-          <!-- Backend & Database -->
-          <div class="tech-cat-card">
-            <div class="tech-cat-header">
-              <div class="tech-cat-icon">⚙️</div>
-              <h3 class="tech-cat-title">Backend & Database</h3>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted);">Asynchronous Python REST services, ORM schema modeling, and relational PostgreSQL storage.</p>
-            <div class="tech-chips-wrap">
-              <span class="tech-chip">🐍 Python <span class="tech-version">v3.11+</span></span>
-              <span class="tech-chip">⚡ FastAPI <span class="tech-version">v0.110.0</span></span>
-              <span class="tech-chip">🐘 PostgreSQL <span class="tech-version">v16 (JSONB)</span></span>
-              <span class="tech-chip">📦 SQLAlchemy <span class="tech-version">v2.0 ORM</span></span>
-              <span class="tech-chip">🛡️ Pydantic <span class="tech-version">V2 Core</span></span>
-              <span class="tech-chip">🌐 HTTPX <span class="tech-version">v0.27.0 (Async)</span></span>
-              <span class="tech-chip">🔄 Alembic <span class="tech-version">Migrations</span></span>
-              <span class="tech-chip">🧪 Pytest <span class="tech-version">Test Suite</span></span>
-            </div>
-          </div>
-
-          <!-- Modern Web & Mobile Smartphone Stack -->
-          <div class="tech-cat-card">
-            <div class="tech-cat-header">
-              <div class="tech-cat-icon">📱</div>
-              <h3 class="tech-cat-title">Next.js & Mobile App</h3>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted);">Responsive Web and Native Smartphone Apps enabling store managers to monitor reviews on the go.</p>
-            <div class="tech-chips-wrap">
-              <span class="tech-chip">▲ Next.js <span class="tech-version">v14 (App Router)</span></span>
-              <span class="tech-chip">⚛️ React <span class="tech-version">v18 Ecosystem</span></span>
-              <span class="tech-chip">📱 React Native <span class="tech-version">iOS & Android</span></span>
-              <span class="tech-chip">🚀 Expo <span class="tech-version">SDK 51 Native</span></span>
-              <span class="tech-chip">🔔 WebPush <span class="tech-version">Instant Alerts</span></span>
-              <span class="tech-chip">📊 Chart.js <span class="tech-version">Mobile Charts</span></span>
-            </div>
-          </div>
-
-          <!-- NLP & Data Science -->
-          <div class="tech-cat-card">
-            <div class="tech-cat-header">
-              <div class="tech-cat-icon">🧠</div>
-              <h3 class="tech-cat-title">NLP & Intelligence</h3>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted);">Natural Language Processing pipelines, sentiment lexicon scoring, and unsupervised topic discovery.</p>
-            <div class="tech-chips-wrap">
-              <span class="tech-chip">📊 NLTK / VADER <span class="tech-version">Lexicon ABSA</span></span>
-              <span class="tech-chip">🤖 Transformers <span class="tech-version">RoBERTa</span></span>
-              <span class="tech-chip">🔬 Scikit-Learn <span class="tech-version">TF-IDF & Clust</span></span>
-              <span class="tech-chip">🏷️ BERTopic <span class="tech-version">Theme Discovery</span></span>
-              <span class="tech-chip">📈 NumPy & Pandas <span class="tech-version">Vector Ops</span></span>
-              <span class="tech-chip">💬 Emoji-Map <span class="tech-version">Sentiment Weights</span></span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- =====================================================================
@@ -615,7 +546,8 @@
         <div class="landing-section-title-wrap">
           <span class="landing-section-tag">Flexible Plans</span>
           <h2 class="landing-section-title">Transparent Pricing for Every Business Scale</h2>
-          <p class="cm-section-desc">From independent stores and creator studios to multi-branch restaurant chains and global mobile apps.</p>
+          <p class="cm-section-desc">From independent stores and creator studios to multi-branch restaurant chains and
+            global mobile apps.</p>
         </div>
 
         <div class="pricing-grid">
@@ -625,7 +557,8 @@
               <div class="pricing-header">
                 <span class="cm-branch-tag">Creator & Retail</span>
                 <h3 class="pricing-plan-name">Starter Plan</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted);">Ideal for single stores, local gyms, and YouTube creators.</p>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Ideal for single stores, local gyms, and YouTube
+                  creators.</p>
               </div>
               <div class="pricing-price-row">
                 <span class="pricing-currency">₹</span>
@@ -634,12 +567,15 @@
               </div>
               <ul class="pricing-features-list" style="margin-top:20px;">
                 <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 5,000 feedback/mo</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> 1 Google Maps or YouTube source</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Automated sentiment classification</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> 1 Google Maps or YouTube source
+                </li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Automated sentiment classification
+                </li>
                 <li class="pricing-feature-item"><span class="pricing-check">✓</span> Weekly digest summary email</li>
               </ul>
             </div>
-            <button onclick="openDemoModal('Starter')" class="cm-btn cm-btn-outline" style="width:100%; margin-top:20px;">Start Free Trial →</button>
+            <button onclick="openDemoModal('Starter')" class="cm-btn cm-btn-outline"
+              style="width:100%; margin-top:20px;">Start Free Trial →</button>
           </div>
 
           <!-- 2. Growth (Featured) -->
@@ -648,7 +584,8 @@
               <div class="pricing-header">
                 <span class="cm-branch-tag" style="background:#F3E8FF; color:#7C3AED;">Multi-Branch & Apps</span>
                 <h3 class="pricing-plan-name">Growth Business</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted);">For multi-location chains like Mani's Biriyani, H&M, and sports stores.</p>
+                <p style="font-size:0.85rem; color:var(--text-muted);">For multi-location chains like Mani's Biriyani,
+                  H&M, and sports stores.</p>
               </div>
               <div class="pricing-price-row">
                 <span class="pricing-currency">₹</span>
@@ -657,13 +594,17 @@
               </div>
               <ul class="pricing-features-list" style="margin-top:20px;">
                 <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 50,000 feedback/mo</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 10 branch locations / sources</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Up to 10 branch locations /
+                  sources</li>
                 <li class="pricing-feature-item"><span class="pricing-check">✓</span> Aspect-Based Sentiment (ABSA)</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> AI Theme Clustering & Insights</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> React Native Smartphone Mobile App</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> AI Theme Clustering & Insights
+                </li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> React Native Smartphone Mobile App
+                </li>
               </ul>
             </div>
-            <button onclick="openDemoModal('Growth')" class="cm-btn cm-btn-primary" style="width:100%; margin-top:20px;">Get Started with Growth →</button>
+            <button onclick="openDemoModal('Growth')" class="cm-btn cm-btn-primary"
+              style="width:100%; margin-top:20px;">Get Started with Growth →</button>
           </div>
 
           <!-- 3. Enterprise -->
@@ -672,19 +613,24 @@
               <div class="pricing-header">
                 <span class="cm-branch-tag" style="background:#ECFDF5; color:#059669;">Enterprise & Publishers</span>
                 <h3 class="pricing-plan-name">Enterprise Scale</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted);">For high-volume publishers like Spotify and national retail brands.</p>
+                <p style="font-size:0.85rem; color:var(--text-muted);">For high-volume publishers like Spotify and
+                  national retail brands.</p>
               </div>
               <div class="pricing-price-row">
                 <span class="pricing-val" style="font-size:2rem;">Custom</span>
               </div>
               <ul class="pricing-features-list" style="margin-top:20px;">
                 <li class="pricing-feature-item"><span class="pricing-check">✓</span> Unlimited reviews & comments</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom LLM fine-tuning & embeddings</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Dedicated Account Manager & 99.9% SLA</li>
-                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom Webhooks & ERP integrations</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom LLM fine-tuning &
+                  embeddings</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Dedicated Account Manager & 99.9%
+                  SLA</li>
+                <li class="pricing-feature-item"><span class="pricing-check">✓</span> Custom Webhooks & ERP integrations
+                </li>
               </ul>
             </div>
-            <button onclick="openDemoModal('Enterprise')" class="cm-btn cm-btn-outline" style="width:100%; margin-top:20px;">Talk to Enterprise Team →</button>
+            <button onclick="openDemoModal('Enterprise')" class="cm-btn cm-btn-outline"
+              style="width:100%; margin-top:20px;">Talk to Enterprise Team →</button>
           </div>
         </div>
       </div>
@@ -694,19 +640,22 @@
         <div class="feature-box">
           <div class="feature-icon">⚡</div>
           <h3 class="feature-title">Multi-Source Live Sync</h3>
-          <p class="feature-desc">Ingest customer reviews from Google Maps, YouTube video comments, and Play Store with verified deduplication and zero manual scraping.</p>
+          <p class="feature-desc">Ingest customer reviews from Google Maps, YouTube video comments, and Play Store with
+            verified deduplication and zero manual scraping.</p>
         </div>
 
         <div class="feature-box">
           <div class="feature-icon">🏷️</div>
           <h3 class="feature-title">Reviewr AI Themes</h3>
-          <p class="feature-desc">Automatically clusters unstructured text into high-impact sentiment themes with positive, neutral, and negative trajectory metrics.</p>
+          <p class="feature-desc">Automatically clusters unstructured text into high-impact sentiment themes with
+            positive, neutral, and negative trajectory metrics.</p>
         </div>
 
         <div class="feature-box">
           <div class="feature-icon">💡</div>
           <h3 class="feature-title">Recommendation Engine</h3>
-          <p class="feature-desc">Surfaces top customer delight drivers, operational friction alerts, and revenue growth recommendations for every branch and channel.</p>
+          <p class="feature-desc">Surfaces top customer delight drivers, operational friction alerts, and revenue growth
+            recommendations for every branch and channel.</p>
         </div>
       </div>
 
@@ -718,7 +667,7 @@
        ========================================================================== -->
   <section id="loginView" class="view-section">
     <div class="login-page-wrapper">
-      
+
       <!-- Left Column: Traditional Login Form -->
       <div class="login-left-card">
         <div>
@@ -727,16 +676,19 @@
             <span>Workspace Authentication</span>
           </div>
           <h2 class="login-form-title">Sign in to Reviewr</h2>
-          <p class="login-form-sub">Enter your business credentials to access your personalized customer feedback intelligence workspace.</p>
+          <p class="login-form-sub">Enter your business credentials to access your personalized customer feedback
+            intelligence workspace.</p>
         </div>
 
-        <div id="loginErrorAlert" style="display:none; background:var(--sentiment-neg-bg); border:1px solid var(--sentiment-neg-border); color:var(--sentiment-neg); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
+        <div id="loginErrorAlert"
+          style="display:none; background:var(--sentiment-neg-bg); border:1px solid var(--sentiment-neg-border); color:var(--sentiment-neg); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
         </div>
 
         <form class="login-form" id="loginForm" onsubmit="handleLoginFormSubmit(event)">
           <div class="form-group">
             <label class="form-label" for="loginEmail">Business Work Email</label>
-            <input type="email" id="loginEmail" class="form-input" placeholder="e.g. admin@manisbiriyani.com" required value="admin@manisbiriyani.com" />
+            <input type="email" id="loginEmail" class="form-input" placeholder="e.g. admin@manisbiriyani.com" required
+              value="admin@manisbiriyani.com" />
           </div>
 
           <div class="form-group">
@@ -744,14 +696,17 @@
               <label class="form-label" for="loginPassword">Password</label>
               <span style="font-size:0.75rem; color:var(--text-muted);">Default: password123</span>
             </div>
-            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required value="password123" />
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required
+              value="password123" />
           </div>
 
-          <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; color:var(--text-muted);">
+          <div
+            style="display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; color:var(--text-muted);">
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
               <input type="checkbox" checked style="accent-color:var(--text-dark);" /> Remember this workspace
             </label>
-            <a href="#" onclick="alert('For demo accounts, use password123'); return false;" style="color:var(--text-dark); text-decoration:none; font-weight:600;">Forgot password?</a>
+            <a href="#" onclick="alert('For demo accounts, use password123'); return false;"
+              style="color:var(--text-dark); text-decoration:none; font-weight:600;">Forgot password?</a>
           </div>
 
           <button type="submit" class="login-submit-btn">
@@ -759,9 +714,11 @@
           </button>
         </form>
 
-        <div style="padding-top:16px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; font-size:0.84rem;">
+        <div
+          style="padding-top:16px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center; font-size:0.84rem;">
           <span style="color:var(--text-muted);">Need to review the landing page?</span>
-          <a href="#" onclick="showLandingView(); return false;" style="color:var(--text-dark); font-weight:700; text-decoration:none;">← Return to Overview</a>
+          <a href="#" onclick="showLandingView(); return false;"
+            style="color:var(--text-dark); font-weight:700; text-decoration:none;">← Return to Overview</a>
         </div>
       </div>
 
@@ -770,7 +727,8 @@
         <div>
           <div style="display:flex; align-items:center; justify-content:space-between;">
             <h3 class="predefined-creds-title">Predefined Demo Accounts</h3>
-            <span class="cm-src-badge google_maps" style="background:#F3E8FF; color:#7C3AED;">1-Click Instant Login</span>
+            <span class="cm-src-badge google_maps" style="background:#F3E8FF; color:#7C3AED;">1-Click Instant
+              Login</span>
           </div>
           <p style="font-size:0.86rem; color:var(--text-muted); margin-top:4px;">
             Select any business persona below to auto-fill credentials and enter its customized intelligence dashboard:
@@ -848,11 +806,12 @@
        ========================================================================== -->
   <section id="dashboardView" class="view-section">
     <div class="dashboard-wrapper">
-      
+
       <!-- Top Active Business Banner -->
       <div class="dash-header-card">
         <div class="dash-header-left">
-          <img id="dashAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=120" class="dash-avatar" alt="Avatar" />
+          <img id="dashAvatar" src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=120"
+            class="dash-avatar" alt="Avatar" />
           <div>
             <div style="display:flex; align-items:center; gap:10px;">
               <h2 id="dashAccountName" class="dash-title">Mani's Dum Biriyani</h2>
@@ -948,7 +907,8 @@
       <div>
         <div style="margin-bottom:14px;">
           <h3 class="cm-card-title">Reviewr AI Recommendation Engine</h3>
-          <p class="cm-card-desc">Synthesized operational improvements and friction alerts based on customer feedback</p>
+          <p class="cm-card-desc">Synthesized operational improvements and friction alerts based on customer feedback
+          </p>
         </div>
         <div id="insightsContainer" class="cm-insights-grid">
           <!-- Populated via JS -->
@@ -967,15 +927,19 @@
             <!-- Sentiment Filters -->
             <div class="cm-tab-group">
               <button class="cm-tab-btn sentiment-filter-tab active" data-sentiment="all">All</button>
-              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="positive" style="color:var(--sentiment-pos);">Positive</button>
-              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="neutral" style="color:var(--sentiment-neu);">Neutral</button>
-              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="negative" style="color:var(--sentiment-neg);">Negative</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="positive"
+                style="color:var(--sentiment-pos);">Positive</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="neutral"
+                style="color:var(--sentiment-neu);">Neutral</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="negative"
+                style="color:var(--sentiment-neg);">Negative</button>
             </div>
 
             <!-- Search -->
             <div class="cm-search-box">
               <span class="cm-search-icon">🔍</span>
-              <input type="text" id="feedbackSearch" class="cm-search-input" placeholder="Search review text, branch, keywords..." />
+              <input type="text" id="feedbackSearch" class="cm-search-input"
+                placeholder="Search review text, branch, keywords..." />
             </div>
           </div>
         </div>
@@ -998,12 +962,14 @@
       </div>
 
       <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
-        Provide a Google Maps Place ID, YouTube Video ID, or Play Store Package Name. Reviewr ingests raw reviews, applies schema normalization, and enforces composite deduplication.
+        Provide a Google Maps Place ID, YouTube Video ID, or Play Store Package Name. Reviewr ingests raw reviews,
+        applies schema normalization, and enforces composite deduplication.
       </p>
 
       <div class="cm-form-group">
         <label class="cm-form-label">Resource Identifier / URL</label>
-        <input type="text" id="syncVideoInput" class="cm-form-input" value="ChIJN1t_tDeuEmsRUsoyG83frY4" placeholder="e.g. Google Maps Place ID or YouTube Video ID" />
+        <input type="text" id="syncVideoInput" class="cm-form-input" value="ChIJN1t_tDeuEmsRUsoyG83frY4"
+          placeholder="e.g. Google Maps Place ID or YouTube Video ID" />
       </div>
 
       <div class="cm-form-group">
@@ -1021,7 +987,8 @@
       <div id="syncStepsBox" class="cm-sync-steps-box"></div>
 
       <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
-        <button onclick="document.getElementById('syncModal').classList.remove('active');" class="cm-btn cm-btn-outline">Cancel</button>
+        <button onclick="document.getElementById('syncModal').classList.remove('active');"
+          class="cm-btn cm-btn-outline">Cancel</button>
         <button id="runSyncBtn" class="cm-btn cm-btn-primary">Start Live Ingestion</button>
       </div>
     </div>
@@ -1032,22 +999,26 @@
     <div class="cm-modal-card">
       <div class="cm-modal-header">
         <h3 class="cm-modal-title">Book a Live Reviewr Demo</h3>
-        <button onclick="document.getElementById('demoModal').classList.remove('active');" class="cm-close-btn">×</button>
+        <button onclick="document.getElementById('demoModal').classList.remove('active');"
+          class="cm-close-btn">×</button>
       </div>
 
       <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
-        Schedule a 15-minute personalized walkthrough tailored to your business locations, YouTube channel, or Play Store mobile app.
+        Schedule a 15-minute personalized walkthrough tailored to your business locations, YouTube channel, or Play
+        Store mobile app.
       </p>
 
       <form onsubmit="handleDemoBooking(event)" style="display:flex; flex-direction:column; gap:14px;">
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input type="text" class="form-input" id="demoBookingName" placeholder="e.g. Mani R" required value="Mani (Founder)" />
+          <input type="text" class="form-input" id="demoBookingName" placeholder="e.g. Mani R" required
+            value="Mani (Founder)" />
         </div>
 
         <div class="form-group">
           <label class="form-label">Work Email</label>
-          <input type="email" class="form-input" id="demoBookingEmail" placeholder="admin@manisbiriyani.com" required value="admin@manisbiriyani.com" />
+          <input type="email" class="form-input" id="demoBookingEmail" placeholder="admin@manisbiriyani.com" required
+            value="admin@manisbiriyani.com" />
         </div>
 
         <div class="form-group">
@@ -1059,12 +1030,14 @@
           </select>
         </div>
 
-        <div id="demoBookingSuccess" style="display:none; background:var(--sentiment-pos-bg); border:1px solid var(--sentiment-pos-border); color:var(--sentiment-pos); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
+        <div id="demoBookingSuccess"
+          style="display:none; background:var(--sentiment-pos-bg); border:1px solid var(--sentiment-pos-border); color:var(--sentiment-pos); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.85rem; font-weight:600;">
           ✓ Demo booking request received! Our VoC specialist will contact you shortly.
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
-          <button type="button" onclick="document.getElementById('demoModal').classList.remove('active');" class="cm-btn cm-btn-outline">Cancel</button>
+          <button type="button" onclick="document.getElementById('demoModal').classList.remove('active');"
+            class="cm-btn cm-btn-outline">Cancel</button>
           <button type="submit" id="demoBookingSubmitBtn" class="cm-btn cm-btn-primary">Confirm Demo Booking →</button>
         </div>
       </form>
@@ -1074,4 +1047,5 @@
   <script src="mockData.js"></script>
   <script src="app.js"></script>
 </body>
+
 </html>
