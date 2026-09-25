@@ -1,45 +1,81 @@
 # Feedback Intelligence Platform
 
-> **Turn millions of scattered customer voices into traceable product decisions.**
+> **Turn scattered customer voices into evidence-backed product decisions.**
 
-An AI-powered product feedback intelligence platform that continuously collects customer feedback from multiple sources, discovers recurring and emerging product problems, prioritizes them using evidence, and generates actionable, traceable product insights.
+An AI-powered feedback intelligence platform that continuously collects customer feedback from multiple sources, understands unstructured conversations, discovers recurring and emerging problems, measures their impact, prioritizes product issues, and generates traceable insights for product teams.
 
 ---
 
-## 🚀 Problem
+## Overview
 
-Companies receive customer feedback across many disconnected channels:
+Modern companies receive customer feedback across multiple channels:
 
-* App Store reviews
-* Google Play reviews
+* App Store and Google Play reviews
 * Google Business Profile reviews
 * YouTube comments
-* Support tickets
-* Surveys
+* Support tickets and chats
+* Surveys and feedback forms
 * Community platforms
-* Social media
-* Custom feedback systems
+* Social platforms
+* Internal feedback systems
+* Custom APIs
 
-The problem is not the lack of feedback.
+The challenge is not collecting feedback.
 
-The problem is **making sense of it at scale**.
+The challenge is **understanding thousands of inconsistent messages and converting them into reliable product decisions**.
 
-Thousands of inconsistent comments can hide the same underlying product problem, while teams may end up prioritizing issues based on isolated complaints rather than aggregate evidence.
+A customer might say:
+
+> "Payment went through but my order disappeared."
+
+Another might say:
+
+> "Money got deducted and then the order was cancelled."
+
+Another might say:
+
+> "UPI worked but I never got my food."
+
+These may represent the **same underlying product problem**.
+
+The platform automatically identifies these relationships and transforms them into a structured, prioritized, and traceable product insight.
 
 ---
 
-## 💡 Solution
+# Problem
 
-Our platform continuously ingests feedback from connected sources and transforms unstructured customer voices into structured, evidence-backed product intelligence.
+Companies commonly face four problems:
+
+### 1. Feedback is fragmented
+
+Customer opinions are distributed across different platforms and systems.
+
+### 2. Feedback is unstructured
+
+The same problem can be described in hundreds of different ways.
+
+### 3. Teams struggle to prioritize
+
+A small number of loud complaints can receive more attention than a widespread but less visible issue.
+
+### 4. Product decisions lack traceability
+
+Teams may know *what* they want to fix without being able to easily trace the decision back to the underlying customer evidence.
+
+---
+
+# Solution
+
+The platform creates a continuous pipeline:
 
 ```text
-Feedback Sources
+Customer Feedback
        ↓
-Automatic Ingestion
+Automatic Collection
        ↓
-Normalization & Deduplication
+Normalization
        ↓
-NLP Analysis
+NLP Understanding
        ↓
 Semantic Embeddings
        ↓
@@ -47,139 +83,301 @@ Problem Discovery
        ↓
 Trend Detection
        ↓
-Priority Engine
+Priority Analysis
        ↓
 LLM Insight Generation
        ↓
-Traceable Product Decisions
+Evidence & Traceability
+       ↓
+Product Decision
 ```
+
+Instead of asking an LLM to read every individual message, the system combines **NLP, semantic search, clustering, analytics, and LLM reasoning**.
+
+This makes the architecture more scalable and keeps product insights grounded in measurable evidence.
 
 ---
 
-## ✨ Key Features
+# Key Features
 
-### 🔌 Multi-Source Feedback Connectors
+## 🔌 Multi-Source Feedback Collection
 
-Connect feedback sources without manually uploading files.
+Connect multiple feedback sources and continuously retrieve new feedback.
+
+Potential integrations include:
 
 * YouTube
 * Google Business Profile
 * Google Play
 * Apple App Store
-* Support platforms
-* Surveys
+* Customer-support platforms
+* Survey platforms
 * Community platforms
-* Custom APIs
+* Social platforms
+* Custom REST APIs
+* Webhooks
+
+The connector architecture allows additional sources to be added without changing the core intelligence pipeline.
 
 ---
 
-### 🔄 Continuous Feedback Ingestion
+## 🔄 Continuous Feedback Ingestion
 
-Automatically retrieve new feedback at scheduled intervals.
+Instead of manually uploading feedback files, connected sources can be synchronized periodically.
+
+The ingestion system handles:
 
 * Incremental fetching
-* Deduplication
+* Duplicate detection
+* Source normalization
+* Metadata extraction
 * Background processing
-* Source synchronization
 * Retry handling
-
----
-
-### 🧠 NLP-Based Feedback Understanding
-
-Each feedback item is analyzed for:
-
-* Sentiment
-* Intent
-* Product area
-* Topic
-* Semantic meaning
-* Metadata
-
----
-
-### 🔍 Automatic Problem Discovery
-
-The system groups semantically similar feedback to discover recurring product problems without requiring every problem to be manually predefined.
-
-Example:
+* Failed-job recovery
 
 ```text
-"Payment succeeded but order disappeared"
-
-"Money was deducted but order failed"
-
-"UPI payment completed but order wasn't created"
-
-                ↓
-
-       PAYMENT / ORDER FAILURE
+Connected Source
+       ↓
+Scheduler
+       ↓
+Fetch New Feedback
+       ↓
+Deduplication
+       ↓
+Processing Queue
+       ↓
+AI Pipeline
 ```
 
 ---
 
-### 📈 Emerging Problem Detection
+# 🧹 Feedback Normalization
 
-Track how problems change over time.
+Different platforms expose different data structures.
 
-The system detects:
+The system converts them into a common internal representation.
 
-* Increasing complaint volume
-* Sudden spikes
-* Sentiment deterioration
+```text
+Source
+Text
+Rating
+Timestamp
+Author
+Platform
+Product
+Version
+Location
+Metadata
+```
+
+This allows the AI pipeline to process feedback consistently regardless of its source.
+
+---
+
+# 🧠 NLP-Based Feedback Understanding
+
+Each feedback item is analyzed to extract structured information.
+
+### Sentiment
+
+Identifies whether feedback is:
+
+* Positive
+* Neutral
+* Negative
+
+### Intent
+
+Identifies the primary purpose or issue type:
+
+* Payment
+* Login
+* Delivery
+* Performance
+* Refund
+* Account
+* Feature request
+* Bug
+* Support issue
+
+### Metadata
+
+Where available, the system can associate feedback with:
+
+* Product version
+* Platform
+* Location
+* Customer segment
+* Feature
+* Source
+
+---
+
+# 🔎 Semantic Understanding
+
+Keyword matching alone cannot recognize that:
+
+> "Money was deducted but my order vanished"
+
+and
+
+> "UPI payment completed but order wasn't created"
+
+are related.
+
+The system generates semantic embeddings for feedback and stores them using vector search.
+
+```text
+Feedback
+   ↓
+Embedding Model
+   ↓
+Vector Representation
+   ↓
+Vector Database
+   ↓
+Semantic Similarity
+```
+
+This enables the system to find feedback with similar meanings even when completely different words are used.
+
+---
+
+# 🧩 Automatic Problem Discovery
+
+The platform automatically groups semantically related feedback.
+
+For example:
+
+```text
+"App crashes after update"
+
+"Latest version keeps closing"
+
+"Can't open the app after updating"
+
+"App freezes on startup"
+```
+
+can form a common problem cluster:
+
+```text
+POST-UPDATE APPLICATION CRASH
+```
+
+This allows the system to discover product problems without requiring every issue to be manually predefined.
+
+---
+
+# 📈 Emerging Problem Detection
+
+The system continuously analyzes how feedback changes over time.
+
+It can identify:
+
+* Sudden increases in complaints
+* Increasing negative sentiment
+* New problem clusters
 * Version-specific problems
 * Platform-specific problems
 * Location-specific problems
-
----
-
-### 🎯 Evidence-Based Prioritization
-
-Problems are prioritized using measurable signals:
-
-```text
-Frequency
-Severity
-Growth
-User Impact
-Negative Sentiment
-```
-
-The priority engine is explainable rather than relying on an opaque prediction.
-
----
-
-### 🤖 LLM-Powered Product Insights
-
-The LLM receives aggregated evidence from the analytics pipeline and converts it into concise product intelligence.
+* Recurring issues
+* Declining or improving problems
 
 Example:
 
 ```text
-Problem:
-Payment confirmation failures
+Week 1      42 complaints
+Week 2      61 complaints
+Week 3      117 complaints
+Week 4      286 complaints
 
-Evidence:
-2,341 related feedback items
-+240% growth
-89% negative sentiment
-Mostly Android v4.2 users
-
-Insight:
-The increase is strongly concentrated around
-the Android 4.2 release and appears related to
-the payment-confirmation → order-creation flow.
-
-Recommended investigation:
-Review transaction callback and order creation
-handling introduced in the affected release.
+              ↑
+        Emerging Problem
 ```
 
 ---
 
-### 🔎 Traceable Evidence
+# 🎯 Evidence-Based Prioritization
 
-Every insight can be traced back to its underlying evidence.
+Problems are evaluated using measurable signals such as:
+
+* Feedback volume
+* Severity
+* Growth rate
+* Negative sentiment
+* Number of affected users
+* Product/platform impact
+* Recurrence
+
+The initial system uses an explainable scoring model rather than requiring historical training labels.
+
+Example:
+
+```text
+Frequency       0.91
+Severity        0.88
+Growth          0.94
+User Impact     0.82
+Sentiment       0.90
+────────────────────
+Priority        HIGH
+```
+
+The individual factors remain visible so product teams can understand **why** an issue received its priority.
+
+---
+
+# 🤖 LLM-Powered Product Intelligence
+
+The LLM is used after the analytics pipeline has identified important problems.
+
+It receives structured evidence rather than hundreds of thousands of raw messages.
+
+Example input:
+
+```text
+Problem:
+Payment confirmation failure
+
+Feedback:
+2,341 related messages
+
+Growth:
++240%
+
+Negative sentiment:
+89%
+
+Affected platform:
+Android
+
+Affected version:
+4.2
+```
+
+The LLM converts this evidence into a concise product insight.
+
+Example:
+
+```text
+Payment confirmation failures have increased
+significantly among Android 4.2 users.
+
+The issue appears concentrated around the
+payment-confirmation to order-creation flow.
+
+The product team should investigate transaction
+callback and order creation handling.
+```
+
+The LLM is therefore used primarily for **reasoning, synthesis, explanation, and communication**, while quantitative prioritization remains grounded in structured data.
+
+---
+
+# 🔎 Traceable Insights
+
+Every generated insight can be traced back to its underlying evidence.
 
 ```text
 Product Insight
@@ -190,21 +388,29 @@ Aggregate Metrics
       ↓
 Representative Feedback
       ↓
+Original Feedback
+      ↓
 Original Source
 ```
 
-This prevents the AI from becoming a black box.
+A product manager can therefore ask:
+
+> **"Why did the system identify this as an important problem?"**
+
+and inspect the evidence behind the conclusion.
 
 ---
 
-### 💬 AI-Assisted Response Generation
+# 💬 AI-Assisted Customer Responses
 
-Generate suggested responses for customer feedback.
+The platform can also generate response drafts.
 
 ```text
 Customer Feedback
        ↓
-Context + Problem
+Problem Context
+       ↓
+Customer Sentiment
        ↓
 LLM
        ↓
@@ -215,89 +421,224 @@ Human Review
 Publish
 ```
 
+Responses can be adapted to different contexts:
+
+* Support response
+* Review response
+* Customer-service message
+* Product announcement
+* Internal escalation
+
+Human approval can remain in the workflow before publishing.
+
 ---
 
-## 🏗️ Architecture
+# 📊 Product Intelligence Dashboard
+
+The dashboard provides a centralized view of customer feedback.
+
+### Overview
 
 ```text
-                       ┌───────────────────────┐
-                       │    Feedback Sources   │
-                       │                       │
-                       │ YouTube               │
-                       │ Google Business       │
-                       │ Google Play           │
-                       │ App Store             │
-                       │ Support / Surveys     │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │   Connector Layer     │
-                       │ OAuth / APIs / Webhook │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ FastAPI Ingestion     │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ Redis + Celery        │
-                       │ Async Processing      │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ PostgreSQL            │
-                       │ Raw + Metadata        │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ NLP Processing        │
-                       │ Sentiment / Intent    │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ BGE Embeddings        │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ PostgreSQL + pgvector │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ BERTopic + HDBSCAN    │
-                       │ Problem Discovery     │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ Trend + Priority      │
-                       │ Engine                │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ GPT-class LLM         │
-                       │ Insight Generation    │
-                       └───────────┬───────────┘
-                                   │
-                                   ▼
-                       ┌───────────────────────┐
-                       │ Next.js Dashboard     │
-                       └───────────────────────┘
+Total Feedback
+Active Problems
+Emerging Problems
+High-Priority Problems
+Resolved Problems
+```
+
+### Problem Trends
+
+```text
+Payment        ███████████████
+Performance    ███████████
+Delivery       █████████
+Refund         ███████
+Login          █████
+```
+
+### Problem Details
+
+```text
+Payment Confirmation Failure
+
+2,341 Feedback
++240% Growth
+89% Negative
+
+Affected:
+Android 4.2
+
+Priority:
+HIGH
+
+[View Evidence]
+[View Feedback]
+[View AI Insight]
 ```
 
 ---
 
-## 🧰 Technology Stack
+# 🏗️ System Architecture
 
-### Frontend
+```text
+                         ┌───────────────────────────┐
+                         │      FEEDBACK SOURCES     │
+                         │                           │
+                         │ YouTube                   │
+                         │ Google Business Profile   │
+                         │ Google Play               │
+                         │ Apple App Store           │
+                         │ Support Systems           │
+                         │ Surveys                   │
+                         │ Communities               │
+                         │ Custom APIs               │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │    CONNECTOR LAYER        │
+                         │                           │
+                         │ OAuth / APIs / Webhooks   │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │      FASTAPI BACKEND      │
+                         │                           │
+                         │ Authentication            │
+                         │ Source Management         │
+                         │ Feedback APIs             │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │    REDIS + CELERY         │
+                         │                           │
+                         │ Background Processing     │
+                         │ Scheduled Jobs             │
+                         │ Queue Management           │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │       POSTGRESQL          │
+                         │                           │
+                         │ Feedback                  │
+                         │ Users                     │
+                         │ Sources                   │
+                         │ Metadata                  │
+                         │ Problems                  │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │       NLP PIPELINE        │
+                         │                           │
+                         │ Text Processing            │
+                         │ Sentiment                  │
+                         │ Intent                     │
+                         │ Metadata Extraction        │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │    EMBEDDING PIPELINE     │
+                         │                           │
+                         │ BGE Embeddings            │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │       PGVECTOR            │
+                         │                           │
+                         │ Semantic Search            │
+                         │ Similarity Retrieval       │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │   PROBLEM DISCOVERY      │
+                         │                           │
+                         │ BERTopic                  │
+                         │ HDBSCAN                   │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │  TREND & PRIORITY ENGINE │
+                         │                           │
+                         │ Frequency                 │
+                         │ Severity                  │
+                         │ Growth                    │
+                         │ User Impact               │
+                         │ Sentiment                 │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │        LLM LAYER          │
+                         │                           │
+                         │ Insight Generation        │
+                         │ Evidence Synthesis        │
+                         │ Response Generation       │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │      NEXT.JS APP          │
+                         │                           │
+                         │ Dashboard                 │
+                         │ Problem Explorer          │
+                         │ Trends                    │
+                         │ Evidence                  │
+                         │ Responses                 │
+                         └───────────────────────────┘
+```
+
+---
+
+# 🔄 End-to-End Data Flow
+
+```text
+1. Company connects feedback sources
+                ↓
+2. Platform retrieves new feedback
+                ↓
+3. Feedback is normalized
+                ↓
+4. Duplicate/irrelevant records are filtered
+                ↓
+5. Feedback is stored
+                ↓
+6. NLP analyzes sentiment and intent
+                ↓
+7. Embeddings capture semantic meaning
+                ↓
+8. Similar feedback is discovered
+                ↓
+9. BERTopic/HDBSCAN identifies problem clusters
+                ↓
+10. Historical and current trends are calculated
+                ↓
+11. Problems receive evidence-based priority
+                ↓
+12. Important problems are passed to the LLM
+                ↓
+13. LLM generates evidence-backed insights
+                ↓
+14. Dashboard presents the problem and evidence
+                ↓
+15. Product team investigates and decides
+                ↓
+16. Optional AI-assisted response is generated
+```
+
+---
+
+# 🧰 Technology Stack
+
+## Frontend
 
 * Next.js
 * TypeScript
@@ -305,19 +646,19 @@ Publish
 * shadcn/ui
 * ECharts / Recharts
 
-### Backend
+## Backend
 
 * Python
 * FastAPI
 * Celery
 * Redis
 
-### Database
+## Database
 
 * PostgreSQL
 * pgvector
 
-### NLP / ML
+## NLP / Machine Learning
 
 * spaCy
 * RoBERTa
@@ -326,183 +667,66 @@ Publish
 * BERTopic
 * HDBSCAN
 
-### AI
+## Generative AI
 
 * GPT-class LLM
 
-### Infrastructure
+## Infrastructure
 
 * Docker
 * AWS
 
----
+## Integration
 
-## 🔄 Processing Pipeline
-
-```text
-Source
-  ↓
-Fetch New Feedback
-  ↓
-Normalize
-  ↓
-Deduplicate
-  ↓
-Store
-  ↓
-Sentiment + Intent
-  ↓
-Generate Embedding
-  ↓
-Semantic Search
-  ↓
-Topic / Problem Clustering
-  ↓
-Trend Analysis
-  ↓
-Priority Calculation
-  ↓
-Important Problem Detection
-  ↓
-LLM Insight Generation
-  ↓
-Dashboard
-```
+* REST APIs
+* OAuth
+* Webhooks
+* Source-specific connectors
 
 ---
 
-## 🎯 Example
+# 🧠 Why These Technologies?
 
-### Raw Feedback
-
-```text
-"After the latest update my UPI payment succeeds,
-but the order gets cancelled."
-```
-
-### NLP
-
-```text
-Sentiment: Negative
-Intent: Payment / Transaction Failure
-Platform: Android
-Version: 4.2
-```
-
-### Semantic Cluster
-
-```text
-Payment Confirmation / Order Creation Failure
-```
-
-### Aggregate Evidence
-
-```text
-Feedback: 2,341
-Growth: +240%
-Negative: 89%
-Main Platform: Android
-Main Version: 4.2
-```
-
-### Product Insight
-
-```text
-A rapidly increasing payment-confirmation problem
-is concentrated among Android 4.2 users.
-
-The product team should investigate the payment
-callback and order creation flow.
-```
+| Requirement             | Technology          |
+| ----------------------- | ------------------- |
+| API backend             | FastAPI             |
+| Continuous processing   | Celery + Redis      |
+| Structured storage      | PostgreSQL          |
+| Semantic search         | pgvector            |
+| Sentiment               | RoBERTa             |
+| Intent                  | DistilBERT          |
+| Semantic representation | BGE                 |
+| Problem discovery       | BERTopic            |
+| Clustering              | HDBSCAN             |
+| Product prioritization  | Explainable scoring |
+| Insight generation      | LLM                 |
+| Dashboard               | Next.js             |
+| Deployment              | Docker + AWS        |
 
 ---
 
-## 📂 Project Structure
+# 📐 Priority Engine
+
+The initial system uses an interpretable scoring approach.
+
+A problem can be evaluated using:
 
 ```text
-feedback-intelligence/
-│
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── dashboard/
-│   └── lib/
-│
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── connectors/
-│   │   ├── ingestion/
-│   │   ├── nlp/
-│   │   ├── embeddings/
-│   │   ├── clustering/
-│   │   ├── priority/
-│   │   ├── insights/
-│   │   └── models/
-│   │
-│   ├── workers/
-│   └── main.py
-│
-├── ml/
-│   ├── sentiment/
-│   ├── intent/
-│   ├── embeddings/
-│   └── clustering/
-│
-├── infrastructure/
-│   ├── docker/
-│   └── aws/
-│
-├── tests/
-│
-├── docker-compose.yml
-├── .env.example
-├── requirements.txt
-└── README.md
+Priority Score =
+    Frequency
+  + Severity
+  + Growth
+  + User Impact
+  + Negative Sentiment
 ```
 
----
+The actual weights can be configured according to the organization's requirements.
 
-## 🔐 Data & Security
+This approach is useful initially because the system does not require historical product-team decisions to train a supervised model.
 
-* OAuth/API-key based source authentication
-* Secrets stored through environment variables / secret manager
-* No unnecessary storage of personal information
-* Source-level access controls
-* Tenant isolation
-* Audit logs for generated insights and responses
+### Future Learning Layer
 
----
-
-## 📊 Scalability
-
-The platform is designed around asynchronous processing.
-
-```text
-Feedback Sources
-       ↓
-Queue
-       ↓
-Workers
-       ↓
-NLP Processing
-       ↓
-Database
-       ↓
-Analytics
-```
-
-Workers can be horizontally scaled as feedback volume increases.
-
-The LLM is used primarily for **aggregated/high-value insights**, rather than making an expensive LLM request for every incoming message.
-
----
-
-## 🧠 Future Learning-Based Prioritization
-
-The initial priority engine uses explainable statistical scoring because a new deployment does not have historical product-team decisions.
-
-As organizations accumulate historical decisions:
+Once sufficient historical decision data exists:
 
 ```text
 Historical Feedback
@@ -513,119 +737,372 @@ Feature Engineering
         ↓
 XGBoost
         ↓
-Learned Priority Prediction
+Organization-Specific Priority Prediction
 ```
 
-This allows the platform to eventually learn organization-specific prioritization patterns.
+This allows the system to evolve from generic evidence-based prioritization toward organization-specific learned prioritization.
 
 ---
 
-## 🚀 Getting Started
+# ⚡ Scalability
 
-### 1. Clone
+The system is designed for asynchronous, distributed processing.
+
+```text
+Feedback Sources
+       ↓
+Message Queue
+       ↓
+Worker Pool
+       ↓
+NLP / Embeddings
+       ↓
+Database
+       ↓
+Analytics
+       ↓
+LLM
+```
+
+The architecture supports horizontal scaling by adding additional workers as feedback volume increases.
+
+LLM calls are concentrated on **important aggregated problems rather than every individual feedback item**, reducing unnecessary inference cost.
+
+---
+
+# 🔐 Security & Privacy
+
+The platform should support:
+
+* OAuth-based authentication
+* API-key protection
+* Encrypted credentials
+* Environment-based secrets
+* Tenant isolation
+* Role-based access control
+* Audit logs
+* Secure webhook validation
+* Data retention controls
+* Removal/anonymization of unnecessary personal information
+
+---
+
+# 🏢 Multi-Tenant Architecture
+
+The platform is designed for multiple organizations.
+
+```text
+Organization
+     │
+     ├── Users
+     ├── Products
+     ├── Feedback Sources
+     ├── Feedback
+     ├── Problems
+     └── Insights
+```
+
+Every organization's data is logically isolated.
+
+This allows the platform to operate as a SaaS product rather than as a single-company analytics tool.
+
+---
+
+# 📁 Project Structure
+
+```text
+feedback-intelligence/
+│
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── dashboard/
+│   ├── hooks/
+│   ├── lib/
+│   └── services/
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── auth/
+│   │   ├── connectors/
+│   │   ├── ingestion/
+│   │   ├── normalization/
+│   │   ├── nlp/
+│   │   ├── embeddings/
+│   │   ├── clustering/
+│   │   ├── trends/
+│   │   ├── priority/
+│   │   ├── insights/
+│   │   ├── responses/
+│   │   ├── database/
+│   │   └── models/
+│   │
+│   ├── workers/
+│   └── main.py
+│
+├── ml/
+│   ├── sentiment/
+│   ├── intent/
+│   ├── embeddings/
+│   ├── clustering/
+│   └── evaluation/
+│
+├── infrastructure/
+│   ├── docker/
+│   ├── nginx/
+│   └── aws/
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── evaluation/
+│
+├── docker-compose.yml
+├── .env.example
+├── requirements.txt
+├── LICENSE
+└── README.md
+```
+
+---
+
+# 🚀 Local Development
+
+## Prerequisites
+
+* Python 3.11+
+* Node.js 20+
+* PostgreSQL
+* Redis
+* Docker
+
+## Clone
 
 ```bash
 git clone <repository-url>
 cd feedback-intelligence
 ```
 
-### 2. Configure environment
+## Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Configure:
+Example:
 
 ```env
 DATABASE_URL=
 REDIS_URL=
 LLM_API_KEY=
-YOUTUBE_API_KEY=
+
+YOUTUBE_CLIENT_ID=
+YOUTUBE_CLIENT_SECRET=
+
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+
 APPLE_KEY_ID=
 APPLE_ISSUER_ID=
 ```
 
-### 3. Start infrastructure
+## Start infrastructure
 
 ```bash
 docker compose up -d
 ```
 
-### 4. Start backend
+## Backend
 
 ```bash
 cd backend
+
 pip install -r requirements.txt
+
 uvicorn app.main:app --reload
 ```
 
-### 5. Start frontend
+## Celery Worker
+
+```bash
+celery -A workers.celery_app worker --loglevel=info
+```
+
+## Frontend
 
 ```bash
 cd frontend
+
 npm install
 npm run dev
 ```
 
 ---
 
-## 🛣️ Roadmap
+# 🧪 Testing
 
-* [x] Multi-source feedback architecture
-* [x] NLP processing
-* [x] Semantic embeddings
-* [x] Problem clustering
-* [x] Priority engine
-* [x] LLM insights
-* [ ] YouTube connector
-* [ ] Google Business Profile connector
-* [ ] Google Play connector
-* [ ] App Store connector
-* [ ] Support platform connectors
-* [ ] Real-time event processing
-* [ ] Automated response workflows
-* [ ] Organization-specific learned prioritization
-* [ ] XGBoost priority model with historical decision data
+The project should include:
+
+* Unit tests
+* API tests
+* Connector tests
+* NLP evaluation
+* Embedding evaluation
+* Clustering evaluation
+* Priority-engine tests
+* LLM output validation
+* Integration tests
+* End-to-end tests
+
+Example:
+
+```bash
+pytest
+```
 
 ---
 
-## 👥 Use Cases
+# 📊 Evaluation
 
-### SaaS Companies
+The system can be evaluated using:
 
-Identify recurring feature complaints and emerging product issues.
+### NLP
 
-### Mobile Apps
+* Accuracy
+* Precision
+* Recall
+* F1-score
 
-Analyze App Store and Google Play reviews across versions.
+### Clustering
 
-### Retail & Restaurants
+* Silhouette Score
+* Topic coherence
+* Human evaluation
 
-Aggregate location-based customer reviews and detect recurring service problems.
+### Retrieval
+
+* Precision@K
+* Recall@K
+* Semantic similarity
+
+### Priority
+
+* Agreement with expert/product-team labels
+* Ranking consistency
+* Detection of emerging issues
+
+### LLM
+
+* Groundedness
+* Evidence coverage
+* Hallucination rate
+* Human evaluation
+
+---
+
+# 🌍 Potential Applications
+
+### SaaS
+
+Identify recurring product bugs and feature requests.
+
+### Mobile Applications
+
+Understand reviews across app versions and platforms.
+
+### Retail
+
+Analyze customer feedback across multiple store locations.
+
+### Restaurants
+
+Identify recurring service, food, delivery, and customer-experience problems.
+
+### Consumer Products
+
+Aggregate reviews and discover recurring product defects or complaints.
 
 ### Media & Content
 
-Analyze YouTube/community feedback to understand audience pain points.
+Understand audience reactions across videos and communities.
 
-### Support Teams
+### Customer Support
 
-Convert thousands of support conversations into product-level insights.
-
-### Product Teams
-
-Move from individual complaints to evidence-backed product decisions.
+Convert large-scale support conversations into product-level insights.
 
 ---
 
-## 📌 Core Value Proposition
+# 🔮 Future Scope
 
-> **Don't just collect customer feedback. Turn it into evidence-backed product decisions.**
+The platform can evolve toward:
+
+* More source connectors
+* Real-time streaming ingestion
+* Multilingual feedback analysis
+* Voice-feedback transcription
+* Organization-specific taxonomies
+* Automatic product-area mapping
+* Advanced anomaly detection
+* Learned prioritization using historical decisions
+* Automated experiment recommendations
+* Product-roadmap integration
+* Jira / Linear / GitHub issue creation
+* Human-in-the-loop response workflows
+* Organization-specific AI agents
 
 ---
 
-## 📜 License
+# 🎯 Core Product Philosophy
+
+The platform is built around four principles:
+
+### 1. Aggregate the Voice
+
+Don't let isolated complaints represent the entire customer base.
+
+### 2. Discover the Problem
+
+Group different expressions of the same underlying issue.
+
+### 3. Show the Evidence
+
+Every important insight should be traceable to real customer feedback.
+
+### 4. Support the Decision
+
+Use AI to help product teams understand and act on the evidence.
+
+---
+
+# ⭐ Core Pipeline
+
+```text
+CONNECT
+   ↓
+COLLECT
+   ↓
+NORMALIZE
+   ↓
+UNDERSTAND
+   ↓
+EMBED
+   ↓
+CLUSTER
+   ↓
+DETECT TRENDS
+   ↓
+PRIORITIZE
+   ↓
+EXPLAIN
+   ↓
+RESPOND
+   ↓
+DECIDE
+```
+
+---
+
+# 📄 License
 
 MIT License
