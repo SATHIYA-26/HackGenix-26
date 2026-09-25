@@ -38,3 +38,8 @@ class DatabaseError(FeedbackIntelligenceException):
 class LLMServiceError(FeedbackIntelligenceException):
     """Raised when LLM service interaction fails."""
     pass
+
+
+# Convenience aliases
+EntityNotFoundException = ResourceNotFoundException
+ValidationException = ValidationError

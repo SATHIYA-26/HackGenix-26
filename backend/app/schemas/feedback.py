@@ -41,6 +41,11 @@ class CanonicalFeedbackInput(BaseModel):
         return cleaned
 
 
+# Canonical alias as specified in system architecture
+FeedbackInput = CanonicalFeedbackInput
+
+
+
 class FeedbackBatchInput(BaseModel):
     """Batch feedback submission schema."""
     items: List[CanonicalFeedbackInput] = Field(..., min_length=1, max_length=2000)

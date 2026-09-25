@@ -171,6 +171,7 @@ class ProblemCluster(Base):
     trends = relationship("Trend", back_populates="problem", cascade="all, delete-orphan")
     recommendations = relationship("Recommendation", back_populates="problem", cascade="all, delete-orphan")
     insights = relationship("Insight", back_populates="problem", cascade="all, delete-orphan")
+    actions = relationship("Action", back_populates="problem", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"<ProblemCluster(id={self.id}, name='{self.name}', priority={self.priority_score})>"
@@ -210,6 +211,7 @@ class Recommendation(Base):
 
     # Relationship
     problem = relationship("ProblemCluster", back_populates="recommendations")
+    actions = relationship("Action", back_populates="recommendation")
 
     def __repr__(self) -> str:
         return f"<Recommendation(problem_id={self.problem_id}, confidence={self.confidence})>"
@@ -233,3 +235,35 @@ class Insight(Base):
 
     def __repr__(self) -> str:
         return f"<Insight(problem_id={self.problem_id})>"
+
+
+class Action(Base):
+    """Closed-loop product action tracking implementation, release, and feedback impact."""
+    __tablename__ = "actions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    action_id = Column(String(64), unique=True, nullable=False, index=True)
+    problem_id = Column(Integer, ForeignKey("problem_clusters.id", ondelete="CASCADE"), nullable=False, index=True)
+    recommendation_id = Column(Integer, ForeignKey("recommendations.id", ondelete="SET NULL"), nullable=True, index=True)
+    title = Column(String(256), nullable=False)
+    description = Column(Text, nullable=True)
+    action_type = Column(String(64), default="bug_fix", nullable=False)
+    status = Column(String(32), default="planned", nullable=False, index=True)
+    assignee = Column(String(128), nullable=True)
+    jira_issue_key = Column(String(64), nullable=True)
+    release_version = Column(String(64), nullable=True)
+    release_date = Column(DateTime, nullable=True)
+    baseline_metrics = Column(JSON, nullable=True)
+    post_release_metrics = Column(JSON, nullable=True)
+    impact_score = Column(Float, nullable=True)
+    impact_summary = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Relationships
+    problem = relationship("ProblemCluster", back_populates="actions")
+    recommendation = relationship("Recommendation", back_populates="actions")
+
+    def __repr__(self) -> str:
+        return f"<Action(id={self.id}, action_id='{self.action_id}', status='{self.status}', version='{self.release_version}')>"
+

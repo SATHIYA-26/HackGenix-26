@@ -46,3 +46,8 @@ def setup_logging(debug: bool = True) -> logging.Logger:
 
 
 logger = setup_logging()
+
+
+def get_logger(name: str = "feedback_intelligence") -> logging.Logger:
+    """Return a child logger or named logger."""
+    return logging.getLogger(f"feedback_intelligence.{name}" if name != "feedback_intelligence" else name)

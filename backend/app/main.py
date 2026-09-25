@@ -15,7 +15,7 @@ from app.core.exceptions import (
     ValidationError as CustomValidationError,
 )
 from app.db.database import init_db, engine
-from app.api.routes import feedback, analysis, problems, trends, recommendations, dashboard
+from app.api.routes import feedback, analysis, problems, trends, recommendations, dashboard, actions, connectors
 
 
 @asynccontextmanager
@@ -140,3 +140,5 @@ app.include_router(problems.router, prefix=settings.API_V1_STR)
 app.include_router(trends.router, prefix=settings.API_V1_STR)
 app.include_router(recommendations.router, prefix=settings.API_V1_STR)
 app.include_router(dashboard.router, prefix=settings.API_V1_STR)
+app.include_router(actions.router, prefix=settings.API_V1_STR)
+app.include_router(connectors.router, prefix=settings.API_V1_STR)
