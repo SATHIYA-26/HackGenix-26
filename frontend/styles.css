@@ -419,10 +419,9 @@ body {
 }
 
 .roi-header-title {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: -0.01em;
   color: var(--text-dark);
 }
 
