@@ -2833,6 +2833,7 @@ body {
 
 /* Interactive Particle Canvas (Coins, Micro-Tokens & Numbers Behind Cursor) */
 .dovetail-particle-canvas {
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -2844,6 +2845,7 @@ body {
 
 /* Ambient Spotlight Follower (Subtle background illumination behind cursor) */
 .dovetail-cursor-spotlight {
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;

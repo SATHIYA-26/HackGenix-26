@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DovetailCursor from "./DovetailCursor";
 import Navbar from "./Navbar";
 import AnnouncementBar from "./AnnouncementBar";
 import LandingView from "./LandingView";
@@ -119,24 +118,18 @@ export default function ReviewrApp({ initialView = "landing" }) {
 
   if (activeView === "dashboard") {
     return (
-      <>
-        <DovetailCursor />
-        <DashboardShell
-          currentAccount={currentAccount}
-          currentAccountId={currentAccountId}
-          accounts={accounts}
-          onAccountChange={handleAccountChange}
-          onNavigateLanding={() => handleNavigate("landing")}
-        />
-      </>
+      <DashboardShell
+        currentAccount={currentAccount}
+        currentAccountId={currentAccountId}
+        accounts={accounts}
+        onAccountChange={handleAccountChange}
+        onNavigateLanding={() => handleNavigate("landing")}
+      />
     );
   }
 
   return (
     <>
-      {/* Ambient Particle Animation & Spotlight Engine */}
-      <DovetailCursor />
-
       {/* Ambient Gradient Glow */}
       <div className="bg-glow-wrapper" aria-hidden="true" />
 
