@@ -12,12 +12,30 @@ connect_args = {}
 if database_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
-engine = create_engine(
-    database_url,
-    echo=settings.DB_ECHO,
-    connect_args=connect_args,
-    pool_pre_ping=True,
-)
+try:
+    engine = create_engine(
+        database_url,
+        echo=settings.DB_ECHO,
+        connect_args=connect_args,
+        pool_pre_ping=True,
+    )
+    # Quick probe if postgres
+    if "postgresql" in database_url:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+except Exception as exc:
+    logger.warning(
+        f"PostgreSQL connection to '{database_url}' failed: {exc}. "
+        "Falling back to local SQLite engine (sqlite:///./feedback_intelligence.db) for development."
+    )
+    database_url = "sqlite:///./feedback_intelligence.db"
+    connect_args = {"check_same_thread": False}
+    engine = create_engine(
+        database_url,
+        echo=settings.DB_ECHO,
+        connect_args=connect_args,
+        pool_pre_ping=True,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

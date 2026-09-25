@@ -59,11 +59,11 @@ class SemanticClusteringService:
 
         try:
             clusterer = hdbscan.HDBSCAN(
-                min_cluster_size=max(2, min(self.min_cluster_size, len(embeddings) // 4)),
-                min_samples=self.min_samples,
+                min_cluster_size=max(2, min(self.min_cluster_size, 3)),
+                min_samples=min(2, self.min_samples),
                 metric=self.metric,
-                cluster_selection_method="eom",
-                allow_single_cluster=False,
+                cluster_selection_epsilon=0.4,
+                allow_single_cluster=True,
             )
             labels = clusterer.fit_predict(X)
         except Exception as exc:
@@ -71,11 +71,16 @@ class SemanticClusteringService:
             # Fallback partitioning
             labels = self._fallback_clustering(X)
 
+        # If HDBSCAN produced 0 clusters (all marked as -1 noise), engage density fallback
+        if len([l for l in set(labels) if l >= 0]) == 0 and len(embeddings) >= self.min_cluster_size:
+            logger.info("HDBSCAN yielded 0 clusters for small batch; engaging semantic similarity fallback.")
+            labels = self._fallback_clustering(X, threshold=0.50)
+
         clusters: Dict[int, ClusterResult] = {}
         outlier_feedback_ids: List[str] = []
 
         unique_labels = set(labels)
-        logger.info(f"HDBSCAN discovered {len([l for l in unique_labels if l >= 0])} distinct clusters from {len(embeddings)} items.")
+        logger.info(f"Discovered {len([l for l in unique_labels if l >= 0])} distinct clusters from {len(embeddings)} items.")
 
         for label in unique_labels:
             indices = np.where(labels == label)[0]

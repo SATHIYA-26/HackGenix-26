@@ -64,6 +64,10 @@ class FeedbackService:
 
     def _dispatch_background_task(self, feedback_id: str) -> None:
         """Safely attempt to dispatch to Celery worker; fails gracefully if Redis/Celery is offline."""
+        from app.core.config import settings
+        if settings.is_testing:
+            return
+
         try:
             from app.workers.tasks import process_feedback_item_task
             process_feedback_item_task.delay(feedback_id)
@@ -73,6 +77,10 @@ class FeedbackService:
 
     def _dispatch_batch_background_tasks(self, feedback_ids: List[str]) -> None:
         """Safely attempt to dispatch batch to Celery worker."""
+        from app.core.config import settings
+        if settings.is_testing:
+            return
+
         try:
             from app.workers.tasks import process_feedback_batch_task
             process_feedback_batch_task.delay(feedback_ids)
