@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check } from "lucide-react";
 
 export default function DemoModal({ isOpen, planName, onClose }) {
   const [name, setName] = useState("Mani (Founder)");
@@ -85,8 +86,9 @@ export default function DemoModal({ isOpen, planName, onClose }) {
           {isSuccess && (
             <div
               id="demoBookingSuccess"
+              className="flex items-center gap-2"
               style={{
-                display: "block",
+                display: "flex",
                 background: "var(--sentiment-pos-bg)",
                 border: "1px solid var(--sentiment-pos-border)",
                 color: "var(--sentiment-pos)",
@@ -96,7 +98,8 @@ export default function DemoModal({ isOpen, planName, onClose }) {
                 fontWeight: 600,
               }}
             >
-              ✓ Demo booking request received! Our VoC specialist will contact you shortly.
+              <Check className="w-4 h-4 shrink-0 text-[#059669]" />
+              <span>Demo booking request received! Our VoC specialist will contact you shortly.</span>
             </div>
           )}
 
@@ -107,7 +110,7 @@ export default function DemoModal({ isOpen, planName, onClose }) {
             <button
               type="submit"
               id="demoBookingSubmitBtn"
-              className="cm-btn cm-btn-primary"
+              className="cm-btn cm-btn-primary flex items-center gap-1.5"
               disabled={isSubmitting || isSuccess}
             >
               {isSubmitting ? (
@@ -115,7 +118,9 @@ export default function DemoModal({ isOpen, planName, onClose }) {
                   <span className="cm-spinner"></span> Confirming...
                 </>
               ) : isSuccess ? (
-                "✓ Demo Scheduled!"
+                <>
+                  <Check className="w-3.5 h-3.5" /> Demo Scheduled!
+                </>
               ) : planName ? (
                 `Book Demo for ${planName} Plan →`
               ) : (

@@ -450,11 +450,11 @@ const REVIEWR_ACCOUNTS = [
         sentiment: "positive",
         theme: "Sidhu & Crew Humour & Chemistry",
         created_at: "2026-09-24T20:10:00Z",
-        text: "That puncture shop prank at 18:35 literally made me spit out my coffee laughing! Sidhu anna, you and the crew are pure stress-busters. Never stop making these weekly vlogs ❤️🔥",
+        text: "That puncture shop prank at 18:35 literally made me spit out my coffee laughing! Sidhu anna, you and the crew are pure stress-busters. Never stop making these weekly vlogs.",
         source_url: "https://youtube.com/watch?v=vj_munnar_44",
         metadata: { video_id: "vj_munnar_44", like_count: 842, is_reply: false, replies_count: 8 },
         replies: [
-          { author_name: "VJ Sidhu (Creator)", text: "Hahaha thanks Dhanush bro! Wait till you see next week's episode 😂", created_at: "2026-09-24T20:45:00Z" }
+          { author_name: "VJ Sidhu (Creator)", text: "Thanks Dhanush bro! Wait till you see next week's episode.", created_at: "2026-09-24T20:45:00Z" }
         ]
       },
       {
@@ -643,7 +643,7 @@ export const NLP_SAMPLES = [
     badgeText: "POSITIVE (+78)",
     polarity: "Compound Polarity: +0.784",
     summary: "Strong positive polarity on food quality and seasoning, offset by localized negative friction on physical wait times.",
-    theme: "🏷️ Mutton Biriyani & Meat Tenderness",
+    theme: "Mutton Biriyani & Meat Tenderness",
     themeBg: "#F3E8FF",
     themeColor: "#7C3AED",
     entities: '"mutton biriyani", "T. Nagar branch", "Sunday queue"',
@@ -657,7 +657,7 @@ export const NLP_SAMPLES = [
     badgeText: "NEGATIVE (-64)",
     polarity: "Compound Polarity: -0.642",
     summary: "Critical technical issue identified: Core playback works but major failure reported on local storage cache sync on Android 14.",
-    theme: "🏷️ Android 14 Offline Sync & Downloads",
+    theme: "Android 14 Offline Sync & Downloads",
     themeBg: "#FFF1F2",
     themeColor: "#E11D48",
     entities: '"Discover Weekly", "offline downloads", "Android 14", "v8.9.42"',
@@ -671,7 +671,7 @@ export const NLP_SAMPLES = [
     badgeText: "POSITIVE (+96)",
     polarity: "Compound Polarity: +0.962",
     summary: "Overwhelmingly positive community sentiment celebrating humor, crew camaraderie, and production cinematography.",
-    theme: "🏷️ Comedy Banter & Travel Crew Chemistry",
+    theme: "Comedy Banter & Travel Crew Chemistry",
     themeBg: "#ECFDF5",
     themeColor: "#059669",
     entities: '"Madurai street food", "4K drone cinematography", "comedy timing"',
@@ -685,7 +685,7 @@ export const NLP_SAMPLES = [
     badgeText: "NEUTRAL (+21)",
     polarity: "Compound Polarity: +0.210",
     summary: "Mixed retail sentiment: Apparel quality and collection are well received, but fitting room bottleneck suppresses customer delight.",
-    theme: "🏷️ Fitting Room Wait & Staff Assistance",
+    theme: "Fitting Room Wait & Staff Assistance",
     themeBg: "#F1F5F9",
     themeColor: "#64748B",
     entities: '"summer linen collection", "Mylapore branch", "fitting room queues"',

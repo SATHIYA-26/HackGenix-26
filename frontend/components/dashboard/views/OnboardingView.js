@@ -13,6 +13,7 @@ import {
   Database,
   Cpu,
   TrendingUp,
+  Check,
 } from "lucide-react";
 
 export default function OnboardingView({ onComplete }) {
@@ -100,13 +101,13 @@ export default function OnboardingView({ onComplete }) {
                 key={s}
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold transition-all ${
                   currentStep === s
-                    ? "bg-[#18181B] text-white"
+                    ? "bg-[#7C3AED] text-white shadow-xs"
                     : currentStep > s
-                    ? "bg-[#059669] text-white"
+                    ? "bg-[#7C3AED] text-white"
                     : "bg-[#ECE8E0] text-[#71717A]"
                 }`}
               >
-                {currentStep > s ? "✓" : s}
+                {currentStep > s ? <Check className="w-3.5 h-3.5" /> : s}
               </div>
             ))}
           </div>
@@ -428,13 +429,13 @@ export default function OnboardingView({ onComplete }) {
                   <div
                     className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] shrink-0 font-bold ${
                       idx < analysisStep
-                        ? "bg-[#059669] text-white"
+                        ? "bg-[#7C3AED] text-white"
                         : idx === analysisStep
                         ? "border-2 border-[#7C3AED] text-[#7C3AED] animate-spin"
                         : "bg-[#ECE8E0] text-[#71717A]"
                     }`}
                   >
-                    {idx < analysisStep ? "✓" : idx === analysisStep ? "•" : idx + 1}
+                    {idx < analysisStep ? <Check className="w-2.5 h-2.5" /> : idx === analysisStep ? "•" : idx + 1}
                   </div>
                   <span
                     className={`text-[11px] truncate ${

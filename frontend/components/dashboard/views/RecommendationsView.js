@@ -1,6 +1,6 @@
 "use client";
 
-import { Lightbulb, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Plus } from "lucide-react";
+import { Lightbulb, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Plus, Check } from "lucide-react";
 import { RECOMMENDATIONS, PROBLEMS } from "../data/intelligenceMockData";
 
 export default function RecommendationsView({ onSelectProblem, onOpenCreateAction, company }) {
@@ -88,7 +88,7 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
                 <div className="space-y-1 text-xs text-[#3F3F46]">
                   {rec.actionItems?.map((item, idx) => (
                     <div key={idx} className="flex items-start gap-2">
-                      <span className="text-[#059669] font-bold">✓</span>
+                      <Check className="w-3.5 h-3.5 text-[#059669] shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </div>
                   ))}

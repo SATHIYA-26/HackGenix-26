@@ -23,27 +23,118 @@ import {
   CONNECTED_SOURCES,
   getCompanyIntelligence,
 } from "../data/intelligenceMockData";
+import DateRangeFilter, { formatDateShort } from "../components/DateRangeFilter";
 
 export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate, company }) {
-  const [timeframe, setTimeframe] = useState("30d");
+  const [selectedRange, setSelectedRange] = useState({
+    preset: "1m",
+    label: "1 Month",
+    startDate: null,
+    endDate: null,
+    days: 30,
+  });
   const [showShareToast, setShowShareToast] = useState(false);
 
   const comp = company || getCompanyIntelligence("acc_manis");
   const compProblems = comp.problems && comp.problems.length > 0 ? comp.problems : PROBLEMS;
-  const emergingProblems = compProblems.filter((p) => p.status === "emerging" || p.status === "critical").slice(0, 4);
-  const priorityProblems = [...compProblems].sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 3);
   const recentFeedback = comp.recentFeedback && comp.recentFeedback.length > 0 ? comp.recentFeedback : RAW_FEEDBACK_ITEMS.slice(0, 3);
   const sourcesList = comp.sources && comp.sources.length > 0 ? comp.sources : CONNECTED_SOURCES;
   const aiBrief = comp.aiBrief || AI_BRIEF;
-  const metrics = comp.metrics || {
-    totalFeedback: "14,280",
-    totalFeedbackDelta: "+12.4% review surge",
-    ratingAvg: "4.4 ★",
-    netSentiment: "+78%",
-    negativePct: "9.7%",
-    activeProblemsCount: 8,
-    emergingSignalsCount: 3,
-  };
+
+  // ─── DYNAMIC DATA SCALING BASED ON SELECTED DATE RANGE ───
+  const days = selectedRange.days || 30;
+  const scale = days / 30;
+
+  // Base raw volume (default ~14,280 for 30 days)
+  const baseVolume = parseInt((comp.metrics?.totalFeedback || "14,280").replace(/,/g, ""), 10) || 14280;
+  const dynamicTotalFeedback = Math.max(140, Math.round(baseVolume * scale));
+  const dynamicTotalFeedbackFormatted = dynamicTotalFeedback.toLocaleString();
+
+  // Dynamic Deltas & Sentiments
+  let dynamicDelta = "+12.4% review surge";
+  let dynamicRating = comp.metrics?.ratingAvg?.replace(" ★", " / 5.0") || "4.4 / 5.0";
+  let dynamicNetSentiment = "+78.4%";
+  let positivePct = 76.2;
+  let neutralPct = 14.1;
+  let negativePct = 9.7;
+  let activeProblemsCount = compProblems.length;
+  let emergingCount = 3;
+
+  if (days <= 1) {
+    dynamicDelta = "+4.8% daily intake";
+    dynamicRating = "4.6 / 5.0";
+    dynamicNetSentiment = "+83.2%";
+    positivePct = 81.0;
+    neutralPct = 12.5;
+    negativePct = 6.5;
+    activeProblemsCount = Math.min(3, compProblems.length);
+    emergingCount = 1;
+  } else if (days <= 7) {
+    dynamicDelta = "+18.2% weekly surge";
+    dynamicRating = "4.5 / 5.0";
+    dynamicNetSentiment = "+81.4%";
+    positivePct = 78.8;
+    neutralPct = 13.1;
+    negativePct = 8.1;
+    activeProblemsCount = Math.min(5, compProblems.length);
+    emergingCount = 2;
+  } else if (days <= 35) {
+    dynamicDelta = "+12.4% review surge";
+    dynamicRating = "4.4 / 5.0";
+    dynamicNetSentiment = "+78.4%";
+    positivePct = 76.2;
+    neutralPct = 14.1;
+    negativePct = 9.7;
+    activeProblemsCount = Math.min(8, compProblems.length);
+    emergingCount = 3;
+  } else if (days <= 95) {
+    dynamicDelta = "+8.1% quarterly growth";
+    dynamicRating = "4.3 / 5.0";
+    dynamicNetSentiment = "+74.2%";
+    positivePct = 72.4;
+    neutralPct = 15.8;
+    negativePct = 11.8;
+    activeProblemsCount = Math.min(12, compProblems.length);
+    emergingCount = 5;
+  } else {
+    dynamicDelta = "+15.6% aggregate expansion";
+    dynamicRating = "4.3 / 5.0";
+    dynamicNetSentiment = "+75.0%";
+    positivePct = 73.5;
+    neutralPct = 15.2;
+    negativePct = 11.3;
+    activeProblemsCount = compProblems.length;
+    emergingCount = Math.min(6, compProblems.length);
+  }
+
+  const rangeLabelText = selectedRange.preset === "custom" && selectedRange.startDate && selectedRange.endDate
+    ? `${formatDateShort(new Date(selectedRange.startDate))} – ${formatDateShort(new Date(selectedRange.endDate))}`
+    : selectedRange.label || "1 Month";
+
+  const emergingProblems = compProblems
+    .filter((p) => p.status === "emerging" || p.status === "critical")
+    .slice(0, Math.max(2, Math.min(4, activeProblemsCount)))
+    .map((p) => ({
+      ...p,
+      feedbackCount: Math.max(1, Math.round(p.feedbackCount * Math.min(2.5, Math.max(0.12, scale)))),
+    }));
+
+  const priorityProblems = [...compProblems]
+    .sort((a, b) => b.priorityScore - a.priorityScore)
+    .slice(0, 3)
+    .map((p) => ({
+      ...p,
+      feedbackCount: Math.max(1, Math.round(p.feedbackCount * Math.min(2.5, Math.max(0.12, scale)))),
+    }));
+
+  const displaySources = sourcesList.map((src) => {
+    const count = src.totalFeedback ?? src.itemsCount ?? 0;
+    const scaledCount = Math.max(1, Math.round(count * scale));
+    return {
+      ...src,
+      scaledCount,
+    };
+  });
 
   const handleShare = () => {
     setShowShareToast(true);
@@ -55,12 +146,6 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
       {/* ─── UNIFIED HEADER: COMPANY PERSONA GREETING & CONTROLS ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#ECE8E0] pb-6">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-            <span className="text-xs font-semibold text-[#059669] uppercase tracking-wider">
-              Continuous Intelligence Engine Active · {comp.category}
-            </span>
-          </div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">
             Welcome back, {comp.name}
           </h1>
@@ -70,20 +155,11 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Time range selector */}
-          <div className="flex items-center rounded-lg border border-[#E5E1D8] bg-white p-0.5 text-xs">
-            {["7d", "30d", "90d"].map((t) => (
-              <button
-                key={t}
-                onClick={() => setTimeframe(t)}
-                className={`px-3 py-1 rounded font-semibold transition-colors ${
-                  timeframe === t ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
-                }`}
-              >
-                {t.toUpperCase()}
-              </button>
-            ))}
-          </div>
+          {/* Calendar & Timeframe Filter */}
+          <DateRangeFilter
+            selectedRange={selectedRange}
+            onRangeChange={(range) => setSelectedRange(range)}
+          />
 
           <button
             onClick={handleShare}
@@ -117,45 +193,45 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
       )}
 
-      {/* ─── EXECUTIVE METRICS BAR ─── */}
+      {/* ─── EXECUTIVE METRICS BAR (DYNAMICALLY COMPUTED) ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Total Customer Voice
           </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">{metrics.totalFeedback}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {metrics.totalFeedbackDelta}</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{dynamicTotalFeedbackFormatted}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {dynamicDelta}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Net Sentiment
           </span>
-          <p className="text-2xl font-bold text-[#059669] mt-1">{metrics.netSentiment}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">Average: {metrics.ratingAvg}</p>
+          <p className="text-2xl font-bold text-[#059669] mt-1">{dynamicNetSentiment}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">Average: {dynamicRating}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Active Problem Clusters
           </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">{metrics.activeProblemsCount}</p>
-          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">Tracked issues</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{activeProblemsCount}</p>
+          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">Filtered for {rangeLabelText}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Emerging Signals
           </span>
-          <p className="text-2xl font-bold text-[#D97706] mt-1">{metrics.emergingSignalsCount}</p>
+          <p className="text-2xl font-bold text-[#D97706] mt-1">{emergingCount}</p>
           <p className="text-[11px] text-[#D97706] mt-0.5 font-semibold">Velocity surges</p>
         </div>
       </div>
 
-      {/* ─── AI BRIEF: COMPANY-SPECIFIC SHIFTS DETECTED THIS WEEK ─── */}
-      <div className="p-6 rounded-2xl bg-[#FBF9F5] border border-[#E5E1D8] shadow-sm relative overflow-hidden">
+      {/* ─── AI BRIEF: COMPANY-SPECIFIC SHIFTS DETECTED IN SELECTED TIMEFRAME ─── */}
+      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#FAF5FF]/80 via-[#FBF9F5] to-white border border-[#DDD6FE] shadow-2xs relative overflow-hidden">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-md bg-[#7C3AED] text-white flex items-center justify-center">
+          <div className="w-6 h-6 rounded-md bg-[#7C3AED] text-white flex items-center justify-center shadow-xs">
             <Sparkles className="w-3.5 h-3.5" />
           </div>
           <span className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
@@ -164,7 +240,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
 
         <h2 className="text-base font-bold text-[#18181B] mb-4 font-serif">
-          {aiBrief.subheadline}
+          3 important customer feedback shifts detected in {rangeLabelText} across {dynamicTotalFeedbackFormatted} total signals:
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -172,23 +248,23 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             <div
               key={shift.id}
               onClick={() => onSelectProblem(shift.problemId)}
-              className="p-4 rounded-xl bg-white border border-[#E5E1D8] hover:border-[#18181B] cursor-pointer transition-all hover:shadow-sm flex flex-col justify-between group"
+              className="p-4 rounded-xl bg-white border border-[#E5E1D8] hover:border-[#7C3AED] cursor-pointer transition-all hover:shadow-sm flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-center justify-between text-xs font-mono text-[#71717A] mb-2">
                   <span className="font-bold text-[#18181B]">{shift.number}</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F4F1EA] font-sans font-semibold text-[#3F3F46]">
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F5F3FF] font-sans font-semibold text-[#7C3AED] border border-[#DDD6FE]">
                     {shift.category}
                   </span>
                 </div>
-                <p className="text-xs text-[#18181B] font-medium leading-relaxed group-hover:text-[#4F46E5] transition-colors">
+                <p className="text-xs text-[#18181B] font-medium leading-relaxed group-hover:text-[#7C3AED] transition-colors">
                   {shift.text}
                 </p>
               </div>
 
               <div className="mt-4 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-[11px] text-[#71717A]">
                 <span className="font-mono text-[#E11D48] font-bold">{shift.sentiment}</span>
-                <span className="text-[#4F46E5] font-semibold flex items-center gap-1 group-hover:underline">
+                <span className="text-[#7C3AED] font-semibold flex items-center gap-1 group-hover:underline">
                   Inspect evidence →
                 </span>
               </div>
@@ -207,7 +283,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                 <AlertTriangle className="w-4 h-4 text-[#D97706]" /> Emerging & Critical Problems
               </h2>
               <p className="text-xs text-[#71717A]">
-                Problems with accelerating volume or high negative sentiment
+                Problems with accelerating volume or high negative sentiment in {rangeLabelText}
               </p>
             </div>
             <button
@@ -278,18 +354,18 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#059669]" /> Customer Health
             </h2>
-            <span className="text-[11px] font-mono font-bold text-[#71717A]">{timeframe.toUpperCase()} Trend</span>
+            <span className="text-[11px] font-mono font-bold text-[#71717A] uppercase">{rangeLabelText} Trend</span>
           </div>
 
           <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white space-y-5">
             <div>
               <span className="text-xs font-semibold text-[#71717A]">Net Customer Sentiment</span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-bold text-[#059669]">+78.4%</span>
+                <span className="text-3xl font-bold text-[#059669]">{dynamicNetSentiment}</span>
                 <span className="text-xs font-semibold text-[#059669]">▲ +4.2%</span>
               </div>
               <p className="text-xs text-[#71717A] mt-1">
-                Calculated across 12,480 verified reviews in last {timeframe}
+                Calculated across {dynamicTotalFeedbackFormatted} verified reviews in {rangeLabelText}
               </p>
             </div>
 
@@ -297,30 +373,30 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[#18181B]">Positive Delight</span>
-                <span className="font-bold text-[#059669]">76.2%</span>
+                <span className="font-bold text-[#059669]">{positivePct}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#059669] rounded-full" style={{ width: "76.2%" }} />
+                <div className="h-full bg-[#059669] rounded-full transition-all duration-500" style={{ width: `${positivePct}%` }} />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[#18181B]">Neutral / Informational</span>
-                <span className="font-bold text-[#64748B]">14.1%</span>
+                <span className="font-bold text-[#64748B]">{neutralPct}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#64748B] rounded-full" style={{ width: "14.1%" }} />
+                <div className="h-full bg-[#64748B] rounded-full transition-all duration-500" style={{ width: `${neutralPct}%` }} />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-semibold text-[#18181B]">Negative / Friction</span>
-                <span className="font-bold text-[#E11D48]">9.7%</span>
+                <span className="font-bold text-[#E11D48]">{negativePct}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#E11D48] rounded-full" style={{ width: "9.7%" }} />
+                <div className="h-full bg-[#E11D48] rounded-full transition-all duration-500" style={{ width: `${negativePct}%` }} />
               </div>
             </div>
 
@@ -386,7 +462,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                 <Globe className="w-4 h-4 text-[#0284C7]" /> Sources Distribution
               </h2>
               <p className="text-xs text-[#71717A]">
-                Live continuous pipelines
+                Live continuous pipelines for {rangeLabelText}
               </p>
             </div>
             <button
@@ -398,8 +474,8 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
           </div>
 
           <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3.5">
-            {sourcesList.map((src) => {
-              const count = src.totalFeedback ?? src.itemsCount ?? 0;
+            {displaySources.map((src) => {
+              const count = src.scaledCount || 0;
               return (
                 <div key={src.id} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
@@ -416,10 +492,10 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
                     <div
-                      className="h-full rounded-full"
+                      className="h-full rounded-full transition-all duration-500"
                       style={{
                         backgroundColor: src.accent || "#0284C7",
-                        width: `${Math.min(100, Math.max(5, (count / 12482) * 100))}%`,
+                        width: `${Math.min(100, Math.max(5, (count / (dynamicTotalFeedback || 1)) * 100))}%`,
                       }}
                     />
                   </div>

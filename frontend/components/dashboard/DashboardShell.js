@@ -105,7 +105,7 @@ export default function DashboardShell({
   currentAccountId = "acc_manis",
   currentAccount = null,
   accounts = [],
-  onAccountChange = () => {},
+  onAccountChange = () => { },
 }) {
   const [activeNav, setActiveNav] = useState(initialNav);
   const [selectedProblemId, setSelectedProblemId] = useState(initialProblemId);
@@ -236,21 +236,22 @@ export default function DashboardShell({
   ];
 
   return (
-    <div className="flex h-screen bg-[#FBF9F5] text-[#18181B] font-sans overflow-hidden antialiased">
+    <div className="flex h-screen bg-[#FBF9F5] text-[#18181B] font-sans overflow-hidden antialiased relative">
+      {/* Ambient Purple Mesh Glow Matching Landing Page */}
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-70 bg-[radial-gradient(circle_at_50%_-10%,rgba(124,58,237,0.08)_0%,rgba(216,180,254,0.04)_35%,rgba(251,249,245,0)_70%),radial-gradient(circle_at_90%_20%,rgba(139,92,246,0.05)_0%,rgba(251,249,245,0)_50%)]" />
+
       {/* ─── DESKTOP & TABLET SIDEBAR ─── */}
       <aside
-        className={`bg-white border-r border-[#E5E1D8] flex flex-col shrink-0 transition-all duration-200 z-30 ${
-          isSidebarCollapsed ? "w-[72px]" : "w-[250px]"
-        } hidden md:flex`}
+        className={`bg-white/95 backdrop-blur-md border-r border-[#E5E1D8] flex flex-col shrink-0 transition-all duration-200 z-30 relative ${isSidebarCollapsed ? "w-[72px]" : "w-[250px]"
+          } hidden md:flex`}
       >
         {/* Workspace Brand & Company Switcher Header */}
         <div className="relative border-b border-[#ECE8E0]">
           <div className="h-16 flex items-center justify-between px-3">
             <button
               onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-              className={`flex items-center gap-2.5 overflow-hidden text-left p-1.5 rounded-xl hover:bg-[#F4F1EA] transition-all flex-1 min-w-0 ${
-                isSidebarCollapsed ? "justify-center p-1" : ""
-              }`}
+              className={`flex items-center gap-2.5 overflow-hidden text-left p-1.5 rounded-xl hover:bg-[#F5F3FF] transition-all flex-1 min-w-0 ${isSidebarCollapsed ? "justify-center p-1" : ""
+                }`}
               title={isSidebarCollapsed ? `${company.name} (Click to switch company)` : undefined}
             >
               <img
@@ -275,7 +276,7 @@ export default function DashboardShell({
 
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-1.5 rounded-lg text-[#71717A] hover:bg-[#F4F1EA] hover:text-[#18181B] transition-colors ml-1 shrink-0"
+              className="p-1.5 rounded-lg text-[#71717A] hover:bg-[#F5F3FF] hover:text-[#7C3AED] transition-colors ml-1 shrink-0"
               title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -291,10 +292,10 @@ export default function DashboardShell({
               />
               <div className="absolute top-16 left-2 right-2 bg-white rounded-xl shadow-2xl border border-[#E5E1D8] p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="px-2.5 py-1.5 border-b border-[#ECE8E0] mb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#71717A]">
-                    Select Company Workspace
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#7C3AED]">
+                    Company Workspace Switcher
                   </p>
-                  <p className="text-[11px] text-[#A1A1AA]">
+                  <p className="text-[11px] text-[#71717A]">
                     Instant 1-click multi-business switch
                   </p>
                 </div>
@@ -305,11 +306,10 @@ export default function DashboardShell({
                       <button
                         key={c.id}
                         onClick={() => handleSelectCompany(c.id)}
-                        className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all ${
-                          isSelected
-                            ? "bg-[#18181B] text-white"
-                            : "hover:bg-[#F4F1EA] text-[#18181B]"
-                        }`}
+                        className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all ${isSelected
+                          ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] font-semibold"
+                          : "hover:bg-[#FAF8FF] text-[#18181B]"
+                          }`}
                       >
                         <img
                           src={c.logo}
@@ -318,22 +318,21 @@ export default function DashboardShell({
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between">
-                            <p className={`text-xs font-bold truncate ${isSelected ? "text-white" : "text-[#18181B]"}`}>
+                            <p className={`text-xs font-bold truncate ${isSelected ? "text-[#7C3AED]" : "text-[#18181B]"}`}>
                               {c.name}
                             </p>
                             <span
-                              className={`text-[9px] px-1 rounded font-medium ${
-                                isSelected ? "bg-white/20 text-white" : "bg-[#F4F1EA] text-[#71717A]"
-                              }`}
+                              className={`text-[9px] px-1 rounded font-medium ${isSelected ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#F4F1EA] text-[#71717A]"
+                                }`}
                             >
                               {c.badge}
                             </span>
                           </div>
-                          <p className={`text-[10px] truncate ${isSelected ? "text-white/70" : "text-[#71717A]"}`}>
+                          <p className={`text-[10px] truncate ${isSelected ? "text-[#7C3AED]/80" : "text-[#71717A]"}`}>
                             {c.owner}
                           </p>
                         </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-1" />}
+                        {isSelected && <Check className="w-3.5 h-3.5 text-[#7C3AED] shrink-0 ml-1" />}
                       </button>
                     );
                   })}
@@ -356,20 +355,18 @@ export default function DashboardShell({
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
-                  isActive
-                    ? "bg-[#18181B] text-white shadow-xs"
-                    : "text-[#71717A] hover:bg-[#F4F1EA] hover:text-[#18181B]"
-                } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
+                  ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] shadow-2xs font-bold"
+                  : "text-[#71717A] hover:bg-[#FAF8FF] hover:text-[#7C3AED]"
+                  } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
                 title={isSidebarCollapsed ? item.label : undefined}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#7C3AED]" : "text-[#71717A]"}`} />
                 {!isSidebarCollapsed && <span className="flex-1 text-left truncate">{item.label}</span>}
                 {!isSidebarCollapsed && item.badge ? (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                      isActive ? "bg-white/20 text-white" : "bg-[#FFF1F2] text-[#E11D48]"
-                    }`}
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#FFF1F2] text-[#E11D48]"
+                      }`}
                   >
                     {item.badge}
                   </span>
@@ -380,7 +377,7 @@ export default function DashboardShell({
         </nav>
 
         {/* Sidebar Footer Company Owner Profile */}
-        <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]">
+        <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]/80">
           <div className="flex items-center gap-2.5">
             <img
               src={company.avatar || company.logo}
@@ -396,7 +393,7 @@ export default function DashboardShell({
             {!isSidebarCollapsed && (
               <button
                 onClick={onNavigateLanding}
-                className="text-[#71717A] hover:text-[#18181B] p-1.5 rounded-lg hover:bg-[#EBE7DD] transition-colors"
+                className="text-[#71717A] hover:text-[#7C3AED] p-1.5 rounded-lg hover:bg-[#F5F3FF] transition-colors"
                 title="Return to Marketing Overview"
               >
                 <LogOut className="w-4 h-4" />
@@ -447,11 +444,10 @@ export default function DashboardShell({
                       handleSelectCompany(c.id);
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium text-left ${
-                      c.id === selectedAccountId
-                        ? "bg-[#18181B] text-white"
-                        : "hover:bg-[#EBE7DD] text-[#18181B]"
-                    }`}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium text-left ${c.id === selectedAccountId
+                      ? "bg-[#18181B] text-white"
+                      : "hover:bg-[#EBE7DD] text-[#18181B]"
+                      }`}
                   >
                     <img src={c.logo} alt={c.name} className="w-5 h-5 rounded object-cover" />
                     <span className="truncate flex-1">{c.name}</span>
@@ -477,16 +473,16 @@ export default function DashboardShell({
                       handleNavClick(item.id);
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${
-                      isActive
-                        ? "bg-[#18181B] text-white"
-                        : "text-[#71717A] hover:bg-[#F4F1EA] hover:text-[#18181B]"
-                    }`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold ${isActive
+                      ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] font-bold"
+                      : "text-[#71717A] hover:bg-[#FAF8FF] hover:text-[#7C3AED]"
+                      }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className={`w-4 h-4 ${isActive ? "text-[#7C3AED]" : "text-[#71717A]"}`} />
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.badge && (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-[#FFF1F2] text-[#E11D48]">
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#FFF1F2] text-[#E11D48]"
+                        }`}>
                         {item.badge}
                       </span>
                     )}
@@ -498,7 +494,7 @@ export default function DashboardShell({
             <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]">
               <button
                 onClick={onNavigateLanding}
-                className="w-full py-2 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#18181B] flex items-center justify-center gap-2"
+                className="w-full py-2 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#18181B] hover:text-[#7C3AED] hover:bg-[#F5F3FF] transition-colors flex items-center justify-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Return to Overview</span>
@@ -509,9 +505,9 @@ export default function DashboardShell({
       )}
 
       {/* ─── MAIN SHELL & TOP BAR ─── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
         {/* Persistent Top Navigation Bar */}
-        <header className="h-16 bg-white border-b border-[#E5E1D8] flex items-center justify-between px-4 md:px-8 shrink-0 z-20">
+        <header className="h-16 bg-white/95 backdrop-blur-md border-b border-[#E5E1D8] flex items-center justify-between px-4 md:px-8 shrink-0 z-20">
           <div className="flex items-center gap-3">
             {/* Mobile menu trigger */}
             <button
@@ -524,9 +520,9 @@ export default function DashboardShell({
             {/* Global Search & Ask AI Trigger Button */}
             <button
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="flex items-center gap-3 bg-[#FBF9F5] border border-[#E5E1D8] hover:border-[#18181B] rounded-xl px-3.5 py-2 text-xs text-[#71717A] hover:text-[#18181B] transition-all max-w-md w-60 md:w-80 group"
+              className="flex items-center gap-3 bg-[#FBF9F5] border border-[#E5E1D8] hover:border-[#7C3AED] hover:bg-[#FAF8FF] focus:border-[#7C3AED] rounded-xl px-3.5 py-2 text-xs text-[#71717A] hover:text-[#18181B] transition-all max-w-md w-60 md:w-80 group"
             >
-              <Search className="w-3.5 h-3.5 text-[#71717A] group-hover:text-[#18181B]" />
+              <Search className="w-3.5 h-3.5 text-[#71717A] group-hover:text-[#7C3AED]" />
               <span className="flex-1 text-left truncate">
                 Search {company.name} voices, issues...
               </span>
@@ -551,7 +547,7 @@ export default function DashboardShell({
               className="h-9 px-3 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] text-[#7C3AED] hover:bg-[#EDE9FE] text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Ask AI Data</span>
+              <span className="hidden sm:inline">Ask Reviewr AI</span>
             </button>
 
             {/* Notification Center with Dropdown */}

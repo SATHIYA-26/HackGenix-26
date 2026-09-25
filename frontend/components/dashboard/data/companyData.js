@@ -838,7 +838,7 @@ export const COMPANY_INTELLIGENCE = {
         id: "fb-vj-1",
         authorName: "Dhanush Kumar",
         source: "YouTube · Ep 44: Munnar",
-        text: "That puncture shop prank at 18:35 literally made me spit out my coffee laughing! Sidhu anna, you and the crew are pure stress-busters. Never stop making these weekly vlogs ❤️🔥",
+        text: "That puncture shop prank at 18:35 literally made me spit out my coffee laughing! Sidhu anna, you and the crew are pure stress-busters. Never stop making these weekly vlogs.",
         rating: 5,
         sentiment: "positive",
       },

@@ -1,6 +1,6 @@
 "use client";
 
-import { X, ExternalLink, ThumbsUp, Tag, ShieldCheck, Sparkles, CornerDownRight, ArrowRight } from "lucide-react";
+import { X, ExternalLink, ThumbsUp, Tag, ShieldCheck, Sparkles, CornerDownRight, ArrowRight, Star } from "lucide-react";
 import { RAW_FEEDBACK_ITEMS } from "../data/intelligenceMockData";
 
 export default function FeedbackDetailDrawer({ isOpen, feedback, onClose, onSelectProblem }) {
@@ -65,8 +65,9 @@ export default function FeedbackDetailDrawer({ isOpen, feedback, onClose, onSele
               </div>
             </div>
             {feedback.rating && (
-              <span className="px-2.5 py-1 rounded-lg bg-[#FEF3C7] text-[#D97706] text-xs font-bold">
-                {feedback.rating} ★
+              <span className="px-2.5 py-1 rounded-lg bg-[#FEF3C7] text-[#D97706] text-xs font-bold flex items-center gap-1">
+                <Star className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />
+                <span>{feedback.rating}.0</span>
               </span>
             )}
           </div>

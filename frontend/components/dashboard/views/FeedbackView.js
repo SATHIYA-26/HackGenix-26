@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Filter, MessageSquare, ExternalLink, ThumbsUp } from "lucide-react";
+import { Search, Filter, MessageSquare, ExternalLink, ThumbsUp, Star } from "lucide-react";
 import { getFullFeedbackDatabase } from "../data/intelligenceMockData";
 
 export default function FeedbackView({ onSelectFeedback, company }) {
@@ -149,8 +149,9 @@ export default function FeedbackView({ onSelectFeedback, company }) {
 
               <div className="flex items-center gap-4 shrink-0 text-right">
                 {item.rating && (
-                  <span className="text-xs font-bold text-[#D97706] bg-[#FEF3C7] px-2 py-0.5 rounded">
-                    {item.rating} ★
+                  <span className="text-xs font-bold text-[#D97706] bg-[#FEF3C7] px-2 py-0.5 rounded flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-[#D97706] text-[#D97706]" />
+                    <span>{item.rating}.0</span>
                   </span>
                 )}
                 <span className="text-xs font-bold text-[#4F46E5] group-hover:underline flex items-center gap-1">

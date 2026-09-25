@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, X, Sparkles, ArrowRight, ShieldCheck, Star } from "lucide-react";
 import { HERO_FINANCIAL_MODELS } from "../lib/mockData";
 
 export default function LandingView({ isActive, onOpenDemoModal, onScrollToSection }) {
@@ -326,7 +327,9 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
               <div className="wwd-breakdown-grid">
                 <div className="wwd-breakdown-col before">
                   <div className="wwd-col-header">
-                    <span className="col-icon">❌</span>
+                    <span className="col-icon text-[#E11D48] flex items-center justify-center">
+                      <X className="w-4 h-4" />
+                    </span>
                     <strong>What Traditional Tools See:</strong>
                   </div>
                   <div className="wwd-col-body">
@@ -339,7 +342,9 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
 
                 <div className="wwd-breakdown-col after">
                   <div className="wwd-col-header">
-                    <span className="col-icon">✓</span>
+                    <span className="col-icon text-[#059669] flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </span>
                     <strong>What Reviewr AI Instantly Does:</strong>
                   </div>
                   <div className="wwd-col-body">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Clock, Calendar, ArrowRight, User, TrendingDown, ShieldCheck, Activity } from "lucide-react";
+import { CheckCircle2, Clock, Calendar, ArrowRight, User, TrendingDown, ShieldCheck, Activity, Check } from "lucide-react";
 import { ACTIONS } from "../data/intelligenceMockData";
 
 export default function ActionsView({ onSelectProblem, company }) {
@@ -124,10 +124,10 @@ export default function ActionsView({ onSelectProblem, company }) {
                   <div key={idx} className="flex items-center gap-2 text-[#3F3F46]">
                     <span
                       className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                        m.done ? "bg-[#059669] text-white" : "bg-[#F4F1EA] text-[#71717A]"
+                        m.done ? "bg-[#7C3AED] text-white" : "bg-[#F4F1EA] text-[#71717A]"
                       }`}
                     >
-                      {m.done ? "✓" : idx + 1}
+                      {m.done ? <Check className="w-2.5 h-2.5" /> : idx + 1}
                     </span>
                     <span className={m.done ? "line-through text-[#71717A]" : ""}>{m.name}</span>
                   </div>

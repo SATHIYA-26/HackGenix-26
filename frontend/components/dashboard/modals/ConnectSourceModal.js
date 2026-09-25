@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, CheckCircle2, ArrowRight, ArrowLeft, Radio, Globe, Video, Play, MessageSquare, Plus, ShieldCheck } from "lucide-react";
+import { X, CheckCircle2, ArrowRight, ArrowLeft, Radio, Globe, Video, Play, MessageSquare, Plus, ShieldCheck, Check } from "lucide-react";
 
 const AVAILABLE_SOURCES = [
   { id: "youtube", name: "YouTube Creator Channel", icon: Video, desc: "Ingest video comments, community replies, and sponsor feedback." },
@@ -172,10 +172,19 @@ export default function ConnectSourceModal({ isOpen, onClose, onSourceConnected 
 
             <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] space-y-2">
               <p className="text-xs font-bold text-[#18181B]">Pipeline Safeguards:</p>
-              <div className="text-[11px] text-[#71717A] space-y-1">
-                <p>✓ Composite deduplication: <code>(business_id + source + external_id)</code></p>
-                <p>✓ Automated spam & bot suppression filter enabled</p>
-                <p>✓ Aspect-Based Sentiment (ABSA) model applied during ingestion</p>
+              <div className="text-[11px] text-[#71717A] space-y-1.5">
+                <p className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-[#059669] shrink-0" />
+                  <span>Composite deduplication: <code>(business_id + source + external_id)</code></span>
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-[#059669] shrink-0" />
+                  <span>Automated spam & bot suppression filter enabled</span>
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-[#059669] shrink-0" />
+                  <span>Aspect-Based Sentiment (ABSA) model applied during ingestion</span>
+                </p>
               </div>
             </div>
           </div>

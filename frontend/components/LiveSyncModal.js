@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Clock } from "lucide-react";
 
 export default function LiveSyncModal({
   isOpen,
@@ -111,18 +112,18 @@ export default function LiveSyncModal({
         {currentStepIndex >= 0 && (
           <div id="syncStepsBox" className="cm-sync-steps-box" style={{ display: "flex" }}>
             {steps.map((s, idx) => {
-              let icon = "⏳";
+              let icon = <Clock className="w-3.5 h-3.5 inline text-[#71717A] shrink-0" />;
               let cls = "";
               if (idx < currentStepIndex || isComplete) {
-                icon = "✓";
+                icon = <Check className="w-3.5 h-3.5 inline text-[#059669] shrink-0" />;
                 cls = "done";
               } else if (idx === currentStepIndex) {
                 icon = <span className="cm-spinner"></span>;
                 cls = "active";
               }
               return (
-                <div key={idx} className={`cm-step-line ${cls}`}>
-                  {icon} {s.text}
+                <div key={idx} className={`cm-step-line ${cls} flex items-center gap-2`}>
+                  {icon} <span>{s.text}</span>
                 </div>
               );
             })}
@@ -135,7 +136,7 @@ export default function LiveSyncModal({
           </button>
           <button
             id="runSyncBtn"
-            className="cm-btn cm-btn-primary"
+            className="cm-btn cm-btn-primary flex items-center gap-1.5"
             onClick={handleRunSync}
             disabled={isSyncing || isComplete}
           >
@@ -144,7 +145,9 @@ export default function LiveSyncModal({
                 <span className="cm-spinner"></span> Ingesting...
               </>
             ) : isComplete ? (
-              "✓ Ingestion Complete"
+              <>
+                <Check className="w-3.5 h-3.5" /> Ingestion Complete
+              </>
             ) : (
               "Start Live Ingestion"
             )}
