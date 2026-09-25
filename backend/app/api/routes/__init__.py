@@ -1,3 +1,3 @@
-from app.api.routes import feedback
+from app.api.routes import feedback, analysis
 
-__all__ = ["feedback"]
+__all__ = ["feedback", "analysis"]

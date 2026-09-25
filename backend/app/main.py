@@ -15,7 +15,7 @@ from app.core.exceptions import (
     ValidationError as CustomValidationError,
 )
 from app.db.database import init_db, engine
-from app.api.routes import feedback
+from app.api.routes import feedback, analysis
 
 
 @asynccontextmanager
@@ -135,3 +135,4 @@ def readiness_check() -> Dict[str, Any]:
 
 # Include Routers
 app.include_router(feedback.router, prefix=settings.API_V1_STR)
+app.include_router(analysis.router, prefix=settings.API_V1_STR)
