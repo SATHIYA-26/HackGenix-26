@@ -103,6 +103,30 @@ function updateHeroFinancialModel(timeframe, btnElement) {
   }
 }
 
+// ==========================================================================
+// PLATFORM SHOWCASE TABS SWITCHER
+// ==========================================================================
+
+function switchPlatformTab(tabName, btnElement) {
+  if (btnElement) {
+    document.querySelectorAll(".pf-tab-btn").forEach((b) => b.classList.remove("active"));
+    btnElement.classList.add("active");
+  }
+
+  const targetId = {
+    agent: "pfPaneAgent",
+    data: "pfPaneData",
+    intelligence: "pfPaneIntelligence",
+    program: "pfPaneProgram",
+  }[tabName] || "pfPaneData";
+
+  document.querySelectorAll(".pf-pane").forEach((p) => p.classList.remove("active"));
+  const targetPane = document.getElementById(targetId);
+  if (targetPane) {
+    targetPane.classList.add("active");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
   // By default, start on landing page in logged-out mode

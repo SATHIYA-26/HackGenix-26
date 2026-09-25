@@ -30,6 +30,15 @@
   <!-- Ambient Gradient Glow -->
   <div class="bg-glow-wrapper"></div>
 
+  <!-- Top Announcement Bar (Reviewr AI) -->
+  <div class="top-announcement-bar">
+    <div class="announcement-content">
+      <span class="announcement-sparkle">✦</span>
+      <span class="announcement-text">Meet <strong>Reviewr AI</strong>, the AI agent for customer feedback analysis, built to think like a seasoned analyst.</span>
+      <a href="#whatWeDoSection" class="announcement-link" onclick="scrollToSection('whatWeDoSection')">Learn more →</a>
+    </div>
+  </div>
+
   <!-- Top Sticky Navigation Bar -->
   <header class="cm-nav">
     <div class="cm-nav-container">
@@ -396,6 +405,240 @@
 
         </div>
 
+      </div>
+
+      <!-- =====================================================================
+           SECTION: INTERACTIVE PLATFORM SHOWCASE (Tabs & Live Mock Insight Card)
+           ===================================================================== -->
+      <div class="platform-showcase-wrapper">
+        <div class="platform-showcase-card">
+          
+          <!-- Top Main Tabs Navigation -->
+          <div class="platform-tabs-nav">
+            <button class="pf-tab-btn" onclick="switchPlatformTab('agent', this)">Agent</button>
+            <button class="pf-tab-btn active" onclick="switchPlatformTab('data', this)">Data</button>
+            <button class="pf-tab-btn" onclick="switchPlatformTab('intelligence', this)">Intelligence</button>
+            <button class="pf-tab-btn" onclick="switchPlatformTab('program', this)">Program</button>
+          </div>
+
+          <!-- Tab Content Panes -->
+          <div class="platform-pane-container">
+            
+            <!-- Pane 1: DATA (Active Default) -->
+            <div id="pfPaneData" class="pf-pane active">
+              <div class="pf-split-layout">
+                
+                <!-- Left Details -->
+                <div class="pf-left-content">
+                  <h2 class="pf-hero-title">Consolidate all your feedback in one powerful platform</h2>
+                  <p class="pf-hero-desc">
+                    Centralize feedback from every single channel. Get a unified view of your entire customer experience and understand the true voice of the customer.
+                  </p>
+                  <a href="#pipelineSection" class="pf-action-link" onclick="scrollToSection('pipelineSection')">
+                    See every integration <span>→</span>
+                  </a>
+                </div>
+
+                <!-- Right Graphic Stage (Matches Mock Screenshot 2) -->
+                <div class="pf-right-stage">
+                  <div class="pf-stage-grid-bg">
+                    
+                    <!-- Integrated Channel App Badges -->
+                    <div class="pf-integration-icons-grid">
+                      <div class="pf-app-icon" title="Google Maps"><img src="https://www.gstatic.com/images/branding/product/2x/maps_64dp.png" alt="Google Maps" /></div>
+                      <div class="pf-app-icon dark" title="Zendesk"><svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+                      <div class="pf-app-icon dark" title="Salesforce"><svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg></div>
+                      <div class="pf-app-icon dark" title="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+                      <div class="pf-app-icon dark" title="Qualtrics XM"><span style="font-weight:800; font-size:0.9rem; color:#FFFFFF;">XM</span></div>
+                      <div class="pf-app-icon" title="YouTube"><img src="https://www.gstatic.com/youtube/img/branding/favicon/favicon_144x144.png" alt="YouTube" /></div>
+                      <div class="pf-app-icon dark" title="Play Store"><svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                      <div class="pf-app-icon dark" title="Reviewr Intelligence"><span style="font-weight:900; font-size:1.1rem; color:#FFFFFF;">M</span></div>
+                    </div>
+
+                    <!-- Overlay Mock Insight Card (Exact Replica of Screenshot 2) -->
+                    <div class="pf-mock-insight-card">
+                      <div class="pf-mock-header">
+                        <span class="pf-mock-tag">TOP REASONS FOR NEGATIVITY</span>
+                        <span class="pf-mock-time">Last 14 Days</span>
+                      </div>
+
+                      <div class="pf-mock-bars-list">
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">Confusing filters</span>
+                          <div class="pf-bar-track">
+                            <div class="pf-bar-fill rose" style="width: 78%;"></div>
+                          </div>
+                          <span class="pf-bar-count">263</span>
+                        </div>
+
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">Unavailable tickets</span>
+                          <div class="pf-bar-track">
+                            <div class="pf-bar-fill blue" style="width: 58%;"></div>
+                          </div>
+                          <span class="pf-bar-count">194</span>
+                        </div>
+
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">Error when paying</span>
+                          <div class="pf-bar-track">
+                            <div class="pf-bar-fill slate" style="width: 42%;"></div>
+                          </div>
+                          <span class="pf-bar-count">137</span>
+                        </div>
+                      </div>
+
+                      <!-- Summary Callout Box -->
+                      <div class="pf-summary-box">
+                        <div class="pf-summary-heading">
+                          <span class="pf-sparkle-icon">✧</span>
+                          <span>Summary</span>
+                        </div>
+                        <p class="pf-summary-text">
+                          Customers are experiencing significant frustration with the booking process, citing issues such as confusing filters, payment errors, and unavailability of tickets.
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Bottom Sub Navigation Tabs -->
+              <div class="pf-bottom-subtabs">
+                <span class="pf-subtab active">Integrations</span>
+                <span class="pf-subtab">Taxonomy</span>
+                <span class="pf-subtab">Data Enrichment</span>
+                <span class="pf-subtab">Security & Privacy</span>
+              </div>
+            </div>
+
+            <!-- Pane 2: AGENT -->
+            <div id="pfPaneAgent" class="pf-pane">
+              <div class="pf-split-layout">
+                <div class="pf-left-content">
+                  <h2 class="pf-hero-title">Meet Reviewr AI, your autonomous customer feedback analyst</h2>
+                  <p class="pf-hero-desc">
+                    Built to think like a seasoned analyst. Reviewr AI continuously monitors review surges, detects sentiment inflection points, and synthesizes root-cause hypotheses for product teams.
+                  </p>
+                  <a href="#whatWeDoSection" class="pf-action-link" onclick="scrollToSection('whatWeDoSection')">
+                    Explore AI Agent capabilities <span>→</span>
+                  </a>
+                </div>
+                <div class="pf-right-stage">
+                  <div class="pf-stage-grid-bg">
+                    <div class="pf-mock-insight-card" style="position:static; margin:24px auto; max-width:440px;">
+                      <div class="pf-mock-header">
+                        <span class="pf-mock-tag" style="color:#7C3AED;">AUTONOMOUS AGENT ACTIONS</span>
+                        <span class="pf-mock-time">Real-time</span>
+                      </div>
+                      <div class="pf-summary-box" style="background:#F5F3FF; border:1px solid rgba(124,58,237,0.2);">
+                        <div class="pf-summary-heading" style="color:#7C3AED;">
+                          <span>🤖 Reviewr Agent Report</span>
+                        </div>
+                        <p class="pf-summary-text" style="color:var(--text-dark);">
+                          "Identified 34 new 1-star reviews in Chennai related to table queue delays. Suggested operational fix: Deploy weekend pager tokens to reduce walkaways by ₹1.8L/mo."
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pf-bottom-subtabs">
+                <span class="pf-subtab active">Autonomous Analysis</span>
+                <span class="pf-subtab">Custom Reasoning</span>
+                <span class="pf-subtab">Automated Alerts</span>
+              </div>
+            </div>
+
+            <!-- Pane 3: INTELLIGENCE -->
+            <div id="pfPaneIntelligence" class="pf-pane">
+              <div class="pf-split-layout">
+                <div class="pf-left-content">
+                  <h2 class="pf-hero-title">Aspect-based sentiment intelligence across every channel</h2>
+                  <p class="pf-hero-desc">
+                    Deconstruct complex multi-clause reviews into discrete operational topics. Measure customer perception across food tenderness, staff responsiveness, and checkout bugs with sub-second accuracy.
+                  </p>
+                  <a href="#pipelineSection" class="pf-action-link" onclick="scrollToSection('pipelineSection')">
+                    Explore NLP Sentiment Engine <span>→</span>
+                  </a>
+                </div>
+                <div class="pf-right-stage">
+                  <div class="pf-stage-grid-bg">
+                    <div class="pf-mock-insight-card" style="position:static; margin:24px auto; max-width:440px;">
+                      <div class="pf-mock-header">
+                        <span class="pf-mock-tag" style="color:#059669;">ASPECT POLARITY MATRIX</span>
+                        <span class="pf-mock-time">Live Sync</span>
+                      </div>
+                      <div class="pf-mock-bars-list">
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">🍗 Taste & Seasoning</span>
+                          <div class="pf-bar-track"><div class="pf-bar-fill" style="width:94%; background:#10B981;"></div></div>
+                          <span class="pf-bar-count">+0.94</span>
+                        </div>
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">🧼 Ambience & Hygiene</span>
+                          <div class="pf-bar-track"><div class="pf-bar-fill" style="width:82%; background:#10B981;"></div></div>
+                          <span class="pf-bar-count">+0.82</span>
+                        </div>
+                        <div class="pf-bar-row">
+                          <span class="pf-bar-label">⏱️ Wait Time Friction</span>
+                          <div class="pf-bar-track"><div class="pf-bar-fill rose" style="width:76%;"></div></div>
+                          <span class="pf-bar-count">-0.76</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pf-bottom-subtabs">
+                <span class="pf-subtab active">Aspect ABSA</span>
+                <span class="pf-subtab">Topic Discovery</span>
+                <span class="pf-subtab">Root Cause Analysis</span>
+              </div>
+            </div>
+
+            <!-- Pane 4: PROGRAM -->
+            <div id="pfPaneProgram" class="pf-pane">
+              <div class="pf-split-layout">
+                <div class="pf-left-content">
+                  <h2 class="pf-hero-title">Scale feedback intelligence across entire enterprise operations</h2>
+                  <p class="pf-hero-desc">
+                    Empower regional managers, store owners, and product executives with role-based dashboards, automated weekly digest summaries, and measurable revenue attribution ROI tracking.
+                  </p>
+                  <a href="#pricingSection" class="pf-action-link" onclick="scrollToSection('pricingSection')">
+                    View Enterprise programs <span>→</span>
+                  </a>
+                </div>
+                <div class="pf-right-stage">
+                  <div class="pf-stage-grid-bg">
+                    <div class="pf-mock-insight-card" style="position:static; margin:24px auto; max-width:440px;">
+                      <div class="pf-mock-header">
+                        <span class="pf-mock-tag" style="color:#3B82F6;">EXECUTIVE VOC PROGRAM</span>
+                        <span class="pf-mock-time">Multi-Location</span>
+                      </div>
+                      <div class="pf-summary-box" style="background:#EFF6FF; border:1px solid rgba(59,130,246,0.2);">
+                        <div class="pf-summary-heading" style="color:#3B82F6;">
+                          <span>📈 Program ROI: 14.8x Lift</span>
+                        </div>
+                        <p class="pf-summary-text" style="color:var(--text-dark);">
+                          Connected 5 business entities, tracking 32.5M+ customer interactions with zero manual review reading required.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pf-bottom-subtabs">
+                <span class="pf-subtab active">Executive Dashboards</span>
+                <span class="pf-subtab">Multi-Branch Sync</span>
+                <span class="pf-subtab">Revenue Attribution</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
 
       <!-- =====================================================================
