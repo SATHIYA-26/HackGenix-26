@@ -1,9 +1,6 @@
 /**
- * Reviewr - Frontend Application Logic & Account Switcher
- * Supporting 3 Persona Types:
- * 1. Google Maps Businesses (Mani's Dum Biriyani, Chepauk Sports Store, H&M Mylapore)
- * 2. YouTube Creator Channels (VJ Sidhu Vlogs)
- * 3. Google Play Store Applications (Spotify)
+ * Reviewr - Frontend Application Logic
+ * Supports Chattermill Landing Page & Customized Business Dashboards
  */
 
 let currentAccountId = "acc_manis";
@@ -17,7 +14,8 @@ let timelineChart = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
-  switchAccount(currentAccountId);
+  // By default, start on landing page
+  showLandingView();
 });
 
 function setupEventListeners() {
@@ -58,6 +56,46 @@ function setupEventListeners() {
   }
 }
 
+// Navigation View Switchers
+function showLandingView() {
+  document.getElementById("landingView").classList.add("active");
+  document.getElementById("dashboardView").classList.remove("active");
+
+  document.getElementById("navHome").classList.add("active");
+  document.getElementById("navPortals").classList.remove("active");
+  document.getElementById("navDash").classList.remove("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showDashboardView(accountId) {
+  if (accountId) {
+    switchAccount(accountId);
+  }
+  document.getElementById("landingView").classList.remove("active");
+  document.getElementById("dashboardView").classList.add("active");
+
+  document.getElementById("navHome").classList.remove("active");
+  document.getElementById("navPortals").classList.remove("active");
+  document.getElementById("navDash").classList.add("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function scrollToPortals() {
+  if (!document.getElementById("landingView").classList.contains("active")) {
+    document.getElementById("landingView").classList.add("active");
+    document.getElementById("dashboardView").classList.remove("active");
+    document.getElementById("navHome").classList.remove("active");
+    document.getElementById("navPortals").classList.add("active");
+    document.getElementById("navDash").classList.remove("active");
+  }
+  const portalsEl = document.getElementById("portalsSection");
+  if (portalsEl) {
+    portalsEl.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
 function switchAccount(accountId) {
   currentAccountId = accountId;
   currentAccount = REVIEWR_ACCOUNTS.find((a) => a.id === accountId) || REVIEWR_ACCOUNTS[0];
@@ -80,30 +118,26 @@ function switchAccount(accountId) {
   if (navAvatar) navAvatar.src = currentAccount.avatar;
   if (accSelect) accSelect.value = currentAccountId;
 
-  // Update Quickbar active tab
-  document.querySelectorAll(".cm-persona-tab").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-  const activeTabEl = document.getElementById(`tab_${currentAccountId}`);
-  if (activeTabEl) activeTabEl.classList.add("active");
+  const modalSelect = document.getElementById("modalAccountSelect");
+  if (modalSelect) modalSelect.value = currentAccountId;
 
-  // Update Active Persona Banner
-  const bannerAvatar = document.getElementById("bannerAvatar");
-  const bannerName = document.getElementById("bannerAccountName");
-  const bannerBadge = document.getElementById("bannerTypeBadge");
-  const bannerHandle = document.getElementById("bannerHandle");
-  const bannerCategory = document.getElementById("bannerCategory");
-  const bannerTotal = document.getElementById("bannerTotalReviews");
+  // Update Dashboard Top Banner
+  const dashAvatar = document.getElementById("dashAvatar");
+  const dashName = document.getElementById("dashAccountName");
+  const dashBadge = document.getElementById("dashTypeBadge");
+  const dashHandle = document.getElementById("dashHandle");
+  const dashCategory = document.getElementById("dashCategory");
+  const dashTotal = document.getElementById("dashTotalReviews");
 
-  if (bannerAvatar) bannerAvatar.src = currentAccount.avatar;
-  if (bannerName) bannerName.textContent = currentAccount.name;
-  if (bannerBadge) {
-    bannerBadge.textContent = currentAccount.typeLabel;
-    bannerBadge.className = `cm-src-badge ${currentAccount.type}`;
+  if (dashAvatar) dashAvatar.src = currentAccount.avatar;
+  if (dashName) dashName.textContent = currentAccount.name;
+  if (dashBadge) {
+    dashBadge.textContent = currentAccount.typeLabel;
+    dashBadge.className = `cm-src-badge ${currentAccount.type}`;
   }
-  if (bannerHandle) bannerHandle.textContent = currentAccount.handle;
-  if (bannerCategory) bannerCategory.textContent = currentAccount.category;
-  if (bannerTotal) bannerTotal.textContent = `${currentAccount.totalReviews} Total Feedback`;
+  if (dashHandle) dashHandle.textContent = currentAccount.handle;
+  if (dashCategory) dashCategory.textContent = currentAccount.category;
+  if (dashTotal) dashTotal.textContent = `${currentAccount.totalReviews} Total Feedback`;
 
   // Update Location / Branch / Video Dropdown
   const locSelect = document.getElementById("locationSelect");
@@ -145,7 +179,7 @@ function renderCharts() {
 
   if (timelineChart) timelineChart.destroy();
 
-  // Generate trend curves according to current account type
+  // Custom data trajectories per account type
   let posData = [320, 410, 480, 560, 620, 710, 840, 920];
   let negData = [80, 95, 70, 85, 60, 75, 55, 64];
   let neuData = [110, 130, 145, 160, 150, 180, 190, 210];
@@ -262,7 +296,7 @@ function renderInsights() {
       <span class="cm-insight-tag ${insight.type}">${insight.badge}</span>
       <h4 class="cm-insight-title">${insight.title}</h4>
       <p class="cm-insight-desc">${insight.description}</p>
-      <div class="cm-fb-footer">
+      <div class="cm-insight-footer">
         <span class="cm-theme-tag">${insight.theme}</span>
         <span style="font-weight:700; color:var(--text-dark);">${insight.impact}</span>
       </div>
@@ -362,7 +396,7 @@ function renderFeedbackFeed() {
   }).join("");
 }
 
-// Simulated Ingestion Pipeline with real-time UI animation
+// Live Ingestion with step-by-step UI animation
 async function handleRunSync() {
   const inputEl = document.getElementById("syncVideoInput");
   const resourceId = inputEl ? inputEl.value.trim() : "ChIJN1t_tDeuEmsRUsoyG83frY4";
@@ -397,7 +431,6 @@ async function handleRunSync() {
     await new Promise((r) => setTimeout(r, 600));
   }
 
-  // Add new synced comment to current account
   const newComment = {
     id: `fb-live-${Date.now()}`,
     source: currentAccount.type,
