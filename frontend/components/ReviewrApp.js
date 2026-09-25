@@ -7,6 +7,7 @@ import AnnouncementBar from "./AnnouncementBar";
 import LandingView from "./LandingView";
 import LoginView from "./LoginView";
 import DashboardView from "./DashboardView";
+import DashboardShell from "./dashboard/DashboardShell";
 import LiveSyncModal from "./LiveSyncModal";
 import DemoModal from "./DemoModal";
 import { REVIEWR_ACCOUNTS } from "../lib/mockData";
@@ -115,6 +116,15 @@ export default function ReviewrApp({ initialView = "landing" }) {
       }
     }, 100);
   };
+
+  if (activeView === "dashboard") {
+    return (
+      <>
+        <DovetailCursor />
+        <DashboardShell onNavigateLanding={() => handleNavigate("landing")} />
+      </>
+    );
+  }
 
   return (
     <>
