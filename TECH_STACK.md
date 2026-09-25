@@ -44,16 +44,19 @@
 
 ---
 
-## 2. Frontend Technologies (Prototype & Web App)
+## 2. Modern Web & Smartphone Mobile Stack (Web, iOS & Android)
 
-| Category | Technology | Description & Role |
+| Category | Technology | Description & Role for Jury Presentation |
 |---|---|---|
-| **Core Languages** | **HTML5** & **Modern JavaScript (ES6+)** | Semantic structure, reactive state management, asynchronous fetch pipelines, and interactive DOM rendering without heavy framework overhead. |
-| **Styling & Design System** | **Vanilla CSS3 (Custom Design System)** | Premium VoC SaaS aesthetic: custom HSL color tokens, glassmorphism, rounded pill geometry (`border-radius: 9999px`), and fluid layouts. |
+| **Web App Framework** | **Next.js 14 (App Router)** | High-performance Server-Side Rendering (SSR), API routes, and React Server Components (RSC) delivering sub-100ms dashboard load times. |
+| **Component Architecture** | **React 18 & TypeScript** | Modular UI components, concurrent rendering, and strict type safety for enterprise multi-tenant workspaces. |
+| **Mobile Smartphone App** | **React Native & Expo SDK 51** | **Native iOS & Android smartphone application** allowing store branch managers and creators to receive real-time push notifications, view friction alerts, and reply to reviews on the move. |
+| **Real-time Mobile Alerts** | **WebPush & Firebase Cloud Messaging (FCM)** | Instant push notifications dispatched when critical 1-star reviews or sudden sentiment dips occur. |
+| **Styling & Design Tokens** | **Tailwind CSS & Vanilla CSS3** | Custom HSL color tokens, glassmorphism, rounded pill geometry (`border-radius: 9999px`), and fluid mobile-first responsive layouts. |
 | **Typography** | **Plus Jakarta Sans** | Geometric Grotesque typeface used for the **Reviewr** brand wordmark, logo mark, and UI elements. |
 | | **Fraunces** | Editorial display serif with styled italic accents used for headings and key metrics. |
 | | **Inter** | Clean, high-legibility sans-serif for numerical data, badges, and feedback body text. |
-| **Data Visualization** | **Chart.js v4.4.2** | Interactive canvas-based line charts rendering sentiment trajectory curves (Positive, Neutral, Negative) and volume trends. |
+| **Data Visualization** | **Chart.js v4.4.2 & React-Chartjs-2** | Interactive canvas-based line charts rendering sentiment trajectory curves (Positive, Neutral, Negative) optimized for mobile touchscreens and desktop viewports. |
 | **Color Palette Tokens** | **Warm Sand (`#FBF9F5`)** | Primary page background evoking a signature light ivory theme. |
 | | **Crisp White (`#FFFFFF`)** | Elevated cards with subtle sand borders (`#E5E2DC`). |
 | | **Deep Obsidian (`#18181B`)** | High-contrast dark buttons, typography, and logo badge. |
