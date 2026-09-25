@@ -14,7 +14,17 @@ import {
   Share2,
   Globe,
   Layers,
+  Play,
+  X,
 } from "lucide-react";
+
+function YouTubeIcon({ className = "w-5 h-5" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
 import {
   USER_PROFILE,
   AI_BRIEF,
@@ -25,7 +35,14 @@ import {
 } from "../data/intelligenceMockData";
 import DateRangeFilter, { formatDateShort } from "../components/DateRangeFilter";
 
-export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate, company }) {
+export default function HomeView({
+  onSelectProblem,
+  onSelectFeedback,
+  onNavigate,
+  company,
+  activeVideoFocus = null,
+  onClearVideoFocus = () => {},
+}) {
   const [selectedRange, setSelectedRange] = useState({
     preset: "1m",
     label: "1 Month",
@@ -59,6 +76,19 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
   let negativePct = 9.7;
   let activeProblemsCount = compProblems.length;
   let emergingCount = 3;
+
+  // ─── OVERRIDES WHEN FOCUSING ON A SPECIFIC ATTACHED YOUTUBE VIDEO ───
+  const isVideoFocus = !!activeVideoFocus?.video;
+  const videoMeta = activeVideoFocus?.video;
+  const videoStats = activeVideoFocus?.stats;
+  const videoComments = activeVideoFocus?.comments || [];
+
+  if (isVideoFocus && videoStats) {
+    dynamicNetSentiment = videoStats.netSentiment || "+0%";
+    positivePct = videoStats.positivePct ?? 0;
+    neutralPct = videoStats.neutralPct ?? 0;
+    negativePct = videoStats.negativePct ?? 0;
+  }
 
   if (days <= 1) {
     dynamicDelta = "+4.8% daily intake";
@@ -141,6 +171,30 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
     setTimeout(() => setShowShareToast(false), 2500);
   };
 
+  const finalTotalFeedbackFormatted = isVideoFocus
+    ? `${videoStats?.totalCommentsExtracted || videoComments.length} Extracted`
+    : dynamicTotalFeedbackFormatted;
+
+  const finalDelta = isVideoFocus
+    ? `${videoMeta?.commentCount || 0} on YouTube`
+    : dynamicDelta;
+
+  const finalRating = isVideoFocus
+    ? `${videoStats?.positivePct || 0}% Pos · ${videoStats?.negativePct || 0}% Neg`
+    : `Average: ${dynamicRating}`;
+
+  const finalFeedbackList = isVideoFocus && videoComments.length > 0
+    ? videoComments.slice(0, 3).map((c) => ({
+        id: c.id,
+        text: c.text,
+        authorName: c.authorName,
+        source: c.source,
+        sentiment: c.sentiment,
+        rating: c.sentiment === "positive" ? 5 : (c.sentiment === "negative" ? 1 : 3),
+        createdAt: c.createdAt,
+      }))
+    : recentFeedback;
+
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* ─── UNIFIED HEADER: COMPANY PERSONA GREETING & CONTROLS ─── */}
@@ -186,6 +240,49 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
         </div>
       </div>
 
+      {/* ─── ACTIVE VIDEO FOCUS BANNER (WHEN ATTACHED FROM SOURCES) ─── */}
+      {isVideoFocus && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FAF5FF] via-[#F3E8FF] to-[#FAF8F5] border border-[#DDD6FE] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <YouTubeIcon className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-[#7C3AED] text-white px-2 py-0.5 rounded-full">
+                  Focusing on Video Alone
+                </span>
+                {activeVideoFocus.backendStatus === "forwarded_to_backend" ? (
+                  <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> External NLP Backend Synced
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-medium text-[#71717A] bg-white border border-[#E5E1D8] px-2 py-0.5 rounded-full">
+                    Built-in Stats Engine Active (Fallback)
+                  </span>
+                )}
+              </div>
+              <h3 className="text-sm font-bold text-[#18181B] mt-1 font-serif line-clamp-1">
+                {videoMeta?.title}
+              </h3>
+              <p className="text-xs text-[#71717A]">
+                Channel: <strong>{videoMeta?.channelTitle}</strong> · Views: <strong>{videoMeta?.viewCount?.toLocaleString()}</strong> · Likes: <strong>{videoMeta?.likeCount?.toLocaleString()}</strong>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <button
+              onClick={onClearVideoFocus}
+              className="h-8 px-3 rounded-lg bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span>Show Full Channel</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {showShareToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
@@ -197,10 +294,10 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Total Customer Voice
+            {isVideoFocus ? "Extracted Voice" : "Total Customer Voice"}
           </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">{dynamicTotalFeedbackFormatted}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {dynamicDelta}</p>
+          <p className="text-2xl font-bold text-[#18181B] mt-1">{finalTotalFeedbackFormatted}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {finalDelta}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
@@ -208,7 +305,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
             Net Sentiment
           </span>
           <p className="text-2xl font-bold text-[#059669] mt-1">{dynamicNetSentiment}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">Average: {dynamicRating}</p>
+          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">{finalRating}</p>
         </div>
 
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
@@ -502,6 +599,19 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
                 </div>
               );
             })}
+
+            {(comp?.type === "youtube" || comp?.id === "acc_vj_sidhu" || (comp?.category && comp.category.toLowerCase().includes("youtube"))) && (
+              <button
+                onClick={() => onNavigate("sources")}
+                className="w-full mt-2 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-xs font-semibold text-[#7C3AED] hover:text-[#6D28D9] transition-colors group"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse"></span>
+                  Live YouTube Video & Channel Extractor
+                </span>
+                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -525,7 +635,7 @@ export default function HomeView({ onSelectProblem, onSelectFeedback, onNavigate
           </div>
 
           <div className="space-y-3">
-            {recentFeedback.map((fb) => (
+            {finalFeedbackList.map((fb) => (
               <div
                 key={fb.id}
                 onClick={() => onSelectFeedback(fb)}

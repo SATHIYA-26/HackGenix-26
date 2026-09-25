@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Globe, Plus, CheckCircle2, AlertCircle, RefreshCw, ShieldCheck } from "lucide-react";
 import { CONNECTED_SOURCES } from "../data/intelligenceMockData";
+import YouTubeLiveExtractorCard from "../components/YouTubeLiveExtractorCard";
 
-export default function SourcesView({ onOpenConnectSource, company }) {
+export default function SourcesView({ onOpenConnectSource, company, onAddFeedbackItems, onVideoAnalyzed }) {
   const sourcesList = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
   const activeCount = sourcesList.filter((s) => s.status !== "disconnected").length;
   const totalIngested = sourcesList.reduce(
@@ -24,19 +26,28 @@ export default function SourcesView({ onOpenConnectSource, company }) {
 
         <button
           onClick={onOpenConnectSource}
-          className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 self-start md:self-auto"
+          className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 self-start md:self-auto shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Connect New Source</span>
         </button>
       </div>
 
+      {/* ─── LIVE YOUTUBE API V3 INGESTION & STATS ENGINE (ONLY FOR YOUTUBE CHANNELS) ─── */}
+      {(company?.type === "youtube" || company?.id === "acc_vj_sidhu" || (company?.category && company.category.toLowerCase().includes("youtube"))) && (
+        <YouTubeLiveExtractorCard
+          company={company}
+          onAddFeedbackItems={onAddFeedbackItems}
+          onVideoAnalyzed={onVideoAnalyzed}
+        />
+      )}
+
       {/* Pipeline Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase">Active Pipelines</span>
           <p className="text-2xl font-bold text-[#18181B] mt-1">{activeCount} Connected</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 flex items-center gap-1">
+          <p className="text-[11px] text-[#059669] mt-0.5 flex items-center gap-1 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-[#059669]"></span> All webhooks operational
           </p>
         </div>
@@ -64,7 +75,7 @@ export default function SourcesView({ onOpenConnectSource, company }) {
           return (
             <div
               key={src.id}
-              className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#D6D1C6] transition-all flex flex-col justify-between space-y-4"
+              className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#D6D1C6] transition-all flex flex-col justify-between space-y-4 shadow-2xs"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -100,7 +111,7 @@ export default function SourcesView({ onOpenConnectSource, company }) {
               <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#ECE8E0] text-center text-xs">
                 <div>
                   <span className="text-[10px] text-[#71717A] block">Feedback Volume</span>
-                  <span className="font-bold text-[#18181B]">{src.totalFeedback.toLocaleString()}</span>
+                  <span className="font-bold text-[#18181B]">{src.totalFeedback ? src.totalFeedback.toLocaleString() : src.itemsCount?.toLocaleString() || 0}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-[#71717A] block">Last Sync</span>
@@ -117,8 +128,15 @@ export default function SourcesView({ onOpenConnectSource, company }) {
                   <ShieldCheck className="w-3.5 h-3.5 text-[#059669]" /> Verified Secure
                 </span>
                 {isConnected ? (
-                  <button className="text-xs font-semibold text-[#18181B] hover:text-[#4F46E5] flex items-center gap-1">
-                    <RefreshCw className="w-3 h-3" /> Sync Now
+                  <button
+                    onClick={() => {
+                      if (src.type === "youtube" || src.name.toLowerCase().includes("youtube")) {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="text-xs font-semibold text-[#7C3AED] hover:text-[#6D28D9] flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" /> Live Sync
                   </button>
                 ) : (
                   <button

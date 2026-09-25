@@ -111,6 +111,7 @@ export default function DashboardShell({
   const [selectedProblemId, setSelectedProblemId] = useState(initialProblemId);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [actionTargetProblem, setActionTargetProblem] = useState(null);
+  const [activeVideoFocus, setActiveVideoFocus] = useState(null);
 
   // Business company workspace switcher state
   const [selectedAccountId, setSelectedAccountId] = useState(currentAccountId || "acc_manis");
@@ -211,6 +212,27 @@ export default function DashboardShell({
   const handleOpenCreateAction = (prob) => {
     setActionTargetProblem(prob || (company.problems && company.problems[0]) || PROBLEMS[0]);
     setIsCreateActionOpen(true);
+  };
+
+  const handleAddFeedbackItems = (newItems) => {
+    if (!newItems || newItems.length === 0) return;
+    if (!company.recentFeedback) {
+      company.recentFeedback = [];
+    }
+    company.recentFeedback = [...newItems, ...company.recentFeedback];
+  };
+
+  const handleVideoAnalyzed = (videoData) => {
+    setActiveVideoFocus(videoData);
+    if (videoData.comments && videoData.comments.length > 0) {
+      handleAddFeedbackItems(videoData.comments);
+    }
+    setActiveNav("dashboard");
+    setSelectedProblemId(null);
+  };
+
+  const handleClearVideoFocus = () => {
+    setActiveVideoFocus(null);
   };
 
   const compProblems = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
@@ -620,6 +642,8 @@ export default function DashboardShell({
                     onSelectProblem={handleSelectProblem}
                     onSelectFeedback={handleSelectFeedback}
                     onNavigate={(nav) => handleNavClick(nav)}
+                    activeVideoFocus={activeVideoFocus}
+                    onClearVideoFocus={handleClearVideoFocus}
                   />
                 )}
                 {activeNav === "problems" && (
@@ -642,6 +666,8 @@ export default function DashboardShell({
                   <SourcesView
                     onOpenConnectSource={() => setIsConnectSourceOpen(true)}
                     company={company}
+                    onAddFeedbackItems={handleAddFeedbackItems}
+                    onVideoAnalyzed={handleVideoAnalyzed}
                   />
                 )}
                 {activeNav === "recommendations" && (
