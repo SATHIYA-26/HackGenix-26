@@ -42,10 +42,16 @@ class FeedbackRepository:
         items = query.order_by(desc(Feedback.created_at)).offset(skip).limit(limit).all()
         return items, total
 
-    def create(self, item: CanonicalFeedbackInput) -> Feedback:
+    def create(self, item: Any) -> Feedback:
         existing = self.get_by_feedback_id(item.feedback_id)
         if existing:
             return existing
+
+        meta = {}
+        if hasattr(item, "extra_metadata") and isinstance(item.extra_metadata, dict):
+            meta = item.extra_metadata
+        elif hasattr(item, "metadata") and isinstance(item.metadata, dict):
+            meta = item.metadata
 
         db_feedback = Feedback(
             feedback_id=item.feedback_id,
@@ -54,18 +60,24 @@ class FeedbackRepository:
             text=item.text,
             rating=item.rating,
             created_at=item.created_at,
-            extra_metadata=item.metadata or {},
+            extra_metadata=meta,
         )
         self.db.add(db_feedback)
         self.db.commit()
         self.db.refresh(db_feedback)
         return db_feedback
 
-    def create_batch(self, items: List[CanonicalFeedbackInput]) -> List[Feedback]:
+    def create_batch(self, items: List[Any]) -> List[Feedback]:
         created_records: List[Feedback] = []
         for item in items:
             existing = self.get_by_feedback_id(item.feedback_id)
             if not existing:
+                meta = {}
+                if hasattr(item, "extra_metadata") and isinstance(item.extra_metadata, dict):
+                    meta = item.extra_metadata
+                elif hasattr(item, "metadata") and isinstance(item.metadata, dict):
+                    meta = item.metadata
+
                 db_item = Feedback(
                     feedback_id=item.feedback_id,
                     source=item.source,
@@ -73,7 +85,7 @@ class FeedbackRepository:
                     text=item.text,
                     rating=item.rating,
                     created_at=item.created_at,
-                    extra_metadata=item.metadata or {},
+                    extra_metadata=meta,
                 )
                 self.db.add(db_item)
                 created_records.append(db_item)
