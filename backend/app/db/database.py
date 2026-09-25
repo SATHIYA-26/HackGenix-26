@@ -6,6 +6,8 @@ from app.core.logging import logger
 
 # Create engine
 database_url = settings.DATABASE_URL
+if database_url.startswith("postgresql+asyncpg://"):
+    database_url = database_url.replace("postgresql+asyncpg://", "postgresql://", 1)
 
 # Configure engine arguments depending on DB type
 connect_args = {}
@@ -54,13 +56,13 @@ def get_db() -> Generator[Session, None, None]:
 def init_db(check_vector: bool = True) -> None:
     """Initialize database tables and extensions (e.g. pgvector for PostgreSQL)."""
     try:
-        if "postgresql" in settings.DATABASE_URL and check_vector:
+        if engine.dialect.name == "postgresql" and check_vector:
             with engine.connect() as conn:
                 conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
                 conn.commit()
                 logger.info("PostgreSQL pgvector extension verified/created.")
     except Exception as exc:
-        logger.warning(f"Could not enable pgvector extension (might not be superuser or non-Postgres): {exc}")
+        logger.warning(f"Could not enable pgvector extension: {exc}")
 
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables initialized successfully.")
