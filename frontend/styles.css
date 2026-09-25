@@ -1,16 +1,16 @@
 /* ==========================================================================
    Reviewr — AI Customer Feedback Intelligence & Voice of Customer SaaS
-   Chattermill-Inspired Design System, Gradients, Typography & Color Tokens
+   Modern Design System, Gradients, Typography & Color Tokens
    Typography: Fraunces (Editorial Display Serif) + Inter (Precision UI Sans)
    Palette: Warm Sand (#FBF9F5), Crisp White (#FFFFFF), Deep Obsidian (#18181B),
             Subtle Borders (#E5E2DC), Glow Accents (#7C3AED, #4F46E5),
-            Chattermill Sentiment Indicators (Emerald, Slate, Crimson)
+            VoC Sentiment Indicators (Emerald, Slate, Crimson)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 :root {
-  /* Chattermill Core Palette */
+  /* Core Palette */
   --bg-page: #FBF9F5;
   --bg-surface: #FFFFFF;
   --bg-subtle: #F4F1EA;
@@ -25,7 +25,7 @@
   --text-light: #A1A1AA;
   --text-white: #FFFFFF;
 
-  /* Brand Accents & Chattermill Ambient Gradients */
+  /* Brand Accents & Ambient Gradients */
   --primary: #18181B;
   --primary-hover: #27272A;
   --accent-purple: #7C3AED;
@@ -36,7 +36,7 @@
                    radial-gradient(circle at 15% 65%, rgba(124, 58, 237, 0.05) 0%, rgba(251, 249, 245, 0) 60%);
   --gradient-hero-card: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
   
-  /* Chattermill Signature 3-Tier Sentiment Colors */
+  /* 3-Tier VoC Sentiment Colors */
   --sentiment-pos: #059669;
   --sentiment-pos-bg: #ECFDF5;
   --sentiment-pos-border: #A7F3D0;
@@ -87,7 +87,7 @@ body {
   position: relative;
 }
 
-/* Chattermill Ambient Mesh Glow */
+/* Ambient Mesh Glow */
 .bg-glow-wrapper {
   position: fixed;
   top: 0;
@@ -581,7 +581,7 @@ body {
 }
 
 /* ==========================================================================
-   VIEW 2: DEDICATED LOGIN PAGE (Chattermill Auth UI)
+   VIEW 2: DEDICATED LOGIN PAGE (VoC Auth UI)
    ========================================================================== */
 
 .login-page-wrapper {
@@ -913,7 +913,7 @@ body {
   margin-top: 2px;
 }
 
-/* Chattermill Themes List */
+/* AI Themes List */
 .cm-themes-list {
   display: flex;
   flex-direction: column;

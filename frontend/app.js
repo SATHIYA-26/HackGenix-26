@@ -1,6 +1,6 @@
 /**
  * Reviewr - Frontend Application Logic
- * Supports Chattermill Landing Page & Customized Business Dashboards
+ * Supports Landing Page, Authentication & Customized Business Dashboards
  */
 
 let currentAccountId = "acc_manis";

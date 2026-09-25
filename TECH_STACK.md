@@ -1,6 +1,6 @@
 # Reviewr — Technology Stack & Architecture Reference
 
-**Reviewr** is an AI-native customer feedback analysis and Voice of Customer (VoC) SaaS platform inspired by **Chattermill.com**, built to unify fragmented reviews and comments from **Google Maps**, **YouTube**, **Google Play Store**, and **Instagram** into a normalized PostgreSQL intelligence engine.
+**Reviewr** is an AI-native customer feedback analysis and Voice of Customer (VoC) SaaS platform built to unify fragmented reviews and comments from **Google Maps**, **YouTube**, **Google Play Store**, and **Instagram** into a normalized PostgreSQL intelligence engine.
 
 ---
 
@@ -36,7 +36,7 @@
                                            ▼
     ┌────────────────────────────── FRONTEND LAYER ───────────────────────────────┐
     │                                                                             │
-    │   Chattermill-Inspired Design System (Fraunces + Plus Jakarta Sans + Inter) │
+    │   Reviewr VoC Design System (Fraunces + Plus Jakarta Sans + Inter)          │
     │   • Executive KPI Grid    • Sentiment Trend Visualizer (Chart.js)           │
     │   • AI Theme Discovery    • Recommendation Engine & Real-time Live Sync     │
     └─────────────────────────────────────────────────────────────────────────────┘
@@ -49,12 +49,12 @@
 | Category | Technology | Description & Role |
 |---|---|---|
 | **Core Languages** | **HTML5** & **Modern JavaScript (ES6+)** | Semantic structure, reactive state management, asynchronous fetch pipelines, and interactive DOM rendering without heavy framework overhead. |
-| **Styling & Design System** | **Vanilla CSS3 (Custom Design System)** | Complete recreation of the **Chattermill.com** aesthetic: custom HSL color tokens, glassmorphism, rounded pill geometry (`border-radius: 9999px`), and fluid layouts. |
+| **Styling & Design System** | **Vanilla CSS3 (Custom Design System)** | Premium VoC SaaS aesthetic: custom HSL color tokens, glassmorphism, rounded pill geometry (`border-radius: 9999px`), and fluid layouts. |
 | **Typography** | **Plus Jakarta Sans** | Geometric Grotesque typeface used for the **Reviewr** brand wordmark, logo mark, and UI elements. |
 | | **Fraunces** | Editorial display serif with styled italic accents used for headings and key metrics. |
 | | **Inter** | Clean, high-legibility sans-serif for numerical data, badges, and feedback body text. |
 | **Data Visualization** | **Chart.js v4.4.2** | Interactive canvas-based line charts rendering sentiment trajectory curves (Positive, Neutral, Negative) and volume trends. |
-| **Color Palette Tokens** | **Warm Sand (`#FBF9F5`)** | Primary page background evoking Chattermill's signature light ivory theme. |
+| **Color Palette Tokens** | **Warm Sand (`#FBF9F5`)** | Primary page background evoking a signature light ivory theme. |
 | | **Crisp White (`#FFFFFF`)** | Elevated cards with subtle sand borders (`#E5E2DC`). |
 | | **Deep Obsidian (`#18181B`)** | High-contrast dark buttons, typography, and logo badge. |
 | | **Emerald Green (`#059669`)** | Positive customer sentiment indicator (`#ECFDF5` background). |
@@ -139,4 +139,4 @@ CREATE TABLE feedback (
 | **Container Engine** | **Docker** & **Docker Compose** | Manages containerized PostgreSQL 16 database with volume persistence and health checks. |
 | **Environment Config** | **`.env` / `.env.example`** | Server-side environment isolation ensuring API keys (`YOUTUBE_API_KEY`) and database credentials remain secret. |
 | **Branching Strategy** | **`dev-rishi`** | Clean backend Module 1 implementation (FastAPI, Alembic, PostgreSQL, YouTube API client, tests). |
-| | **`prototype`** | Standalone Chattermill-styled frontend application with 5 predefined business accounts and AI recommendations. |
+| | **`prototype`** | Standalone modern VoC SaaS frontend application with 5 predefined business accounts and AI recommendations. |

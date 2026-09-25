@@ -13,7 +13,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 def run_server():
-    print(f"Starting Feedback Intelligence (Chattermill Theme) Prototype at http://localhost:{PORT}")
+    print(f"Starting Reviewr Feedback Intelligence Prototype at http://localhost:{PORT}")
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print(f"Serving files from {DIRECTORY}")
         try:
