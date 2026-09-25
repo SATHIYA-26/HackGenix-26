@@ -89,10 +89,9 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
     setChannelSyncResult(null);
 
     try {
-      await new Promise((r) => setTimeout(r, 600));
       setSyncProgress((prev) => [
         ...prev,
-        `Found ${maxVideos} latest published videos. Ingesting up to ${commentsPerVideo} comments each (${maxVideos * commentsPerVideo} total)...`,
+        `Requesting channel sync for ${maxVideos} latest videos (up to ${commentsPerVideo} comments each)...`,
       ]);
 
       const resp = await fetch("/api/youtube/live-sync", {
@@ -117,14 +116,13 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
             ...prev,
             `Video ${i + 1}/${data.videos.length}: "${v.title.slice(0, 32)}..." (${v.commentsCount} comments, Net: ${v.netSentiment})`,
           ]);
-          await new Promise((r) => setTimeout(r, 350));
         }
       }
 
       setSyncProgress((prev) => [
         ...prev,
-        `Running NLP Aspect Sentiment & Frequency Aggregations across ${data.stats?.totalCommentsExtracted || (maxVideos * commentsPerVideo)} signals...`,
-        `Complete! Ingested ${data.stats?.totalCommentsExtracted || (maxVideos * commentsPerVideo)} comments across ${maxVideos} videos.`,
+        `FastAPI NLP Pipeline completed: ${data.comments?.length || 0} real comments processed with RoBERTa sentiment & DistilBERT intents.`,
+        `Complete! Ingested into database with ${data.problemsDiscovered?.length || 0} problem clusters.`,
       ]);
 
       setChannelSyncResult(data);

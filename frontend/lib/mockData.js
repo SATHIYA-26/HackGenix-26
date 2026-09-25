@@ -388,108 +388,26 @@ const REVIEWR_ACCOUNTS = [
     userName: "VJ Sidhu",
     avatar: "assets/logos/vj_sidhu_vlogs.png",
     ratingAvg: null,
-    totalReviews: "284,500",
-    locations: ["Channel-wide", "Ep 44: Chennai to Munnar Roadtrip", "Ep 43: Village Tour", "Ep 42: Midnight Food Hunt"],
+    totalReviews: "0",
+    locations: ["Channel-wide", "Live Video Stream"],
     primaryMetricLabel: "Total Video Comments",
-    primaryMetricValue: "284.5K",
-    primaryMetricTrend: "▲ +28.4% vs last episode",
-    sentimentScore: 91,
-    positivePct: 88,
-    neutralPct: 8,
-    negativePct: 4,
+    primaryMetricValue: "0",
+    primaryMetricTrend: "Awaiting Live Sync",
+    sentimentScore: 0,
+    positivePct: 0,
+    neutralPct: 0,
+    negativePct: 0,
     metrics: {
-      totalFeedback: "284,500",
-      totalFeedbackDelta: "+24.8%",
-      netSentiment: "+91",
-      netSentimentDelta: "+12.1%",
-      commentEngagement: "18.4%",
-      activeThemes: 16
+      totalFeedback: "0",
+      totalFeedbackDelta: "Live Ingestion",
+      netSentiment: "0",
+      netSentimentDelta: "0%",
+      commentEngagement: "0%",
+      activeThemes: 0
     },
-    themes: [
-      { id: "th-vj-1", name: "Sidhu & Crew Humour & Chemistry", count: 98200, sentimentScore: 98, sentiment: "positive", trend: "+32.0%" },
-      { id: "th-vj-2", name: "Drone Shots & 4K Color Grading", count: 64100, sentimentScore: 94, sentiment: "positive", trend: "+18.5%" },
-      { id: "th-vj-3", name: "Background Music & Mic Audio Levels", count: 24200, sentimentScore: 62, sentiment: "neutral", trend: "-5.0%" },
-      { id: "th-vj-4", name: "Next Travel Destination Requests", count: 42100, sentimentScore: 89, sentiment: "positive", trend: "+14.3%" }
-    ],
-    insights: [
-      {
-        type: "positive_driver",
-        badge: "Viral Content Driver",
-        title: "Unscripted Crew Comedy Timing Drives 94% Retention",
-        description: "Comments on the latest Munnar roadtrip episode overwhelmingly highlight Sidhu and Vignesh's spontaneous banter as the standout element.",
-        theme: "Sidhu & Crew Humour & Chemistry",
-        impact: "+98% Fan Love"
-      },
-      {
-        type: "friction_point",
-        badge: "Audio Quality Notice",
-        title: "Wind Noise in Highway Driving Sequences",
-        description: "180 comments in the first 24 hours noted that the mic deadcat wasn't attached during the open jeep scene at 14:20.",
-        theme: "Background Music & Mic Audio Levels",
-        impact: "180 Technical Notes"
-      },
-      {
-        type: "trending_request",
-        badge: "Audience Demand",
-        title: "Madurai Street Food Marathon Episode",
-        description: "Over 1,240 comments begged the team to do a 48-hour Kari Dosa and Jigarthanda food crawl in Madurai next.",
-        theme: "Next Travel Destination Requests",
-        impact: "1,240 Episode Requests"
-      }
-    ],
-    feedbackItems: [
-      {
-        id: "vj-1",
-        source: "youtube",
-        source_type: "comment",
-        branch: "Ep 44: Chennai to Munnar Roadtrip",
-        external_id: "yt_vj_401",
-        author_name: "Dhanush Kumar",
-        author_avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-        rating: null,
-        sentiment: "positive",
-        theme: "Sidhu & Crew Humour & Chemistry",
-        created_at: "2026-09-24T20:10:00Z",
-        text: "That puncture shop prank at 18:35 literally made me spit out my coffee laughing! Sidhu anna, you and the crew are pure stress-busters. Never stop making these weekly vlogs.",
-        source_url: "https://youtube.com/watch?v=vj_munnar_44",
-        metadata: { video_id: "vj_munnar_44", like_count: 842, is_reply: false, replies_count: 8 },
-        replies: [
-          { author_name: "VJ Sidhu (Creator)", text: "Thanks Dhanush bro! Wait till you see next week's episode.", created_at: "2026-09-24T20:45:00Z" }
-        ]
-      },
-      {
-        id: "vj-2",
-        source: "youtube",
-        source_type: "comment",
-        branch: "Ep 44: Chennai to Munnar Roadtrip",
-        external_id: "yt_vj_402",
-        author_name: "Priya Cinematography",
-        author_avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
-        rating: null,
-        sentiment: "positive",
-        theme: "Drone Shots & 4K Color Grading",
-        created_at: "2026-09-24T19:00:00Z",
-        text: "The sunrise drone transition over the tea plantations at 04:12 was cinematic level! Huge shoutout to the editor and drone pilot. What a visual treat in 4K 60fps.",
-        source_url: "https://youtube.com/watch?v=vj_munnar_44",
-        metadata: { video_id: "vj_munnar_44", like_count: 419, is_reply: false }
-      },
-      {
-        id: "vj-3",
-        source: "youtube",
-        source_type: "comment",
-        branch: "Ep 44: Chennai to Munnar Roadtrip",
-        external_id: "yt_vj_403",
-        author_name: "Ramesh Sound Engineer",
-        author_avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100",
-        rating: null,
-        sentiment: "neutral",
-        theme: "Background Music & Mic Audio Levels",
-        created_at: "2026-09-24T17:30:00Z",
-        text: "Bro great video as always! Just a tiny feedback: background BGM was slightly overpowering the dialogue around 12:40 when you guys were ordering food at the dhaba. Otherwise 10/10.",
-        source_url: "https://youtube.com/watch?v=vj_munnar_44",
-        metadata: { video_id: "vj_munnar_44", like_count: 154, is_reply: false }
-      }
-    ]
+    themes: [],
+    insights: [],
+    feedbackItems: []
   },
 
   {
