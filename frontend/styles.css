@@ -2915,22 +2915,6 @@ body.cursor-active .dovetail-cursor-ring {
   opacity: 1;
 }
 
-/* Badge Label inside Ring */
-.dovetail-cursor-badge {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  white-space: nowrap;
-  pointer-events: none !important;
-  padding: 0 4px;
-}
-
 /* State: Hovering Clickable Elements (Buttons, Links, Selectors) */
 body.cursor-hover-clickable .dovetail-cursor-ring {
   width: 52px;
@@ -2944,29 +2928,13 @@ body.cursor-hover-clickable .dovetail-cursor-ring {
 
 body.cursor-hover-clickable .dovetail-cursor-dot {
   background-color: var(--accent-purple);
+  transform: translate3d(0, 0, 0) scale(1.3);
 }
 
-/* State: Hovering Cards / Explorables (Morphs into pill badge with text) */
-body.cursor-hover-badge .dovetail-cursor-ring {
-  width: auto;
-  min-width: 86px;
-  height: 32px;
-  margin-top: -16px;
-  margin-left: -43px;
-  padding: 0 14px;
-  border-radius: 9999px;
-  background: rgba(24, 24, 27, 0.92);
-  border-color: rgba(124, 58, 237, 0.6);
-  box-shadow: 0 10px 25px -4px rgba(24, 24, 27, 0.35), 0 0 16px rgba(124, 58, 237, 0.25);
-}
-
-body.cursor-hover-badge .dovetail-cursor-dot {
-  opacity: 0 !important;
-}
-
-body.cursor-hover-badge .dovetail-cursor-badge {
-  opacity: 1;
-  transform: scale(1);
+/* State: Clicking / Mouse Down */
+body.cursor-clicking .dovetail-cursor-ring {
+  transform: translate3d(0, 0, 0) scale(0.85);
+  border-color: var(--accent-indigo);
 }
 
 /* State: Inside text inputs or textareas */
@@ -2977,12 +2945,14 @@ body.cursor-hover-input .dovetail-cursor-dot {
 
 /* Touch & Mobile disable */
 @media (hover: none) or (pointer: coarse) {
+  .dovetail-particle-canvas,
   .dovetail-cursor-spotlight,
   .dovetail-cursor-dot,
   .dovetail-cursor-ring {
     display: none !important;
   }
 }
+
 
 
 

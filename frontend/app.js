@@ -914,32 +914,29 @@ function handleDemoBooking(e) {
 
 // ==========================================================================
 // DOVETAIL-INSPIRED INTERACTIVE CURSOR & SPOTLIGHT CONTROLLER
-// Enhanced with Micro-Coins, VoC Metric Tokens & Special Glyphs
+// Enhanced with Micro-Coins, VoC Metric Tokens & Special Glyphs Everywhere
 // ==========================================================================
 
 function initDovetailCursor() {
   const dot = document.getElementById("cursorDot");
   const ring = document.getElementById("cursorRing");
-  const badge = document.getElementById("cursorBadge");
   const spotlight = document.getElementById("cursorSpotlight");
   const canvas = document.getElementById("cursorParticleCanvas");
 
   if (!dot || !ring || !spotlight) return;
 
-  let mouseX = -100;
-  let mouseY = -100;
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
   let prevMouseX = -100;
   let prevMouseY = -100;
-  let dotX = -100;
-  let dotY = -100;
-  let ringX = -100;
-  let ringY = -100;
-  let spotX = -100;
-  let spotY = -100;
-  let isHoveringBadge = false;
+  let dotX = mouseX;
+  let dotY = mouseY;
+  let ringX = mouseX;
+  let ringY = mouseY;
+  let spotX = mouseX;
+  let spotY = mouseY;
   let isHoveringClickable = false;
   let isHoveringInput = false;
-  let currentBadgeText = "";
 
   // ------------------------------------------------------------------------
   // Particle Canvas Engine (Micro-Coins, VoC Metrics, Numbers & Glyphs)
@@ -971,21 +968,20 @@ function initDovetailCursor() {
     resizeCanvas();
   }
 
-  function spawnParticle(x, y, isBurst = false) {
+  function spawnParticle(x, y, isBurst = false, customVy = null) {
     if (!ctx) return;
-    if (particles.length > 50) return; // Prevent excess count
+    if (particles.length > 70) return; // Smooth limit for buttery 60fps
 
-    // Categorize particle type
     const rand = Math.random();
     let type = "glyph";
     let text = "";
     let color = THEME_COLORS[Math.floor(Math.random() * THEME_COLORS.length)];
 
-    if (rand < 0.35) {
+    if (rand < 0.38) {
       type = "coin";
       text = TOKEN_COINS[Math.floor(Math.random() * TOKEN_COINS.length)];
-      color = Math.random() > 0.4 ? "#D97706" : "#7C3AED"; // Gold or Violet coin
-    } else if (rand < 0.70) {
+      color = Math.random() > 0.4 ? "#D97706" : "#7C3AED"; // Amber Gold or Violet coin
+    } else if (rand < 0.72) {
       type = "metric";
       text = TOKEN_METRICS[Math.floor(Math.random() * TOKEN_METRICS.length)];
       color = text.startsWith("+") || text.includes("★") ? "#059669" : "#7C3AED";
@@ -994,21 +990,21 @@ function initDovetailCursor() {
       text = TOKEN_GLYPHS[Math.floor(Math.random() * TOKEN_GLYPHS.length)];
     }
 
-    const angle = isBurst ? Math.random() * Math.PI * 2 : (Math.random() * Math.PI * 2);
-    const speed = isBurst ? 1.5 + Math.random() * 3.0 : 0.6 + Math.random() * 1.4;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = isBurst ? 1.8 + Math.random() * 3.2 : 0.6 + Math.random() * 1.5;
 
     particles.push({
-      x: x + (Math.random() - 0.5) * 12,
-      y: y + (Math.random() - 0.5) * 12,
+      x: x + (Math.random() - 0.5) * 16,
+      y: y + (Math.random() - 0.5) * 16,
       vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - (isBurst ? 0.8 : 0.4), // slight float up
+      vy: customVy !== null ? customVy + (Math.random() - 0.5) * 1.5 : Math.sin(angle) * speed - (isBurst ? 1.0 : 0.4),
       type: type,
       text: text,
       color: color,
       size: type === "metric" ? 9 : (type === "coin" ? 11 : 10),
       alpha: 0.95,
-      life: isBurst ? 55 + Math.random() * 25 : 45 + Math.random() * 20,
-      maxLife: 60,
+      life: isBurst ? 55 + Math.random() * 25 : 45 + Math.random() * 25,
+      maxLife: 65,
       rotation: (Math.random() - 0.5) * 0.4,
       rotSpeed: (Math.random() - 0.5) * 0.04
     });
@@ -1022,7 +1018,7 @@ function initDovetailCursor() {
       const p = particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.015; // gentle gravity
+      p.vy += 0.012; // gentle buoyancy/gravity
       p.vx *= 0.98; // air drag
       p.rotation += p.rotSpeed;
       p.life--;
@@ -1039,7 +1035,6 @@ function initDovetailCursor() {
       ctx.globalAlpha = p.alpha;
 
       if (p.type === "coin") {
-        // Draw Dovetail-styled miniature embossed crypto/fiat coin disc
         const radius = p.size;
         ctx.beginPath();
         ctx.arc(0, 0, radius, 0, Math.PI * 2);
@@ -1049,14 +1044,12 @@ function initDovetailCursor() {
         ctx.strokeStyle = p.color;
         ctx.stroke();
 
-        // Inner coin symbol
         ctx.font = `700 ${Math.round(p.size * 1.1)}px 'Inter', sans-serif`;
         ctx.fillStyle = p.color;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(p.text, 0, 0.5);
       } else if (p.type === "metric") {
-        // Draw miniature pill chip with metric text
         ctx.font = `600 ${p.size}px 'Inter', sans-serif`;
         const textMetrics = ctx.measureText(p.text);
         const paddingX = 6;
@@ -1076,7 +1069,6 @@ function initDovetailCursor() {
         ctx.textBaseline = "middle";
         ctx.fillText(p.text, 0, 0);
       } else {
-        // Draw special character / gibberish glyph
         ctx.font = `700 ${p.size}px 'Inter', monospace`;
         ctx.fillStyle = p.color;
         ctx.textAlign = "center";
@@ -1089,9 +1081,10 @@ function initDovetailCursor() {
   }
 
   // ------------------------------------------------------------------------
-  // Mouse & Interaction Handlers
+  // Mouse & Scroll Handlers (Scroll Animation Everywhere)
   // ------------------------------------------------------------------------
   let distAccumulator = 0;
+  let lastScrollY = window.scrollY;
 
   window.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
@@ -1104,8 +1097,7 @@ function initDovetailCursor() {
       const dist = Math.sqrt(dx * dx + dy * dy);
       distAccumulator += dist;
 
-      // Spawn micro-token trail on fluid movement
-      if (distAccumulator > 32) {
+      if (distAccumulator > 28) {
         spawnParticle(mouseX, mouseY, false);
         distAccumulator = 0;
       }
@@ -1114,6 +1106,22 @@ function initDovetailCursor() {
     prevMouseX = mouseX;
     prevMouseY = mouseY;
   });
+
+  // Dynamic Scroll Animation Everywhere
+  window.addEventListener("scroll", () => {
+    const currentScrollY = window.scrollY;
+    const deltaY = currentScrollY - lastScrollY;
+    lastScrollY = currentScrollY;
+
+    if (Math.abs(deltaY) > 2) {
+      // Spawn floating coins and character particles on scroll
+      const spawnX = mouseX > 0 && mouseX < window.innerWidth ? mouseX + (Math.random() - 0.5) * 120 : Math.random() * window.innerWidth;
+      const spawnY = mouseY > 0 && mouseY < window.innerHeight ? mouseY + (Math.random() - 0.5) * 80 : Math.random() * window.innerHeight;
+      const scrollVelocity = deltaY > 0 ? -1.2 : 1.2; // Float opposite of scroll direction
+
+      spawnParticle(spawnX, spawnY, false, scrollVelocity);
+    }
+  }, { passive: true });
 
   window.addEventListener("mouseleave", () => {
     document.body.classList.remove("cursor-active");
@@ -1125,8 +1133,7 @@ function initDovetailCursor() {
 
   window.addEventListener("mousedown", (e) => {
     document.body.classList.add("cursor-clicking");
-    // Emit playful burst of micro-tokens and coins on click
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
       spawnParticle(e.clientX, e.clientY, true);
     }
   });
@@ -1135,59 +1142,25 @@ function initDovetailCursor() {
     document.body.classList.remove("cursor-clicking");
   });
 
-  // Dynamic hover detection for contextual badges and states
+  // Hover detection for interactive clickables (no text popups)
   document.addEventListener("mouseover", (e) => {
     const target = e.target;
     if (!target) return;
 
-    const customBadgeEl = target.closest("[data-cursor-label]");
-    const heroCard = target.closest(".hero-roi-card, .roi-header, .roi-metrics-grid");
-    const showcaseCard = target.closest(".showcase-tab-card, .showcase-tabs-nav");
-    const compareCard = target.closest(".aspect-breakdown-card, .compare-card");
-    const featureCard = target.closest(".what-we-do-card, .cm-feature-card, .workflow-step-card");
-    const pricingCard = target.closest(".pricing-card");
-
-    if (customBadgeEl) {
-      isHoveringBadge = true;
-      currentBadgeText = customBadgeEl.getAttribute("data-cursor-label") || "Explore";
-    } else if (heroCard) {
-      isHoveringBadge = true;
-      currentBadgeText = "Analyze";
-    } else if (showcaseCard) {
-      isHoveringBadge = true;
-      currentBadgeText = "Explore";
-    } else if (compareCard) {
-      isHoveringBadge = true;
-      currentBadgeText = "Compare";
-    } else if (featureCard) {
-      isHoveringBadge = true;
-      currentBadgeText = "Inspect";
-    } else if (pricingCard) {
-      isHoveringBadge = true;
-      currentBadgeText = "Plan";
-    } else {
-      isHoveringBadge = false;
-      currentBadgeText = "";
-    }
-
     const clickable = target.closest("button, a, .cm-btn, .roi-tf-btn, .tab-btn, .cm-nav-link, select, input[type='radio'], input[type='checkbox'], [role='button'], .clickable");
-    isHoveringClickable = !!clickable && !isHoveringBadge;
+    isHoveringClickable = !!clickable;
 
     const textInput = target.closest("input[type='text'], input[type='email'], input[type='search'], input[type='password'], textarea");
     isHoveringInput = !!textInput;
 
-    if (isHoveringBadge) {
-      document.body.classList.add("cursor-hover-badge");
-      document.body.classList.remove("cursor-hover-clickable", "cursor-hover-input");
-      if (badge) badge.textContent = currentBadgeText;
-    } else if (isHoveringClickable) {
+    if (isHoveringClickable) {
       document.body.classList.add("cursor-hover-clickable");
-      document.body.classList.remove("cursor-hover-badge", "cursor-hover-input");
+      document.body.classList.remove("cursor-hover-input");
     } else if (isHoveringInput) {
       document.body.classList.add("cursor-hover-input");
-      document.body.classList.remove("cursor-hover-badge", "cursor-hover-clickable");
+      document.body.classList.remove("cursor-hover-clickable");
     } else {
-      document.body.classList.remove("cursor-hover-badge", "cursor-hover-clickable", "cursor-hover-input");
+      document.body.classList.remove("cursor-hover-clickable", "cursor-hover-input");
     }
   });
 
@@ -1220,6 +1193,7 @@ if (document.readyState === "loading") {
 } else {
   initDovetailCursor();
 }
+
 
 
 
