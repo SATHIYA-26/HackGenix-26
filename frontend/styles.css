@@ -104,10 +104,13 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(251, 249, 245, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(251, 249, 245, 0.94);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 14px 32px;
+  padding: 0 32px;
+  height: 68px;
+  display: flex;
+  align-items: center;
 }
 
 .cm-nav-container {
@@ -118,6 +121,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  height: 100%;
 }
 
 .cm-logo-wrap {
@@ -126,6 +130,7 @@ body {
   gap: 10px;
   text-decoration: none;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .cm-logo-mark {
@@ -146,7 +151,7 @@ body {
 .cm-logo-text {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.48rem;
+  font-size: 1.45rem;
   color: #18181B;
   letter-spacing: -0.04em;
   display: flex;
@@ -160,12 +165,13 @@ body {
 }
 
 .cm-nav-link {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   color: var(--text-body);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.15s;
+  white-space: nowrap;
 }
 
 .cm-nav-link:hover, .cm-nav-link.active {
@@ -177,31 +183,57 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
-/* User Session Badge in Nav */
-.cm-user-badge-wrap {
+/* User Session & Account Switcher Pill in Top Nav */
+.cm-user-session-bar {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.cm-account-switcher-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
-  padding: 4px 14px 4px 6px;
+  padding: 4px 12px 4px 6px;
   box-shadow: var(--shadow-subtle);
+  height: 38px;
+  transition: all 0.2s ease;
 }
 
-.cm-user-nav-avatar {
-  width: 28px;
-  height: 28px;
+.cm-account-switcher-bar:hover {
+  border-color: var(--border-card-hover);
+  box-shadow: var(--shadow-card);
+}
+
+.cm-acc-avatar {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  max-width: 26px;
+  max-height: 26px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1px solid var(--border-subtle);
+  display: block;
 }
 
-.cm-user-nav-name {
+.cm-acc-select {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
   font-size: 0.84rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-dark);
+  cursor: pointer;
+  outline: none;
+  padding-right: 4px;
 }
 
 /* Buttons */
