@@ -912,4 +912,140 @@ function handleDemoBooking(e) {
   }, 700);
 }
 
+// ==========================================================================
+// DOVETAIL-INSPIRED INTERACTIVE CURSOR & SPOTLIGHT CONTROLLER
+// ==========================================================================
+
+function initDovetailCursor() {
+  const dot = document.getElementById("cursorDot");
+  const ring = document.getElementById("cursorRing");
+  const badge = document.getElementById("cursorBadge");
+  const spotlight = document.getElementById("cursorSpotlight");
+
+  if (!dot || !ring || !spotlight) return;
+
+  let mouseX = -100;
+  let mouseY = -100;
+  let dotX = -100;
+  let dotY = -100;
+  let ringX = -100;
+  let ringY = -100;
+  let spotX = -100;
+  let spotY = -100;
+  let isHoveringBadge = false;
+  let isHoveringClickable = false;
+  let isHoveringInput = false;
+  let currentBadgeText = "";
+
+  window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    document.body.classList.add("cursor-active");
+  });
+
+  window.addEventListener("mouseleave", () => {
+    document.body.classList.remove("cursor-active");
+  });
+
+  window.addEventListener("mouseenter", () => {
+    document.body.classList.add("cursor-active");
+  });
+
+  window.addEventListener("mousedown", () => {
+    document.body.classList.add("cursor-clicking");
+  });
+
+  window.addEventListener("mouseup", () => {
+    document.body.classList.remove("cursor-clicking");
+  });
+
+  // Dynamic hover detection for contextual badges and states
+  document.addEventListener("mouseover", (e) => {
+    const target = e.target;
+    if (!target) return;
+
+    // Check for explicit badge or card elements
+    const customBadgeEl = target.closest("[data-cursor-label]");
+    const heroCard = target.closest(".hero-roi-card, .roi-header, .roi-metrics-grid");
+    const showcaseCard = target.closest(".showcase-tab-card, .showcase-tabs-nav");
+    const compareCard = target.closest(".aspect-breakdown-card, .compare-card");
+    const featureCard = target.closest(".what-we-do-card, .cm-feature-card, .workflow-step-card");
+    const pricingCard = target.closest(".pricing-card");
+
+    if (customBadgeEl) {
+      isHoveringBadge = true;
+      currentBadgeText = customBadgeEl.getAttribute("data-cursor-label") || "Explore";
+    } else if (heroCard) {
+      isHoveringBadge = true;
+      currentBadgeText = "Analyze";
+    } else if (showcaseCard) {
+      isHoveringBadge = true;
+      currentBadgeText = "Explore";
+    } else if (compareCard) {
+      isHoveringBadge = true;
+      currentBadgeText = "Compare";
+    } else if (featureCard) {
+      isHoveringBadge = true;
+      currentBadgeText = "Inspect";
+    } else if (pricingCard) {
+      isHoveringBadge = true;
+      currentBadgeText = "Plan";
+    } else {
+      isHoveringBadge = false;
+      currentBadgeText = "";
+    }
+
+    // Check for clickable elements
+    const clickable = target.closest("button, a, .cm-btn, .roi-tf-btn, .tab-btn, .cm-nav-link, select, input[type='radio'], input[type='checkbox'], [role='button'], .clickable");
+    isHoveringClickable = !!clickable && !isHoveringBadge;
+
+    // Check for text inputs
+    const textInput = target.closest("input[type='text'], input[type='email'], input[type='search'], input[type='password'], textarea");
+    isHoveringInput = !!textInput;
+
+    // Apply classes
+    if (isHoveringBadge) {
+      document.body.classList.add("cursor-hover-badge");
+      document.body.classList.remove("cursor-hover-clickable", "cursor-hover-input");
+      if (badge) badge.textContent = currentBadgeText;
+    } else if (isHoveringClickable) {
+      document.body.classList.add("cursor-hover-clickable");
+      document.body.classList.remove("cursor-hover-badge", "cursor-hover-input");
+    } else if (isHoveringInput) {
+      document.body.classList.add("cursor-hover-input");
+      document.body.classList.remove("cursor-hover-badge", "cursor-hover-clickable");
+    } else {
+      document.body.classList.remove("cursor-hover-badge", "cursor-hover-clickable", "cursor-hover-input");
+    }
+  });
+
+  // High-performance physics rendering loop (lerp easing)
+  function renderCursor() {
+    dotX += (mouseX - dotX) * 0.75;
+    dotY += (mouseY - dotY) * 0.75;
+
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+
+    spotX += (mouseX - spotX) * 0.08;
+    spotY += (mouseY - spotY) * 0.08;
+
+    dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
+    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+    spotlight.style.transform = `translate3d(${spotX}px, ${spotY}px, 0)`;
+
+    requestAnimationFrame(renderCursor);
+  }
+
+  requestAnimationFrame(renderCursor);
+}
+
+// Auto-initialize when script loads
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDovetailCursor);
+} else {
+  initDovetailCursor();
+}
+
+
 
