@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Intelligence — Multi-Source Customer Voice & AI Sentiment Analytics</title>
+  
+  <!-- Typography Reference: Fraunces & Inter (Chattermill Design Standard) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for Interactive Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Sticky Navigation (Chattermill Style) -->
+  <header class="cm-nav">
+    <div class="cm-nav-container">
+      <a href="#" class="cm-logo-wrap">
+        <div class="cm-logo-mark">⚡</div>
+        <span class="cm-logo-text">Feedback Intelligence</span>
+      </a>
+
+      <nav class="cm-nav-links">
+        <a href="#solution" class="cm-nav-link">Our Solution</a>
+        <a href="#pipeline" class="cm-nav-link">Pipeline Architecture</a>
+        <a href="#dashboard" class="cm-nav-link">Live Dashboard</a>
+        <a href="#feed" class="cm-nav-link">Feedback Feed</a>
+      </nav>
+
+      <div class="cm-nav-actions">
+        <button id="openSyncModalBtn" class="cm-btn cm-btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          Sync Real Source
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content Container -->
+  <div class="cm-page-wrapper">
+
+    <!-- 1. Hero Section: Explaining the Vision (Chattermill Editorial Style) -->
+    <section class="cm-hero">
+      <div class="cm-pill-badge">
+        <span class="dot"></span>
+        <span>AI-Native Customer Intelligence & Voice of Customer SaaS</span>
+      </div>
+
+      <h1 class="cm-hero-title">
+        Turn scattered feedback into <em>verified product intelligence</em>.
+      </h1>
+
+      <p class="cm-hero-sub">
+        Unifying unstructured comments and reviews from YouTube, Google Maps, Google Play Store, and Instagram into a normalized, deduplicated PostgreSQL intelligence engine.
+      </p>
+
+      <div class="cm-hero-cta-row">
+        <a href="#dashboard" class="cm-btn cm-btn-primary">Explore Interactive Prototype</a>
+        <a href="#pipeline" class="cm-btn cm-btn-outline">View Ingestion Pipeline</a>
+      </div>
+    </section>
+
+    <!-- 2. Problem Statement vs. Solution Section -->
+    <section class="cm-solution-section" id="solution">
+      <div class="cm-section-header">
+        <span class="cm-section-tag">The Challenge & Our Breakthrough</span>
+        <h2 class="cm-section-heading">Why Multi-Source Customer Feedback is Broken</h2>
+        <p class="cm-section-desc">Traditional SaaS teams manually check disparate portals with inconsistent rating systems, zero deduplication, and massive comment noise.</p>
+      </div>
+
+      <div class="cm-ps-grid">
+        <!-- Problem Card -->
+        <div class="cm-ps-card problem">
+          <div class="cm-ps-card-title">
+            <span>❌ The Problem Statement</span>
+          </div>
+          <ul class="cm-ps-list problem">
+            <li><span class="icon">✕</span> <strong>Siloed Platforms:</strong> Feedback is scattered across YouTube comments, Play Store reviews, Maps ratings, and Instagram DMs/comments.</li>
+            <li><span class="icon">✕</span> <strong>Inconsistent Schemas:</strong> Some sources have 5-star ratings; others (like YouTube) have likes and nested reply threads with no star ratings.</li>
+            <li><span class="icon">✕</span> <strong>Duplicate & Quota Risk:</strong> Repeated synchronization pulls redundant data and rapidly drains official third-party API quotas.</li>
+            <li><span class="icon">✕</span> <strong>No Actionable Insights:</strong> Raw text is overwhelming for CX and Product managers without automated theme classification.</li>
+          </ul>
+        </div>
+
+        <!-- Solution Card -->
+        <div class="cm-ps-card solution">
+          <div class="cm-ps-card-title">
+            <span>✨ How We Solve It (Feedback Intelligence)</span>
+          </div>
+          <ul class="cm-ps-list solution">
+            <li><span class="icon">✓</span> <strong>Unified Normalization Engine:</strong> Every source maps into a standardized <code>Feedback</code> schema preserving original timestamps and metadata JSONB.</li>
+            <li><span class="icon">✓</span> <strong>Idempotent Deduplication:</strong> Enforces composite unique constraint <code>(business_id + source + external_id)</code> to guarantee zero duplicates.</li>
+            <li><span class="icon">✓</span> <strong>Official API-First Architecture:</strong> Direct server-side HTTPX integration with Google YouTube Data API v3 and complete reply thread pagination.</li>
+            <li><span class="icon">✓</span> <strong>Chattermill-Style AI Themes:</strong> Automatically aggregates customer sentiment into actionable topics, volume trajectories, and key growth drivers.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 4-Step Pipeline Visualizer -->
+    <section class="cm-solution-section" id="pipeline" style="background:var(--bg-page);">
+      <div class="cm-section-header">
+        <span class="cm-section-tag">System Architecture</span>
+        <h2 class="cm-section-heading">4-Step Ingestion & Intelligence Pipeline</h2>
+        <p class="cm-section-desc">From raw API endpoints to verified customer intelligence.</p>
+      </div>
+
+      <div class="cm-pipeline-container">
+        <div class="cm-step-card">
+          <span class="cm-step-number">Step 01</span>
+          <h3 class="cm-step-title">Multi-Source Ingestion</h3>
+          <p class="cm-step-text">Fetches top-level threads & deeply nested replies via official YouTube Data API v3, Google Maps, and Store APIs.</p>
+        </div>
+
+        <div class="cm-step-card">
+          <span class="cm-step-number">Step 02</span>
+          <h3 class="cm-step-title">Schema Normalization</h3>
+          <p class="cm-step-text">Converts disparate timestamps, text fields, author profiles, and engagement counts into a unified feedback payload.</p>
+        </div>
+
+        <div class="cm-step-card">
+          <span class="cm-step-number">Step 03</span>
+          <h3 class="cm-step-title">Idempotency & Deduplication</h3>
+          <p class="cm-step-text">Prevents redundant database insertion and preserves API quota limits across recurring 2-hour sync intervals.</p>
+        </div>
+
+        <div class="cm-step-card">
+          <span class="cm-step-number">Step 04</span>
+          <h3 class="cm-step-title">AI Theme Discovery</h3>
+          <p class="cm-step-text">Clusters customer feedback into positive/neutral/negative themes, surfacing actionable product insights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Interactive Live Dashboard Section -->
+    <section class="cm-dashboard-wrapper" id="dashboard">
+      <div class="cm-dash-topbar">
+        <div>
+          <h2 class="cm-section-heading" style="font-size:1.85rem;">Executive CX Intelligence Dashboard</h2>
+          <p class="cm-section-desc">Live aggregated customer voice across connected platforms.</p>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px;">
+          <select id="businessSelect" class="cm-business-select">
+            <!-- Populated via JS -->
+          </select>
+          <button class="cm-btn cm-btn-white">📅 Last 30 Days</button>
+          <button onclick="document.getElementById('syncModal').classList.add('active');" class="cm-btn cm-btn-primary">
+            + Sync Video
+          </button>
+        </div>
+      </div>
+
+      <!-- Executive KPI Cards -->
+      <div class="cm-kpi-grid">
+        <div class="cm-kpi-card">
+          <span class="cm-kpi-label">Net Sentiment Score</span>
+          <div class="cm-kpi-val-row">
+            <span class="cm-kpi-val">+76</span>
+            <span class="cm-kpi-trend positive">▲ +8.4%</span>
+          </div>
+          <span class="cm-kpi-footer">Across 4,892 customer touchpoints</span>
+        </div>
+
+        <div class="cm-kpi-card">
+          <span class="cm-kpi-label">Total Ingested Feedback</span>
+          <div class="cm-kpi-val-row">
+            <span class="cm-kpi-val">4,892</span>
+            <span class="cm-kpi-trend positive">▲ +18.2%</span>
+          </div>
+          <span class="cm-kpi-footer">YouTube, Maps, Play Store, Instagram</span>
+        </div>
+
+        <div class="cm-kpi-card">
+          <span class="cm-kpi-label">Positive Sentiment Ratio</span>
+          <div class="cm-kpi-val-row">
+            <span class="cm-kpi-val" style="color:var(--sentiment-pos);">72%</span>
+            <span class="cm-kpi-trend positive">▲ +4.1%</span>
+          </div>
+          <span class="cm-kpi-footer">72% Pos · 18% Neu · 10% Neg</span>
+        </div>
+
+        <div class="cm-kpi-card">
+          <span class="cm-kpi-label">Active AI Themes</span>
+          <div class="cm-kpi-val-row">
+            <span class="cm-kpi-val" style="color:#7C3AED;">18</span>
+            <span class="cm-kpi-trend positive">7 High Impact</span>
+          </div>
+          <span class="cm-kpi-footer">Automated CX topic clustering</span>
+        </div>
+      </div>
+
+      <!-- Multi-Source Live Status Strip -->
+      <div class="cm-sources-strip">
+        <div class="cm-source-pill">
+          <div class="cm-source-icon youtube">▶</div>
+          <div class="cm-source-info">
+            <span class="cm-source-title">YouTube Comments</span>
+            <span class="cm-source-count">1,840</span>
+            <span class="cm-source-badge">● Module 1 Active</span>
+          </div>
+        </div>
+
+        <div class="cm-source-pill">
+          <div class="cm-source-icon google_maps">📍</div>
+          <div class="cm-source-info">
+            <span class="cm-source-title">Google Maps Reviews</span>
+            <span class="cm-source-count">1,230</span>
+            <span class="cm-source-badge" style="color:#2563EB;">● Connected</span>
+          </div>
+        </div>
+
+        <div class="cm-source-pill">
+          <div class="cm-source-icon play_store">▶</div>
+          <div class="cm-source-info">
+            <span class="cm-source-title">Google Play Reviews</span>
+            <span class="cm-source-count">980</span>
+            <span class="cm-source-badge" style="color:#059669;">● Connected</span>
+          </div>
+        </div>
+
+        <div class="cm-source-pill">
+          <div class="cm-source-icon instagram">📷</div>
+          <div class="cm-source-info">
+            <span class="cm-source-title">Instagram Comments</span>
+            <span class="cm-source-count">842</span>
+            <span class="cm-source-badge" style="color:#DB2777;">● Connected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics Grid: Chart + Chattermill AI Themes -->
+      <div class="cm-analytics-grid">
+        <!-- Chart -->
+        <div class="cm-card">
+          <div>
+            <h3 class="cm-card-title">Sentiment & Volume Trajectory</h3>
+            <p class="cm-card-desc">Weekly distribution of customer feedback by sentiment tier</p>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="timelineChart"></canvas>
+          </div>
+        </div>
+
+        <!-- AI Themes -->
+        <div class="cm-card">
+          <div>
+            <h3 class="cm-card-title">Chattermill AI Themes</h3>
+            <p class="cm-card-desc">Click any theme to filter customer feedback below</p>
+          </div>
+          <div id="themesContainer" class="cm-themes-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights Row -->
+      <div>
+        <div style="margin-bottom:14px;">
+          <h3 class="cm-card-title">Key Drivers & Recommendations</h3>
+          <p class="cm-card-desc">Synthesized insights based on cross-platform customer feedback</p>
+        </div>
+        <div id="insightsContainer" class="cm-insights-grid">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- 5. Unified Feedback Feed Explorer -->
+      <div class="cm-feed-section" id="feed">
+        <div class="cm-feed-toolbar">
+          <div>
+            <h3 class="cm-card-title">Customer Feedback Stream</h3>
+            <p class="cm-card-desc" id="feedCountDisplay">Showing all feedback items</p>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+            <!-- Source Filters -->
+            <div class="cm-tab-group">
+              <button class="cm-tab-btn source-filter-tab active" data-source="all">All Sources</button>
+              <button class="cm-tab-btn source-filter-tab" data-source="youtube">YouTube</button>
+              <button class="cm-tab-btn source-filter-tab" data-source="google_maps">Maps</button>
+              <button class="cm-tab-btn source-filter-tab" data-source="play_store">Play Store</button>
+              <button class="cm-tab-btn source-filter-tab" data-source="instagram">Instagram</button>
+            </div>
+
+            <!-- Sentiment Filters -->
+            <div class="cm-tab-group">
+              <button class="cm-tab-btn sentiment-filter-tab active" data-sentiment="all">All Sentiments</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="positive" style="color:var(--sentiment-pos);">Positive</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="neutral" style="color:var(--sentiment-neu);">Neutral</button>
+              <button class="cm-tab-btn sentiment-filter-tab" data-sentiment="negative" style="color:var(--sentiment-neg);">Negative</button>
+            </div>
+
+            <!-- Search -->
+            <div class="cm-search-box">
+              <span class="cm-search-icon">🔍</span>
+              <input type="text" id="feedbackSearch" class="cm-search-input" placeholder="Search feedback keywords, authors..." />
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Cards List -->
+        <div id="feedbackFeedContainer" class="cm-feed-list">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Interactive Sync Modal -->
+  <div id="syncModal" class="cm-modal-backdrop">
+    <div class="cm-modal-card">
+      <div class="cm-modal-header">
+        <h3 class="cm-modal-title">Live YouTube Comments Ingestion</h3>
+        <button id="closeSyncModalBtn" class="cm-close-btn">×</button>
+      </div>
+
+      <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
+        Provide a YouTube Video ID or URL. The pipeline connects to Google's official YouTube Data API v3, extracts comment threads and replies, normalizes them into the generic feedback schema, and verifies composite deduplication.
+      </p>
+
+      <div class="cm-form-group">
+        <label class="cm-form-label">YouTube Video ID / URL</label>
+        <input type="text" id="syncVideoInput" class="cm-form-input" value="jNQXAC9IVRw" placeholder="e.g. jNQXAC9IVRw" />
+      </div>
+
+      <div class="cm-form-group">
+        <label class="cm-form-label">Target Business Entity</label>
+        <select class="cm-form-input">
+          <option>AeroScale Cloud Platform (b1)</option>
+          <option>FinPulse Banking (b2)</option>
+          <option>FitPulse Health (b3)</option>
+        </select>
+      </div>
+
+      <!-- Animated Progress Steps -->
+      <div id="syncStepsBox" class="cm-sync-steps-box"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:8px;">
+        <button onclick="document.getElementById('syncModal').classList.remove('active');" class="cm-btn cm-btn-outline">Cancel</button>
+        <button id="runSyncBtn" class="cm-btn cm-btn-primary">Start Live Ingestion</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="mockData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
