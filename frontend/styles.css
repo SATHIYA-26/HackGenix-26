@@ -835,17 +835,17 @@ body {
   background: #FFFFFF;
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: var(--shadow-card);
+  gap: 12px;
+  box-shadow: 0 4px 14px rgba(24, 24, 27, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .wwd-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px -8px rgba(24, 24, 27, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(24, 24, 27, 0.08);
   border-color: var(--border-card-hover);
 }
 
@@ -856,18 +856,18 @@ body {
 }
 
 .wwd-step-pill {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #3B82F6;
   background: #EFF6FF;
   border: 1px solid rgba(59, 130, 246, 0.2);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: var(--radius-full);
 }
 
 .wwd-icon-circle {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -876,16 +876,16 @@ body {
 
 .wwd-title {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-dark);
   letter-spacing: -0.02em;
 }
 
 .wwd-desc {
-  font-size: 0.9rem;
-  color: var(--text-body);
-  line-height: 1.6;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .wwd-highlight-box {
