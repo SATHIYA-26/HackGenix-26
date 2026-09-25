@@ -123,25 +123,28 @@ body {
 }
 
 .cm-logo-mark {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background: var(--bg-dark);
   color: var(--text-white);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.15rem;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
 }
 
 .cm-logo-text {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.4rem;
-  color: var(--text-dark);
-  letter-spacing: -0.03em;
+  font-size: 1.48rem;
+  color: #18181B;
+  letter-spacing: -0.04em;
+  display: flex;
+  align-items: center;
 }
 
 .cm-nav-links {
