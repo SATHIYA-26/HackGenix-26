@@ -1,13 +1,48 @@
 "use client";
 
-import { TrendingUp, TrendingDown, Sparkles, ArrowRight, AlertTriangle, Activity } from "lucide-react";
+import { useState, useEffect } from "react";
+import { TrendingUp, TrendingDown, Sparkles, ArrowRight, AlertTriangle, Activity, RefreshCw } from "lucide-react";
 import { PROBLEMS } from "../data/intelligenceMockData";
+import { getTrendsData } from "@/lib/api/trends";
+import { getProblems } from "@/lib/api/problems";
 
 export default function TrendsView({ onSelectProblem, company }) {
-  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
-  const risingProblems = problemsList.filter((p) => p.growthRate > 0.1).sort((a, b) => b.growthRate - a.growthRate);
-  const decliningProblems = problemsList.filter((p) => p.growthRate < 0).sort((a, b) => a.growthRate - b.growthRate);
-  const emergingSignals = problemsList.filter((p) => p.status === "emerging");
+  const [trendsData, setTrendsData] = useState(null);
+  const [liveProblems, setLiveProblems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    Promise.all([
+      getTrendsData().catch(() => null),
+      getProblems().catch(() => null),
+    ]).then(([trendsRes, probsRes]) => {
+      if (!isMounted) return;
+      if (trendsRes) setTrendsData(trendsRes);
+      if (probsRes?.data?.length > 0) setLiveProblems(probsRes.data);
+      setIsLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const problemsList = liveProblems.length > 0
+    ? liveProblems
+    : (company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS);
+
+  const risingProblems = trendsData?.rising?.length > 0
+    ? trendsData.rising
+    : problemsList.filter((p) => (p.growthRate || 0) > 0.1).sort((a, b) => (b.growthRate || 0) - (a.growthRate || 0));
+
+  const decliningProblems = trendsData?.declining?.length > 0
+    ? trendsData.declining
+    : problemsList.filter((p) => (p.growthRate || 0) < 0).sort((a, b) => (a.growthRate || 0) - (b.growthRate || 0));
+
+  const emergingSignals = trendsData?.emerging?.length > 0
+    ? trendsData.emerging
+    : problemsList.filter((p) => p.status === "emerging");
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">

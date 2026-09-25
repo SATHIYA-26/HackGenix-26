@@ -1,17 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, MessageSquare, ExternalLink, ThumbsUp, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, MessageSquare, ExternalLink, ThumbsUp, Star, RefreshCw, Database } from "lucide-react";
 import { getFullFeedbackDatabase } from "../data/intelligenceMockData";
+import { getFeedbackList } from "@/lib/api/feedback";
 
 export default function FeedbackView({ onSelectFeedback, company }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSource, setSelectedSource] = useState("all");
   const [selectedSentiment, setSelectedSentiment] = useState("all");
   const [selectedPlatform, setSelectedPlatform] = useState("all");
+  const [liveFeedback, setLiveFeedback] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLiveActive, setIsLiveActive] = useState(false);
+  const [totalLiveRecords, setTotalLiveRecords] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+
+    getFeedbackList({
+      page: 1,
+      limit: 100,
+      source: selectedSource,
+      sentiment: selectedSentiment,
+      search: searchQuery,
+    })
+      .then((res) => {
+        if (isMounted && res?.data?.length > 0) {
+          setLiveFeedback(res.data);
+          setIsLiveActive(Boolean(res.isLive));
+          setTotalLiveRecords(res.total || res.data.length);
+        }
+      })
+      .catch((err) => {
+        console.warn("Live feedback fetch notice:", err.message);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedSource, selectedSentiment, searchQuery]);
 
   const companyFeedback = company?.recentFeedback && company.recentFeedback.length > 0 ? company.recentFeedback : [];
-  const baseFeedback = getFullFeedbackDatabase();
+  const baseFeedback = liveFeedback.length > 0 ? liveFeedback : getFullFeedbackDatabase();
   const allFeedback = [
     ...companyFeedback,
     ...baseFeedback.filter((b) => !companyFeedback.some((c) => c.id === b.id)),
@@ -31,8 +66,8 @@ export default function FeedbackView({ onSelectFeedback, company }) {
     return true;
   });
 
-  const sources = Array.from(new Set(allFeedback.map((f) => f.source)));
-  const platforms = Array.from(new Set(allFeedback.map((f) => f.platform)));
+  const sources = Array.from(new Set(allFeedback.map((f) => f.source))).filter(Boolean);
+  const platforms = Array.from(new Set(allFeedback.map((f) => f.platform))).filter(Boolean);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
@@ -99,7 +134,20 @@ export default function FeedbackView({ onSelectFeedback, company }) {
 
       {/* Stream Count Indicator */}
       <div className="flex items-center justify-between text-xs text-[#71717A]">
-        <span>Showing {filteredItems.length} verified customer feedback records</span>
+        <div className="flex items-center gap-2">
+          <span>Showing {filteredItems.length} verified customer feedback records</span>
+          {isLiveActive && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-semibold border border-emerald-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live PostgreSQL Database ({totalLiveRecords} total)
+            </span>
+          )}
+          {isLoading && (
+            <span className="inline-flex items-center gap-1 text-[11px] text-[#71717A]">
+              <RefreshCw className="w-3 h-3 animate-spin" /> Fetching signals...
+            </span>
+          )}
+        </div>
         <span>Click any row to open full signal dossier</span>
       </div>
 

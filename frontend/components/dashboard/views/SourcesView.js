@@ -1,12 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Plus, CheckCircle2, AlertCircle, RefreshCw, ShieldCheck } from "lucide-react";
 import { CONNECTED_SOURCES } from "../data/intelligenceMockData";
 import YouTubeLiveExtractorCard from "../components/YouTubeLiveExtractorCard";
+import { getConnectedSources } from "@/lib/api/sources";
 
 export default function SourcesView({ onOpenConnectSource, company, onAddFeedbackItems, onVideoAnalyzed }) {
-  const sourcesList = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
+  const [liveSources, setLiveSources] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    getConnectedSources()
+      .then((res) => {
+        if (isMounted && res?.length > 0) setLiveSources(res);
+      })
+      .catch((err) => console.warn("Live sources fetch notice:", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const fallbackSources = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
+  const sourcesList = liveSources.length > 0 ? liveSources : fallbackSources;
   const activeCount = sourcesList.filter((s) => s.status !== "disconnected").length;
   const totalIngested = sourcesList.reduce(
     (acc, s) => acc + (s.totalFeedback || s.itemsCount || 0),
@@ -33,14 +50,12 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
         </button>
       </div>
 
-      {/* ─── LIVE YOUTUBE API V3 INGESTION & STATS ENGINE (ONLY FOR YOUTUBE CHANNELS) ─── */}
-      {(company?.type === "youtube" || company?.id === "acc_vj_sidhu" || (company?.category && company.category.toLowerCase().includes("youtube"))) && (
-        <YouTubeLiveExtractorCard
-          company={company}
-          onAddFeedbackItems={onAddFeedbackItems}
-          onVideoAnalyzed={onVideoAnalyzed}
-        />
-      )}
+      {/* ─── LIVE YOUTUBE API V3 INGESTION & STATS ENGINE ─── */}
+      <YouTubeLiveExtractorCard
+        company={company}
+        onAddFeedbackItems={onAddFeedbackItems}
+        onVideoAnalyzed={onVideoAnalyzed}
+      />
 
       {/* Pipeline Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

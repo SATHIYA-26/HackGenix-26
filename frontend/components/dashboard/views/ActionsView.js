@@ -1,13 +1,35 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2, Clock, Calendar, ArrowRight, User, TrendingDown, ShieldCheck, Activity, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2, Clock, Calendar, ArrowRight, User, TrendingDown, ShieldCheck, Activity, Check, RefreshCw } from "lucide-react";
 import { ACTIONS } from "../data/intelligenceMockData";
+import { getActions } from "@/lib/api/actions";
 
 export default function ActionsView({ onSelectProblem, company }) {
   const [filterStatus, setFilterStatus] = useState("all");
+  const [liveActions, setLiveActions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const actionsList = company?.actions && company.actions.length > 0 ? company.actions : ACTIONS;
+  useEffect(() => {
+    let isMounted = true;
+    getActions()
+      .then((res) => {
+        if (isMounted && res?.data?.length > 0) {
+          setLiveActions(res.data);
+        }
+      })
+      .catch((err) => console.warn("Live actions fetch error:", err))
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const fallbackActions = company?.actions && company.actions.length > 0 ? company.actions : ACTIONS;
+  const actionsList = liveActions.length > 0 ? liveActions : fallbackActions;
 
   const filteredActions = actionsList.filter((a) => {
     if (filterStatus !== "all" && a.status !== filterStatus) return false;

@@ -1,10 +1,34 @@
 "use client";
 
-import { Sparkles, ShieldCheck, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, ShieldCheck, ArrowRight, CheckCircle2, MessageSquare, RefreshCw } from "lucide-react";
 import { RECOMMENDATIONS, PROBLEMS } from "../data/intelligenceMockData";
+import { getProblems } from "@/lib/api/problems";
 
 export default function InsightsView({ onSelectProblem, onSelectFeedback, company }) {
-  const compProblems = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  const [liveProblems, setLiveProblems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    getProblems({ status: "all", sort: "priority", limit: 20 })
+      .then((res) => {
+        if (isMounted && res?.data?.length > 0) {
+          setLiveProblems(res.data);
+        }
+      })
+      .catch((err) => console.warn("Live problems for insights error:", err))
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const fallbackProblems = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  const compProblems = liveProblems.length > 0 ? liveProblems : fallbackProblems;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">

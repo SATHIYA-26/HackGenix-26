@@ -1,12 +1,38 @@
 "use client";
 
-import { Lightbulb, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Plus, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Lightbulb, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Plus, Check, RefreshCw } from "lucide-react";
 import { RECOMMENDATIONS, PROBLEMS } from "../data/intelligenceMockData";
+import { getRecommendations } from "@/lib/api/recommendations";
+import { getProblems } from "@/lib/api/problems";
 
 export default function RecommendationsView({ onSelectProblem, onOpenCreateAction, company }) {
-  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  const [liveRecs, setLiveRecs] = useState([]);
+  const [liveProblems, setLiveProblems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const recommendationsList = company?.problems && company.problems.length > 0
+  useEffect(() => {
+    let isMounted = true;
+    Promise.all([
+      getRecommendations().catch(() => null),
+      getProblems().catch(() => null),
+    ]).then(([recsRes, probsRes]) => {
+      if (!isMounted) return;
+      if (recsRes?.data?.length > 0) setLiveRecs(recsRes.data);
+      if (probsRes?.data?.length > 0) setLiveProblems(probsRes.data);
+      setIsLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const problemsList = liveProblems.length > 0
+    ? liveProblems
+    : (company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS);
+
+  const fallbackRecs = company?.problems && company.problems.length > 0
     ? company.problems.map((prob, idx) => ({
         id: `rec-${prob.id}`,
         problemId: prob.id,
@@ -24,6 +50,8 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
         owner: company.ownerName || "Operations Lead",
       }))
     : RECOMMENDATIONS;
+
+  const recommendationsList = liveRecs.length > 0 ? liveRecs : fallbackRecs;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">

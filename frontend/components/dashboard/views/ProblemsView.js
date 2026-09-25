@@ -1,16 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { AlertTriangle, ArrowRight, Filter, Search, LayoutGrid, List, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertTriangle, ArrowRight, Filter, Search, LayoutGrid, List, ChevronRight, RefreshCw } from "lucide-react";
 import { PROBLEMS } from "../data/intelligenceMockData";
+import { getProblems } from "@/lib/api/problems";
 
 export default function ProblemsView({ onSelectProblem, company }) {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("table"); // "table" or "grid"
+  const [liveProblems, setLiveProblems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    getProblems({ status: activeTab, search: searchQuery, sort: "priority" })
+      .then((res) => {
+        if (isMounted && res?.data?.length > 0) {
+          setLiveProblems(res.data);
+        }
+      })
+      .catch((err) => console.warn("Live problems fetch error:", err))
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, searchQuery]);
+
+  const problemsList = liveProblems.length > 0
+    ? liveProblems
+    : (company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS);
 
   const filteredProblems = problemsList.filter((p) => {
     if (activeTab !== "all" && p.status !== activeTab) return false;

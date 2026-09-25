@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { X, CheckCircle2, ArrowRight, Calendar, User, Target, Sparkles } from "lucide-react";
+import { X, CheckCircle2, ArrowRight, Calendar, User, Target, Sparkles, RefreshCw } from "lucide-react";
+import { createAction } from "@/lib/api/actions";
 
 export default function CreateActionModal({ isOpen, problem, onClose, onActionCreated }) {
   const [title, setTitle] = useState(
@@ -11,11 +12,29 @@ export default function CreateActionModal({ isOpen, problem, onClose, onActionCr
   const [targetDate, setTargetDate] = useState("2026-10-05");
   const [targetMetric, setTargetMetric] = useState("Deflect 80%+ of related negative customer complaints");
   const [status, setStatus] = useState("In Progress");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
+    const problemNumericId = problem?.id ? String(problem.id).replace(/\D/g, "") || "1" : "1";
+
+    try {
+      await createAction({
+        problemId: problemNumericId,
+        title,
+        owner,
+        targetDate,
+      });
+    } catch (err) {
+      console.warn("Backend action persistence fallback:", err);
+    }
+
+    setIsSubmitting(false);
+
     if (onActionCreated) {
       onActionCreated({
         id: `act-${Date.now()}`,

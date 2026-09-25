@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sparkles, X, ArrowRight, CheckCircle2, MessageSquare, AlertTriangle, ShieldCheck } from "lucide-react";
 import { PROBLEMS, RAW_FEEDBACK_ITEMS } from "../data/intelligenceMockData";
+import { askAIQuestion } from "@/lib/api/insights";
 
 const PROMPT_TEMPLATES = [
   "What are customers complaining about this week?",
@@ -19,7 +20,7 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
 
   if (!isOpen) return null;
 
-  const handleRunAsk = (questionText) => {
+  const handleRunAsk = async (questionText) => {
     const q = (questionText || query).trim();
     if (!q) return;
 
@@ -27,8 +28,25 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
     setIsThinking(true);
     setResponse(null);
 
-    setTimeout(() => {
-      setIsThinking(false);
+    try {
+      try {
+        const aiRes = await askAIQuestion(q);
+        if (aiRes) {
+          setResponse({
+            headline: aiRes.answer || "Customer signal analysis completed.",
+            summary: `Identified relevant customer signals: ${aiRes.answer}`,
+            concentration: aiRes.concentratedIn || "Connected customer channels",
+            whyItMatters: "Direct customer dissatisfaction impacts retention and brand trust.",
+            evidenceCount: aiRes.evidenceCount || 1,
+            targetProblemId: aiRes.problemId || "prob-1",
+            representativeQuote: aiRes.citations?.[0]?.text ? `“${aiRes.citations[0].text}”` : "Customer feedback indicates repeated friction in this area.",
+            recommendedAction: aiRes.recommendedAction || "Investigate the root issue and deploy UX remediation.",
+          });
+          return;
+        }
+      } catch (e) {
+        console.warn("AI Q&A fallback triggered:", e);
+      }
 
       if (q.toLowerCase().includes("checkout") || q.toLowerCase().includes("upi") || q.toLowerCase().includes("payment")) {
         setResponse({
@@ -73,7 +91,9 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
             "Prioritize Hotfix build v4.2.2 for Android Scoped Storage and deploy idempotent payment webhook reconciliation.",
         });
       }
-    }, 750);
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   return (

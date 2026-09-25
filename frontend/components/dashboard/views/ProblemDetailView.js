@@ -1,17 +1,56 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, ExternalLink, Activity, ArrowRight, Sparkles, User, Layers, Share2, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, ExternalLink, Activity, ArrowRight, Sparkles, User, Layers, Share2, Plus, RefreshCw } from "lucide-react";
 import { PROBLEMS, RAW_FEEDBACK_ITEMS, RECOMMENDATIONS } from "../data/intelligenceMockData";
+import { getProblemById, getProblemEvidence } from "@/lib/api/problems";
+import { getProblemInsight } from "@/lib/api/insights";
 
 export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction, company }) {
   const [activeTab, setActiveTab] = useState("overview"); // "overview", "evidence", "analytics"
+  const [liveProblem, setLiveProblem] = useState(null);
+  const [liveEvidence, setLiveEvidence] = useState([]);
+  const [liveInsight, setLiveInsight] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (problemId) {
+      getProblemById(problemId)
+        .then((p) => {
+          if (isMounted && p) setLiveProblem(p);
+        })
+        .catch(() => {});
+
+      getProblemInsight(problemId)
+        .then((ins) => {
+          if (isMounted && ins) setLiveInsight(ins);
+        })
+        .catch(() => {});
+
+      getProblemEvidence(problemId)
+        .then((ev) => {
+          if (isMounted && ev?.length > 0) setLiveEvidence(ev);
+        })
+        .catch(() => {});
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [problemId]);
 
   const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
-  const problem = problemsList.find((p) => p.id === problemId) || PROBLEMS.find((p) => p.id === problemId) || problemsList[0] || PROBLEMS[0];
+  const problem = liveProblem || problemsList.find((p) => String(p.id) === String(problemId)) || PROBLEMS.find((p) => String(p.id) === String(problemId)) || problemsList[0] || PROBLEMS[0];
   const allFeedback = [...(company?.recentFeedback || []), ...RAW_FEEDBACK_ITEMS];
-  const relatedFeedback = allFeedback.filter((f) => f.problemId === problem.id);
-  const recommendation = RECOMMENDATIONS.find((r) => r.problemId === problem.id) || RECOMMENDATIONS[0];
+  const relatedFeedback = liveEvidence.length > 0 ? liveEvidence : allFeedback.filter((f) => String(f.problemId) === String(problem.id));
+  const fallbackRec = RECOMMENDATIONS.find((r) => String(r.problemId) === String(problem.id)) || RECOMMENDATIONS[0];
+  const recommendation = liveInsight
+    ? {
+        ...fallbackRec,
+        title: `Resolution: ${problem.name}`,
+        rationale: liveInsight.whyItMatters || fallbackRec.rationale,
+        actionItems: liveInsight.recommendedActions?.length > 0 ? liveInsight.recommendedActions : fallbackRec.actionItems,
+      }
+    : fallbackRec;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">

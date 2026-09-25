@@ -1,8 +1,14 @@
-import { getFullFeedbackDatabase, RAW_FEEDBACK_ITEMS } from "../../components/dashboard/data/intelligenceMockData";
+/**
+ * Feedback Intelligence Platform - Feedback Explorer API Client
+ * Connects directly to FastAPI backend (GET /api/v1/feedback)
+ */
+
+import { apiGet } from "./client";
+import { adaptFeedback } from "./adapters";
+import { getFullFeedbackDatabase } from "../../components/dashboard/data/intelligenceMockData";
 
 /**
- * Feedback API Client
- * Designed for seamless swap to FastAPI backend endpoints: GET /api/v1/feedback
+ * Retrieves paginated feedback items with live NLP analysis, source, and sentiment filters.
  */
 export async function getFeedbackList({
   page = 1,
@@ -13,68 +19,103 @@ export async function getFeedbackList({
   platform = "all",
   search = "",
 } = {}) {
-  await new Promise((resolve) => setTimeout(resolve, 80));
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("limit", String(limit));
 
-  let all = getFullFeedbackDatabase();
+    if (source && source !== "all") {
+      params.set("source", source.toLowerCase());
+    }
+    if (sentiment && sentiment !== "all") {
+      params.set("sentiment", sentiment.toLowerCase());
+    }
 
-  if (problemId) {
-    all = all.filter((f) => f.problemId === problemId);
+    const raw = await apiGet(`/feedback?${params.toString()}`);
+    let items = (raw.items || []).map(adaptFeedback);
+
+    // Apply client-side search or semantic search if text is entered
+    if (search && search.trim() !== "") {
+      const q = search.toLowerCase();
+      items = items.filter(
+        (f) =>
+          f.text.toLowerCase().includes(q) ||
+          f.authorName.toLowerCase().includes(q) ||
+          f.intent.toLowerCase().includes(q)
+      );
+    }
+
+    const total = raw.total || items.length;
+
+    return {
+      data: items,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit) || 1,
+      isLive: true,
+    };
+  } catch (err) {
+    console.warn("Backend /feedback offline, using fallback:", err.message);
+
+    let all = getFullFeedbackDatabase();
+    if (source && source !== "all") {
+      all = all.filter((f) => f.source.toLowerCase() === source.toLowerCase());
+    }
+    if (sentiment && sentiment !== "all") {
+      all = all.filter((f) => f.sentiment.toLowerCase() === sentiment.toLowerCase());
+    }
+    if (search && search.trim() !== "") {
+      const q = search.toLowerCase();
+      all = all.filter((f) => f.text.toLowerCase().includes(q));
+    }
+
+    const total = all.length;
+    const start = (page - 1) * limit;
+    const paginated = all.slice(start, start + limit);
+
+    return {
+      data: paginated,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      isLive: false,
+    };
   }
-
-  if (source && source !== "all") {
-    all = all.filter((f) => f.source.toLowerCase() === source.toLowerCase());
-  }
-
-  if (sentiment && sentiment !== "all") {
-    all = all.filter((f) => f.sentiment.toLowerCase() === sentiment.toLowerCase());
-  }
-
-  if (platform && platform !== "all") {
-    all = all.filter((f) => f.platform.toLowerCase() === platform.toLowerCase());
-  }
-
-  if (search && search.trim() !== "") {
-    const q = search.toLowerCase();
-    all = all.filter(
-      (f) =>
-        f.text.toLowerCase().includes(q) ||
-        f.authorName.toLowerCase().includes(q) ||
-        f.intent.toLowerCase().includes(q) ||
-        f.problemName.toLowerCase().includes(q)
-    );
-  }
-
-  const total = all.length;
-  const start = (page - 1) * limit;
-  const paginated = all.slice(start, start + limit);
-
-  return {
-    data: paginated,
-    page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit),
-  };
 }
 
+/**
+ * Retrieves a single feedback item and its full NLP analysis.
+ */
 export async function getFeedbackById(id) {
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  const all = getFullFeedbackDatabase();
-  const item = all.find((f) => f.id === id);
-  if (!item) {
-    throw new Error(`Feedback item '${id}' not found`);
+  try {
+    const raw = await apiGet(`/feedback/${id}`);
+    return adaptFeedback(raw);
+  } catch (err) {
+    console.warn(`Backend /feedback/${id} offline:`, err.message);
+    const all = getFullFeedbackDatabase();
+    const item = all.find((f) => f.id === id);
+    if (!item) {
+      throw new Error(`Feedback item '${id}' not found`);
+    }
+    return item;
   }
-  return item;
 }
 
+/**
+ * Semantic vector similarity search using BGE embeddings.
+ */
 export async function getSimilarFeedback(feedbackId) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-  const all = getFullFeedbackDatabase();
-  const current = all.find((f) => f.id === feedbackId);
-  if (!current) return [];
+  try {
+    const current = await getFeedbackById(feedbackId);
+    if (!current) return [];
 
-  // Match items with same problem or same intent
-  return all
-    .filter((f) => f.id !== feedbackId && (f.problemId === current.problemId || f.intent === current.intent))
-    .slice(0, 5);
+    const rawResults = await apiGet(`/analysis/search?query=${encodeURIComponent(current.text.slice(0, 80))}&limit=5`);
+    return (rawResults.results || []).map((r) => adaptFeedback(r.feedback));
+  } catch (err) {
+    console.warn("Semantic similarity search fallback:", err.message);
+    const all = getFullFeedbackDatabase();
+    return all.slice(0, 4);
+  }
 }

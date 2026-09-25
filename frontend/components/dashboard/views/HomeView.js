@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Sparkles,
   ArrowRight,
@@ -33,6 +33,8 @@ import {
   CONNECTED_SOURCES,
   getCompanyIntelligence,
 } from "../data/intelligenceMockData";
+import { getExecutiveDashboardMetrics } from "@/lib/api/dashboard";
+import { getProblems } from "@/lib/api/problems";
 import DateRangeFilter, { formatDateShort } from "../components/DateRangeFilter";
 
 export default function HomeView({
@@ -51,31 +53,57 @@ export default function HomeView({
     days: 30,
   });
   const [showShareToast, setShowShareToast] = useState(false);
+  const [liveDashboard, setLiveDashboard] = useState(null);
+  const [liveProblems, setLiveProblems] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    getExecutiveDashboardMetrics()
+      .then((data) => {
+        if (isMounted && data) {
+          setLiveDashboard(data);
+        }
+      })
+      .catch((err) => console.warn("Live dashboard fetch error:", err));
+
+    getProblems()
+      .then((res) => {
+        if (isMounted && res?.data?.length > 0) {
+          setLiveProblems(res.data);
+        }
+      })
+      .catch((err) => console.warn("Live problems fetch error:", err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const comp = company || getCompanyIntelligence("acc_manis");
-  const compProblems = comp.problems && comp.problems.length > 0 ? comp.problems : PROBLEMS;
+  const compProblems = liveProblems.length > 0 ? liveProblems : (comp.problems && comp.problems.length > 0 ? comp.problems : PROBLEMS);
   const recentFeedback = comp.recentFeedback && comp.recentFeedback.length > 0 ? comp.recentFeedback : RAW_FEEDBACK_ITEMS.slice(0, 3);
-  const sourcesList = comp.sources && comp.sources.length > 0 ? comp.sources : CONNECTED_SOURCES;
+  const sourcesList = liveDashboard?.topSources?.length > 0 ? liveDashboard.topSources : (comp.sources && comp.sources.length > 0 ? comp.sources : CONNECTED_SOURCES);
   const aiBrief = comp.aiBrief || AI_BRIEF;
 
   // ─── DYNAMIC DATA SCALING BASED ON SELECTED DATE RANGE ───
   const days = selectedRange.days || 30;
   const scale = days / 30;
 
-  // Base raw volume (default ~14,280 for 30 days)
-  const baseVolume = parseInt((comp.metrics?.totalFeedback || "14,280").replace(/,/g, ""), 10) || 14280;
-  const dynamicTotalFeedback = Math.max(140, Math.round(baseVolume * scale));
+  // Base raw volume (use liveDashboard total if connected)
+  const baseVolume = liveDashboard?.totalFeedback || (parseInt((comp.metrics?.totalFeedback || "14,280").replace(/,/g, ""), 10) || 14280);
+  const dynamicTotalFeedback = liveDashboard ? liveDashboard.totalFeedback : Math.max(140, Math.round(baseVolume * scale));
   const dynamicTotalFeedbackFormatted = dynamicTotalFeedback.toLocaleString();
 
   // Dynamic Deltas & Sentiments
-  let dynamicDelta = "+12.4% review surge";
+  let dynamicDelta = liveDashboard?.isLive ? "● Real FastAPI Signal" : "+12.4% review surge";
   let dynamicRating = comp.metrics?.ratingAvg?.replace(" ★", " / 5.0") || "4.4 / 5.0";
-  let dynamicNetSentiment = "+78.4%";
-  let positivePct = 76.2;
-  let neutralPct = 14.1;
-  let negativePct = 9.7;
-  let activeProblemsCount = compProblems.length;
-  let emergingCount = 3;
+  let dynamicNetSentiment = liveDashboard?.avgSentimentScore !== undefined ? `${liveDashboard.avgSentimentScore > 0 ? "+" : ""}${Math.round(liveDashboard.avgSentimentScore * 100)}%` : "+78.4%";
+
+  let positivePct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.positive / liveDashboard.totalFeedback) * 100) : 76.2;
+  let neutralPct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.neutral / liveDashboard.totalFeedback) * 100) : 14.1;
+  let negativePct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.negative / liveDashboard.totalFeedback) * 100) : 9.7;
+  let activeProblemsCount = liveDashboard?.activeProblemsCount ?? compProblems.length;
+  let emergingCount = liveDashboard?.emergingSignalsCount ?? 3;
 
   // ─── OVERRIDES WHEN FOCUSING ON A SPECIFIC ATTACHED YOUTUBE VIDEO ───
   const isVideoFocus = !!activeVideoFocus?.video;
