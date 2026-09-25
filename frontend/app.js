@@ -593,7 +593,7 @@ function renderFeedbackFeed() {
             </div>
           </div>
           <div class="cm-fb-badges">
-            ${item.branch ? `<span class="cm-branch-tag">📍 ${item.branch}</span>` : ''}
+            ${item.branch ? `<span class="cm-branch-tag">${item.branch}</span>` : ''}
             ${item.rating ? `<span class="cm-stars-badge">${item.rating} ★</span>` : ''}
             <span class="cm-src-badge ${item.source}">${sourceLabel}</span>
             <span class="cm-sentiment-badge ${item.sentiment}">
@@ -608,16 +608,16 @@ function renderFeedbackFeed() {
         <div class="cm-fb-footer">
           <span class="cm-theme-tag">${item.theme || 'General Feedback'}</span>
           <div style="display:flex; align-items:center; gap:14px;">
-            ${item.metadata && item.metadata.like_count !== undefined ? `<span>👍 ${item.metadata.like_count}</span>` : ''}
-            ${hasReplies ? `<span style="color:var(--text-muted); font-weight:600;">💬 ${item.replies.length} reply</span>` : ''}
-            ${item.source_url ? `<a href="${item.source_url}" target="_blank" style="color:var(--accent-indigo); text-decoration:none; font-weight:600;">View Review ↗</a>` : ''}
+            ${item.metadata && item.metadata.like_count !== undefined ? `<span style="font-size:0.8rem; color:var(--text-muted);">${item.metadata.like_count} likes</span>` : ''}
+            ${hasReplies ? `<span style="color:var(--text-muted); font-weight:600; font-size:0.8rem;">${item.replies.length} ${item.replies.length === 1 ? 'reply' : 'replies'}</span>` : ''}
+            ${item.source_url ? `<a href="${item.source_url}" target="_blank" style="color:var(--accent-indigo); text-decoration:none; font-weight:600; font-size:0.82rem;">View Review ↗</a>` : ''}
           </div>
         </div>
 
         ${hasReplies ? `
           <div style="background: var(--bg-subtle); border-left: 2px solid var(--text-dark); border-radius: 6px; padding: 10px 14px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px;">
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:0.8rem; font-weight:700; color:var(--text-dark);">💬 ${item.replies[0].author_name}</span>
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-dark);">Response from ${item.replies[0].author_name}</span>
             </div>
             <p style="font-size:0.86rem; color:var(--text-body); margin:0;">${item.replies[0].text}</p>
           </div>
