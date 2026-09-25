@@ -913,30 +913,20 @@ function handleDemoBooking(e) {
 }
 
 // ==========================================================================
-// DOVETAIL-INSPIRED INTERACTIVE CURSOR & SPOTLIGHT CONTROLLER
-// Enhanced with Micro-Coins, VoC Metric Tokens & Special Glyphs Everywhere
+// DOVETAIL-INSPIRED AMBIENT PARTICLES & SPOTLIGHT ENGINE
+// Normal Native Cursor with Micro-Coins, VoC Metrics & Glyphs Background Animation
 // ==========================================================================
 
 function initDovetailCursor() {
-  const dot = document.getElementById("cursorDot");
-  const ring = document.getElementById("cursorRing");
   const spotlight = document.getElementById("cursorSpotlight");
   const canvas = document.getElementById("cursorParticleCanvas");
-
-  if (!dot || !ring || !spotlight) return;
 
   let mouseX = window.innerWidth / 2;
   let mouseY = window.innerHeight / 2;
   let prevMouseX = -100;
   let prevMouseY = -100;
-  let dotX = mouseX;
-  let dotY = mouseY;
-  let ringX = mouseX;
-  let ringY = mouseY;
   let spotX = mouseX;
   let spotY = mouseY;
-  let isHoveringClickable = false;
-  let isHoveringInput = false;
 
   // ------------------------------------------------------------------------
   // Particle Canvas Engine (Micro-Coins, VoC Metrics, Numbers & Glyphs)
@@ -1081,7 +1071,7 @@ function initDovetailCursor() {
   }
 
   // ------------------------------------------------------------------------
-  // Mouse & Scroll Handlers (Scroll Animation Everywhere)
+  // Mouse & Scroll Handlers (Scroll & Mouse Particles Behind Normal Cursor)
   // ------------------------------------------------------------------------
   let distAccumulator = 0;
   let lastScrollY = window.scrollY;
@@ -1097,7 +1087,7 @@ function initDovetailCursor() {
       const dist = Math.sqrt(dx * dx + dy * dy);
       distAccumulator += dist;
 
-      if (distAccumulator > 28) {
+      if (distAccumulator > 26) {
         spawnParticle(mouseX, mouseY, false);
         distAccumulator = 0;
       }
@@ -1114,10 +1104,9 @@ function initDovetailCursor() {
     lastScrollY = currentScrollY;
 
     if (Math.abs(deltaY) > 2) {
-      // Spawn floating coins and character particles on scroll
       const spawnX = mouseX > 0 && mouseX < window.innerWidth ? mouseX + (Math.random() - 0.5) * 120 : Math.random() * window.innerWidth;
       const spawnY = mouseY > 0 && mouseY < window.innerHeight ? mouseY + (Math.random() - 0.5) * 80 : Math.random() * window.innerHeight;
-      const scrollVelocity = deltaY > 0 ? -1.2 : 1.2; // Float opposite of scroll direction
+      const scrollVelocity = deltaY > 0 ? -1.2 : 1.2;
 
       spawnParticle(spawnX, spawnY, false, scrollVelocity);
     }
@@ -1132,52 +1121,19 @@ function initDovetailCursor() {
   });
 
   window.addEventListener("mousedown", (e) => {
-    document.body.classList.add("cursor-clicking");
     for (let i = 0; i < 7; i++) {
       spawnParticle(e.clientX, e.clientY, true);
     }
   });
 
-  window.addEventListener("mouseup", () => {
-    document.body.classList.remove("cursor-clicking");
-  });
-
-  // Hover detection for interactive clickables (no text popups)
-  document.addEventListener("mouseover", (e) => {
-    const target = e.target;
-    if (!target) return;
-
-    const clickable = target.closest("button, a, .cm-btn, .roi-tf-btn, .tab-btn, .cm-nav-link, select, input[type='radio'], input[type='checkbox'], [role='button'], .clickable");
-    isHoveringClickable = !!clickable;
-
-    const textInput = target.closest("input[type='text'], input[type='email'], input[type='search'], input[type='password'], textarea");
-    isHoveringInput = !!textInput;
-
-    if (isHoveringClickable) {
-      document.body.classList.add("cursor-hover-clickable");
-      document.body.classList.remove("cursor-hover-input");
-    } else if (isHoveringInput) {
-      document.body.classList.add("cursor-hover-input");
-      document.body.classList.remove("cursor-hover-clickable");
-    } else {
-      document.body.classList.remove("cursor-hover-clickable", "cursor-hover-input");
-    }
-  });
-
   // High-performance physics rendering loop (lerp easing)
   function renderCursor() {
-    dotX += (mouseX - dotX) * 0.75;
-    dotY += (mouseY - dotY) * 0.75;
-
-    ringX += (mouseX - ringX) * 0.18;
-    ringY += (mouseY - ringY) * 0.18;
-
     spotX += (mouseX - spotX) * 0.08;
     spotY += (mouseY - spotY) * 0.08;
 
-    dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
-    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
-    spotlight.style.transform = `translate3d(${spotX}px, ${spotY}px, 0)`;
+    if (spotlight) {
+      spotlight.style.transform = `translate3d(${spotX}px, ${spotY}px, 0)`;
+    }
 
     updateAndDrawParticles();
 
@@ -1193,6 +1149,7 @@ if (document.readyState === "loading") {
 } else {
   initDovetailCursor();
 }
+
 
 
 
