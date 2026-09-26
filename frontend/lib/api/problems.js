@@ -5,19 +5,26 @@
 
 import { apiGet } from "./client";
 import { adaptProblem, adaptFeedback } from "./adapters";
-import { PROBLEMS, getFullFeedbackDatabase } from "../../components/dashboard/data/intelligenceMockData";
 
 /**
  * Fetches discovered problem clusters from FastAPI backend with live priority rankings.
+ * @param {object} params
+ * @param {string} [params.accountId] - Account filter
+ * @param {string} [params.status] - Status filter (critical, emerging, etc.)
+ * @param {string} [params.search] - Search text query
+ * @param {string} [params.product] - Product category
+ * @param {string} [params.sort] - Sort criteria ("priority", "growth", "volume")
  */
 export async function getProblems({
+  accountId = null,
   status = "all",
   search = "",
   product = "all",
   sort = "priority",
 } = {}) {
   try {
-    const raw = await apiGet(`/problems?skip=0&limit=100&sort_by_priority=${sort === "priority"}`);
+    const accParam = accountId ? `&account_id=${encodeURIComponent(accountId)}` : "";
+    const raw = await apiGet(`/problems?skip=0&limit=100&sort_by_priority=${sort === "priority"}${accParam}`);
     const items = raw.items || (Array.isArray(raw) ? raw : []);
     let results = items.map(adaptProblem);
 
@@ -58,44 +65,49 @@ export async function getProblems({
       isLive: true,
     };
   } catch (err) {
-    console.warn("Backend /problems offline, using fallback:", err.message);
-
-    let results = [...PROBLEMS];
-    if (status && status !== "all") {
-      results = results.filter((p) => p.status === status);
-    }
-    if (search && search.trim() !== "") {
-      const q = search.toLowerCase();
-      results = results.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.summary.toLowerCase().includes(q)
-      );
-    }
+    console.error("Failed to fetch problems from backend:", err.message);
     return {
-      data: results,
-      total: results.length,
+      data: [],
+      total: 0,
       timestamp: new Date().toISOString(),
       isLive: false,
+      error: err.message,
     };
   }
 }
 
 /**
- * Retrieves a single problem cluster by ID.
+ * Retrieves a single problem cluster by ID with traceable quotes and evidence from FastAPI.
  */
 export async function getProblemById(id) {
   try {
     const raw = await apiGet(`/problems/${id}`);
-    return adaptProblem(raw);
-  } catch (err) {
-    console.warn(`Backend /problems/${id} offline, falling back:`, err.message);
-    const problem = PROBLEMS.find((p) => String(p.id) === String(id));
-    if (!problem) {
-      throw new Error(`Problem with ID '${id}' not found`);
+    const adapted = adaptProblem(raw);
+
+    if (raw.representative_feedback) {
+      adapted.representativeFeedback = raw.representative_feedback.map((f) => ({
+        id: f.feedback_id,
+        text: f.text,
+        source: f.source,
+        sourceUrl: f.source_url,
+        rating: f.rating,
+        sentiment: f.sentiment,
+        createdAt: f.created_at,
+      }));
     }
-    return problem;
+
+    if (raw.evidence_summary) {
+      adapted.evidenceSummary = raw.evidence_summary;
+    }
+
+    if (raw.traceable_feedback_ids) {
+      adapted.traceableFeedbackIds = raw.traceable_feedback_ids;
+    }
+
+    return adapted;
+  } catch (err) {
+    console.error(`Failed to fetch problem #${id} from backend:`, err.message);
+    throw err;
   }
 }
 
@@ -104,23 +116,29 @@ export async function getProblemById(id) {
  */
 export async function getProblemEvidence(problemId) {
   try {
+    const detail = await getProblemById(problemId);
+    if (detail && detail.representativeFeedback && detail.representativeFeedback.length > 0) {
+      return {
+        problemId,
+        totalEvidenceCount: detail.representativeFeedback.length,
+        items: detail.representativeFeedback,
+      };
+    }
+
     const rawList = await apiGet(`/feedback?limit=50`);
     const all = (rawList.items || []).map(adaptFeedback);
-    // Find feedback items matching problem or default to top negative items
     const evidence = all.filter((f) => String(f.problemId) === String(problemId));
-    return {
-      problemId,
-      totalEvidenceCount: evidence.length > 0 ? evidence.length : all.slice(0, 5).length,
-      items: evidence.length > 0 ? evidence : all.slice(0, 5),
-    };
-  } catch (err) {
-    console.warn(`Problem evidence fallback for ${problemId}:`, err.message);
-    const allFeedback = getFullFeedbackDatabase();
-    const evidence = allFeedback.filter((f) => f.problemId === problemId);
     return {
       problemId,
       totalEvidenceCount: evidence.length,
       items: evidence,
+    };
+  } catch (err) {
+    console.error(`Failed to fetch evidence for problem ${problemId}:`, err.message);
+    return {
+      problemId,
+      totalEvidenceCount: 0,
+      items: [],
     };
   }
 }

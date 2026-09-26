@@ -56,6 +56,7 @@ def list_feedback(
     source: Optional[str] = Query(None, description="Filter by feedback source"),
     sentiment: Optional[str] = Query(None, description="Filter by sentiment (positive, negative, neutral)"),
     intent: Optional[str] = Query(None, description="Filter by intent category"),
+    account_id: Optional[str] = Query(None, description="Filter by account/company ID"),
     service: FeedbackService = Depends(get_feedback_service),
 ):
     items, total = service.list_feedback(
@@ -64,6 +65,7 @@ def list_feedback(
         source=source,
         sentiment=sentiment,
         intent=intent,
+        account_id=account_id,
     )
     return FeedbackListResponse(
         items=items,

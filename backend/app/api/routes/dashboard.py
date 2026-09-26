@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -18,19 +19,22 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard Summary"])
     summary="Executive Dashboard Summary",
     description="Holistic high-level overview of feedback volume, emerging trends, priority problems, and sentiment.",
 )
-def get_dashboard_summary(db: Session = Depends(get_db)):
+def get_dashboard_summary(
+    account_id: Optional[str] = Query(None, description="Optional account/company filter"),
+    db: Session = Depends(get_db),
+):
     feedback_repo = FeedbackRepository(db)
     problem_repo = ProblemRepository(db)
     trend_repo = TrendRepository(db)
 
-    total_feedback = feedback_repo.count()
-    analyzed_feedback = feedback_repo.count_analyzed()
-    total_problems = problem_repo.count()
-    emerging_count = trend_repo.count_emerging()
+    total_feedback = feedback_repo.count(account_id=account_id)
+    analyzed_feedback = feedback_repo.count_analyzed(account_id=account_id)
+    total_problems = problem_repo.count(account_id=account_id)
+    emerging_count = trend_repo.count_emerging(account_id=account_id)
 
-    sentiment_dist = feedback_repo.get_sentiment_distribution()
-    intent_dist = feedback_repo.get_intent_distribution()
-    source_dist = feedback_repo.get_source_distribution()
+    sentiment_dist = feedback_repo.get_sentiment_distribution(account_id=account_id)
+    intent_dist = feedback_repo.get_intent_distribution(account_id=account_id)
+    source_dist = feedback_repo.get_source_distribution(account_id=account_id)
 
     # Calculate average sentiment score (-1.0 to 1.0)
     pos_count = sentiment_dist.get("positive", 0)
@@ -42,7 +46,7 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
         avg_sentiment = 0.0
 
     # Top priority problems
-    top_problems, _ = problem_repo.get_all(skip=0, limit=5, sort_by_priority=True)
+    top_problems, _ = problem_repo.get_all(skip=0, limit=5, sort_by_priority=True, account_id=account_id)
     top_problem_responses = []
     for p in top_problems:
         breakdown = PriorityBreakdown(
@@ -67,13 +71,14 @@ def get_dashboard_summary(db: Session = Depends(get_db)):
                 priority_score=p.priority_score,
                 priority_breakdown=breakdown,
                 product_dimension=p.product_dimension,
+                account_id=p.account_id,
                 created_at=p.created_at,
                 updated_at=p.updated_at,
             )
         )
 
     # Emerging trends
-    emerging_trends, _ = trend_repo.get_all(only_emerging=True, limit=5)
+    emerging_trends, _ = trend_repo.get_all(only_emerging=True, limit=5, account_id=account_id)
     trend_responses = [
         TrendResponse(
             id=t.id,

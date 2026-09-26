@@ -19,10 +19,11 @@ def list_trends(
     only_emerging: bool = Query(False, description="Filter only to emerging problem spikes"),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
+    account_id: Optional[str] = Query(None, description="Optional account/company filter"),
     db: Session = Depends(get_db),
 ):
     repo = TrendRepository(db)
-    trends, _ = repo.get_all(only_emerging=only_emerging, skip=skip, limit=limit)
+    trends, _ = repo.get_all(only_emerging=only_emerging, skip=skip, limit=limit, account_id=account_id)
 
     return [
         TrendResponse(

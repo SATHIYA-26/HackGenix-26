@@ -111,9 +111,8 @@ export default function Navbar({
                 >
                   <option value="acc_manis">Mani's Dum Biriyani (Google Maps)</option>
                   <option value="acc_chepauk">Chepauk Sports Store (Google Maps)</option>
-                  <option value="acc_hm">H&M Mylapore Branch (Google Maps)</option>
-                  <option value="acc_vj_sidhu">VJ Sidhu Vlogs (YouTube Channel)</option>
                   <option value="acc_spotify">Spotify (Google Play Store)</option>
+                  <option value="acc_mrwhosetheboss">Mrwhosetheboss (YouTube Channel)</option>
                 </select>
               </div>
 

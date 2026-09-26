@@ -35,6 +35,7 @@ class ProblemResponse(BaseModel):
     priority_score: float
     priority_breakdown: Optional[PriorityBreakdown] = None
     product_dimension: Optional[Dict[str, Any]] = None
+    account_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

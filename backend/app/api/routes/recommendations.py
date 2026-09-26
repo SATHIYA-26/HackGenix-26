@@ -19,10 +19,11 @@ router = APIRouter(tags=["Recommendations & Insights"])
 def list_recommendations(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
+    account_id: Optional[str] = Query(None, description="Optional account/company filter"),
     db: Session = Depends(get_db),
 ):
     repo = RecommendationRepository(db)
-    recs, _ = repo.get_all(skip=skip, limit=limit)
+    recs, _ = repo.get_all(skip=skip, limit=limit, account_id=account_id)
 
     return [
         RecommendationResponse(

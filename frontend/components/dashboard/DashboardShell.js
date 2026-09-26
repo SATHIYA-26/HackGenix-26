@@ -35,7 +35,6 @@ import FeedbackView from "./views/FeedbackView";
 import SourcesView from "./views/SourcesView";
 import RecommendationsView from "./views/RecommendationsView";
 import ActionsView from "./views/ActionsView";
-import CustomDashboardsView from "./views/CustomDashboardsView";
 import SettingsView from "./views/SettingsView";
 
 import CommandPaletteModal from "./modals/CommandPaletteModal";
@@ -45,10 +44,6 @@ import CreateActionModal from "./modals/CreateActionModal";
 import FeedbackDetailDrawer from "./modals/FeedbackDetailDrawer";
 
 import {
-  USER_PROFILE,
-  PROBLEMS,
-  ACTIONS,
-  CONNECTED_SOURCES,
   getFullFeedbackDatabase,
   getCompanyIntelligence,
 } from "./data/intelligenceMockData";
@@ -71,28 +66,20 @@ const DEMO_COMPANIES = [
     logo: "/assets/logos/chepauk_sports.png",
   },
   {
-    id: "acc_hm",
-    name: "H&M Mylapore Branch",
-    owner: "Pooja Sundaram (Store CX Lead)",
-    badge: "Fashion Showroom",
-    category: "Fashion Retail Showroom",
-    logo: "/assets/logos/hm_mylapore.png",
-  },
-  {
-    id: "acc_vj_sidhu",
-    name: "VJ Sidhu Vlogs",
-    owner: "VJ Sidhu (Creator & Producer)",
-    badge: "YouTube Channel",
-    category: "YouTube Creator Channel",
-    logo: "/assets/logos/vj_sidhu_vlogs.png",
-  },
-  {
     id: "acc_spotify",
     name: "Spotify Android",
     owner: "Elena Rostova (Android Core PM)",
     badge: "Play Store App",
     category: "Google Play Store App",
     logo: "/assets/logos/spotify.png",
+  },
+  {
+    id: "acc_mrwhosetheboss",
+    name: "Mrwhosetheboss",
+    owner: "Arun Maini (YouTube Creator)",
+    badge: "YouTube Channel",
+    category: "YouTube Creator Channel",
+    logo: "/assets/logos/mrwhosetheboss.png",
   },
 ];
 
@@ -114,6 +101,7 @@ export default function DashboardShell({
   const [activeVideoFocus, setActiveVideoFocus] = useState(null);
 
   // Business company workspace switcher state
+  // IMPORTANT: Start with a static SSR-safe default — restore from storage in useEffect to avoid hydration mismatch
   const [selectedAccountId, setSelectedAccountId] = useState(currentAccountId || "acc_manis");
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
 
@@ -128,10 +116,20 @@ export default function DashboardShell({
   const [isCreateActionOpen, setIsCreateActionOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  // Synchronize company account if changed from parent
+  // Client-only: restore persisted account ID after hydration to avoid SSR mismatch
   useEffect(() => {
-    if (currentAccountId) {
+    const stored = localStorage.getItem("reviewr_account_id") || sessionStorage.getItem("reviewr_account_id");
+    if (stored) {
+      setSelectedAccountId(stored);
+    }
+  }, []);
+
+  // Synchronize company account if changed from parent (e.g. after login)
+  useEffect(() => {
+    if (currentAccountId && currentAccountId !== "acc_manis") {
       setSelectedAccountId(currentAccountId);
+      localStorage.setItem("reviewr_account_id", currentAccountId);
+      sessionStorage.setItem("reviewr_account_id", currentAccountId);
     }
   }, [currentAccountId]);
 
@@ -139,6 +137,10 @@ export default function DashboardShell({
 
   const handleSelectCompany = (accId) => {
     setSelectedAccountId(accId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("reviewr_account_id", accId);
+      sessionStorage.setItem("reviewr_account_id", accId);
+    }
     setIsCompanyDropdownOpen(false);
     setSelectedProblemId(null);
     if (onAccountChange) {
@@ -210,7 +212,7 @@ export default function DashboardShell({
   };
 
   const handleOpenCreateAction = (prob) => {
-    setActionTargetProblem(prob || (company.problems && company.problems[0]) || PROBLEMS[0]);
+    setActionTargetProblem(prob || (company.problems && company.problems[0]) || null);
     setIsCreateActionOpen(true);
   };
 
@@ -235,10 +237,12 @@ export default function DashboardShell({
     setActiveVideoFocus(null);
   };
 
-  const compProblems = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
-  const compSources = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
-  const compActions = company?.actions && company.actions.length > 0 ? company.actions : ACTIONS;
-  const notificationsList = company?.notifications && company.notifications.length > 0 ? company.notifications : USER_PROFILE.notifications;
+  // Use company data as-is — no mock data fallbacks. Empty arrays for accounts that
+  // haven't seeded data yet (e.g. YouTube creator) show proper empty states.
+  const compProblems = company?.problems || [];
+  const compSources = company?.sources || [];
+  const compActions = company?.actions || [];
+  const notificationsList = company?.notifications || [];
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -718,6 +722,7 @@ export default function DashboardShell({
       <CreateActionModal
         isOpen={isCreateActionOpen}
         problem={actionTargetProblem}
+        company={company}
         onClose={() => setIsCreateActionOpen(false)}
         onActionCreated={(newAct) => {
           if (company.actions) {

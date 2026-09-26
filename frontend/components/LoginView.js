@@ -1,7 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { PREDEFINED_USERS } from "../lib/mockData";
+import { ArrowRight, ArrowLeft, Shield, Lock, Mail, CheckCircle2 } from "lucide-react";
+
+export const PREDEFINED_USERS = [
+  {
+    email: "admin@manisbiriyani.com",
+    password: "password123",
+    accountId: "acc_manis",
+    name: "Mani",
+    businessName: "Mani's Dum Biriyani",
+    role: "Founder & Operations",
+    badge: "4 Branches",
+    type: "google_maps",
+    typeLabel: "Google Maps Restaurant Chain",
+    logo: "/assets/logos/manis_dum_biriyani.png",
+  },
+  {
+    email: "murali@chepauksports.com",
+    password: "password123",
+    accountId: "acc_chepauk",
+    name: "Murali Ranganathan",
+    businessName: "Chepauk Sports Store",
+    role: "Managing Director",
+    badge: "Retail Store",
+    type: "google_maps",
+    typeLabel: "Google Maps Retail Showroom",
+    logo: "/assets/logos/chepauk_sports.png",
+  },
+  {
+    email: "product.android@spotify.com",
+    password: "password123",
+    accountId: "acc_spotify",
+    name: "Gustav Söderström",
+    businessName: "Spotify Android",
+    role: "Head of Mobile & CX",
+    badge: "Play Store App",
+    type: "play_store",
+    typeLabel: "Google Play Store App",
+    logo: "/assets/logos/spotify.png",
+  },
+  {
+    email: "arun@mrwhosetheboss.com",
+    password: "password123",
+    accountId: "acc_mrwhosetheboss",
+    name: "Arun Maini",
+    businessName: "Mrwhosetheboss",
+    role: "YouTube Creator Studio",
+    badge: "YouTube Channel",
+    type: "youtube",
+    typeLabel: "YouTube Channel (Creator Studio)",
+    logo: "/assets/logos/mrwhosetheboss.png",
+  },
+];
 
 export default function LoginView({
   isActive,
@@ -39,7 +90,7 @@ export default function LoginView({
       onLoginSuccess(matchedUser.accountId);
     } else {
       setErrorMessage(
-        "Invalid business email or password. Please select one of the predefined demo accounts on the right."
+        "Invalid business email or password. Please select one of the 4 verified accounts on the right."
       );
     }
   };
@@ -56,7 +107,7 @@ export default function LoginView({
             </div>
             <h2 className="login-form-title">Sign in to Reviewr</h2>
             <p className="login-form-sub">
-              Enter your business credentials to access your personalized customer feedback intelligence workspace.
+              Enter your credentials to access your live FastAPI-powered feedback intelligence platform.
             </p>
           </div>
 
@@ -130,20 +181,14 @@ export default function LoginView({
                 />{" "}
                 Remember this workspace
               </label>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  alert("For demo accounts, use password123");
-                }}
-                style={{ color: "var(--text-dark)", textDecoration: "none", fontWeight: 600 }}
-              >
-                Forgot password?
-              </a>
+              <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                Password: password123
+              </span>
             </div>
 
-            <button type="submit" className="login-submit-btn">
-              Sign In to Business Dashboard →
+            <button type="submit" className="login-submit-btn flex items-center justify-center gap-2">
+              <span>Sign In to Business Dashboard</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
@@ -164,107 +209,55 @@ export default function LoginView({
                 e.preventDefault();
                 onNavigateLanding();
               }}
+              className="flex items-center gap-1.5"
               style={{ color: "var(--text-dark)", fontWeight: 700, textDecoration: "none" }}
             >
-              ← Return to Overview
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Overview</span>
             </a>
           </div>
         </div>
 
-        {/* Right Column: Predefined Demo Credentials Card */}
+        {/* Right Column: 4 Predefined Demo Accounts */}
         <div className="predefined-credentials-card">
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <h3 className="predefined-creds-title">Predefined Demo Accounts</h3>
+              <h3 className="predefined-creds-title">Predefined Business Workspaces</h3>
               <span className="cm-src-badge google_maps" style={{ background: "#F3E8FF", color: "#7C3AED" }}>
                 1-Click Instant Login
               </span>
             </div>
             <p style={{ fontSize: "0.86rem", color: "var(--text-muted)", marginTop: "4px" }}>
-              Select any business persona below to auto-fill credentials and enter its customized intelligence dashboard:
+              Select any of the 4 business personas below to auto-load its live backend dataset and customized intelligence dashboard:
             </p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {/* 1. Mani's Dum Biriyani */}
-            <div className="demo-account-btn" onClick={() => handleQuickLogin("acc_manis")}>
-              <div className="demo-acc-left">
-                <img
-                  src="/assets/logos/manis_dum_biriyani.png"
-                  className="demo-acc-avatar"
-                  alt="Mani's Dum Biriyani"
-                />
-                <div>
-                  <span className="demo-acc-name">Mani's Dum Biriyani</span>
-                  <span className="demo-acc-email">admin@manisbiriyani.com · 4 Branches</span>
+            {PREDEFINED_USERS.map((user) => (
+              <div
+                key={user.accountId}
+                className="demo-account-btn"
+                onClick={() => handleQuickLogin(user.accountId)}
+              >
+                <div className="demo-acc-left">
+                  <img
+                    src={user.logo}
+                    className="demo-acc-avatar"
+                    alt={user.businessName}
+                  />
+                  <div>
+                    <span className="demo-acc-name">{user.businessName}</span>
+                    <span className="demo-acc-email">
+                      {user.email} · {user.badge}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 demo-acc-arrow">
+                  <span>Enter</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <span className="demo-acc-arrow">Login →</span>
-            </div>
-
-            {/* 2. Chepauk Sports Store */}
-            <div className="demo-account-btn" onClick={() => handleQuickLogin("acc_chepauk")}>
-              <div className="demo-acc-left">
-                <img
-                  src="/assets/logos/chepauk_sports.png"
-                  className="demo-acc-avatar"
-                  alt="Chepauk Sports Store"
-                />
-                <div>
-                  <span className="demo-acc-name">Chepauk Sports Store</span>
-                  <span className="demo-acc-email">murali@chepauksports.com · Retail Store</span>
-                </div>
-              </div>
-              <span className="demo-acc-arrow">Login →</span>
-            </div>
-
-            {/* 3. H&M Mylapore Branch */}
-            <div className="demo-account-btn" onClick={() => handleQuickLogin("acc_hm")}>
-              <div className="demo-acc-left">
-                <img
-                  src="/assets/logos/hm_mylapore.png"
-                  className="demo-acc-avatar"
-                  alt="H&M Mylapore"
-                />
-                <div>
-                  <span className="demo-acc-name">H&M Mylapore Branch</span>
-                  <span className="demo-acc-email">store.mylapore@hm.com · Fashion Showroom</span>
-                </div>
-              </div>
-              <span className="demo-acc-arrow">Login →</span>
-            </div>
-
-            {/* 4. VJ Sidhu Vlogs */}
-            <div className="demo-account-btn" onClick={() => handleQuickLogin("acc_vj_sidhu")}>
-              <div className="demo-acc-left">
-                <img
-                  src="/assets/logos/vj_sidhu_vlogs.png"
-                  className="demo-acc-avatar"
-                  alt="VJ Sidhu Vlogs"
-                />
-                <div>
-                  <span className="demo-acc-name">VJ Sidhu Vlogs</span>
-                  <span className="demo-acc-email">sidhu@vjsidhuvlogs.com · YouTube Channel</span>
-                </div>
-              </div>
-              <span className="demo-acc-arrow">Login →</span>
-            </div>
-
-            {/* 5. Spotify */}
-            <div className="demo-account-btn" onClick={() => handleQuickLogin("acc_spotify")}>
-              <div className="demo-acc-left">
-                <img
-                  src="/assets/logos/spotify.png"
-                  className="demo-acc-avatar"
-                  alt="Spotify"
-                />
-                <div>
-                  <span className="demo-acc-name">Spotify Android</span>
-                  <span className="demo-acc-email">product.android@spotify.com · Play Store App</span>
-                </div>
-              </div>
-              <span className="demo-acc-arrow">Login →</span>
-            </div>
+            ))}
           </div>
         </div>
       </div>

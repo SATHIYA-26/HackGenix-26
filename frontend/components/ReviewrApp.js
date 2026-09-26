@@ -14,7 +14,9 @@ import { REVIEWR_ACCOUNTS } from "../lib/mockData";
 export default function ReviewrApp({ initialView = "landing" }) {
   const [activeView, setActiveView] = useState(initialView);
   const [isAuthenticated, setIsAuthenticated] = useState(initialView === "dashboard");
+  // Always start with a safe SSR default — hydrate from storage in useEffect to avoid hydration mismatch
   const [currentAccountId, setCurrentAccountId] = useState("acc_manis");
+  const [isHydrated, setIsHydrated] = useState(false);
   const [accounts, setAccounts] = useState(REVIEWR_ACCOUNTS);
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
@@ -23,17 +25,20 @@ export default function ReviewrApp({ initialView = "landing" }) {
   const currentAccount = accounts.find((a) => a.id === currentAccountId) || accounts[0];
 
   useEffect(() => {
-    // Sync browser path if accessed directly
-    if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      if (path === "/login") {
-        setActiveView("login");
-      } else if (path === "/dashboard") {
-        setActiveView("dashboard");
-        setIsAuthenticated(true);
-      } else if (path === "/") {
-        setActiveView("landing");
-      }
+    // Client-only: restore persisted account ID and sync path after hydration
+    const savedAccount = localStorage.getItem("reviewr_account_id") || sessionStorage.getItem("reviewr_account_id");
+    if (savedAccount) {
+      setCurrentAccountId(savedAccount);
+      setIsAuthenticated(true);
+    }
+    setIsHydrated(true);
+
+    const path = window.location.pathname;
+    if (path === "/login") {
+      setActiveView("login");
+    } else if (path === "/dashboard" || path === "/home" || path === "/sources" || path === "/problems" || path === "/trends" || path === "/insights" || path === "/feedback" || path === "/recommendations" || path === "/actions" || path === "/settings") {
+      setActiveView("dashboard");
+      setIsAuthenticated(true);
     }
   }, []);
 
@@ -48,6 +53,11 @@ export default function ReviewrApp({ initialView = "landing" }) {
 
   const handleLoginSuccess = (accountId) => {
     setCurrentAccountId(accountId);
+    // Persist so page reloads on /dashboard keep the right portal
+    if (typeof window !== "undefined") {
+      localStorage.setItem("reviewr_account_id", accountId);
+      sessionStorage.setItem("reviewr_account_id", accountId);
+    }
     setIsAuthenticated(true);
     setActiveView("dashboard");
     if (typeof window !== "undefined") {
@@ -58,15 +68,22 @@ export default function ReviewrApp({ initialView = "landing" }) {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setActiveView("landing");
+    setCurrentAccountId("acc_manis");
     if (typeof window !== "undefined") {
+      localStorage.removeItem("reviewr_account_id");
+      sessionStorage.removeItem("reviewr_account_id");
       window.history.pushState(null, "", "/");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    setActiveView("landing");
   };
 
   const handleAccountChange = (accountId) => {
     setCurrentAccountId(accountId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("reviewr_account_id", accountId);
+      sessionStorage.setItem("reviewr_account_id", accountId);
+    }
   };
 
   const handleOpenDemoModal = (plan = null) => {

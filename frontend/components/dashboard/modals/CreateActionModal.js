@@ -4,11 +4,11 @@ import { useState } from "react";
 import { X, CheckCircle2, ArrowRight, Calendar, User, Target, Sparkles, RefreshCw } from "lucide-react";
 import { createAction } from "@/lib/api/actions";
 
-export default function CreateActionModal({ isOpen, problem, onClose, onActionCreated }) {
+export default function CreateActionModal({ isOpen, problem, onClose, onActionCreated, company }) {
   const [title, setTitle] = useState(
     problem ? `Investigate & resolve ${problem.name}` : "Investigate customer feedback friction"
   );
-  const [owner, setOwner] = useState("Priya Nair (Payments Engineering)");
+  const [owner, setOwner] = useState(company?.ownerName || "Engineering Team");
   const [targetDate, setTargetDate] = useState("2026-10-05");
   const [targetMetric, setTargetMetric] = useState("Deflect 80%+ of related negative customer complaints");
   const [status, setStatus] = useState("In Progress");
@@ -20,17 +20,18 @@ export default function CreateActionModal({ isOpen, problem, onClose, onActionCr
     e.preventDefault();
     setIsSubmitting(true);
 
-    const problemNumericId = problem?.id ? String(problem.id).replace(/\D/g, "") || "1" : "1";
+    const problemNumericId = parseInt(String(problem?.id || "1").replace(/\D/g, "") || "1", 10);
 
     try {
       await createAction({
-        problemId: problemNumericId,
+        problem_id: problemNumericId,
         title,
-        owner,
-        targetDate,
+        description: targetMetric,
+        assignee: owner,
+        account_id: company?.id || "acc_manis",
       });
     } catch (err) {
-      console.warn("Backend action persistence fallback:", err);
+      console.warn("Backend action persistence notice:", err);
     }
 
     setIsSubmitting(false);

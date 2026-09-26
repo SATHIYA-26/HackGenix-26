@@ -25,7 +25,7 @@ export const COMPANY_INTELLIGENCE = {
     metrics: {
       totalFeedback: "14,280",
       totalFeedbackDelta: "+12.4% review surge",
-      ratingAvg: "4.4 ★",
+      ratingAvg: "4.4 / 5.0",
       netSentiment: "+78%",
       negativePct: "9.7%",
       activeProblemsCount: 8,
@@ -300,7 +300,7 @@ export const COMPANY_INTELLIGENCE = {
     metrics: {
       totalFeedback: "3,890",
       totalFeedbackDelta: "+8.9% review growth",
-      ratingAvg: "4.7 ★",
+      ratingAvg: "4.7 / 5.0",
       netSentiment: "+86%",
       negativePct: "6.2%",
       activeProblemsCount: 6,
@@ -508,7 +508,7 @@ export const COMPANY_INTELLIGENCE = {
     metrics: {
       totalFeedback: "5,410",
       totalFeedbackDelta: "+15.3% feedback surge",
-      ratingAvg: "4.2 ★",
+      ratingAvg: "4.2 / 5.0",
       netSentiment: "+72%",
       negativePct: "11.8%",
       activeProblemsCount: 7,
@@ -668,18 +668,18 @@ export const COMPANY_INTELLIGENCE = {
     ],
   },
 
-  acc_vj_sidhu: {
-    id: "acc_vj_sidhu",
-    name: "VJ Sidhu Vlogs",
-    handle: "@VJSidhuVlogs",
-    ownerName: "VJ Sidhu",
+  acc_mrwhosetheboss: {
+    id: "acc_mrwhosetheboss",
+    name: "Mrwhosetheboss",
+    handle: "@Mrwhosetheboss",
+    ownerName: "Arun Maini",
     ownerRole: "YouTube Creator Studio",
-    email: "sidhu@vjsidhuvlogs.com",
-    category: "YouTube Creator & Media Channel",
+    email: "arun@mrwhosetheboss.com",
+    category: "YouTube Creator & Tech Channel",
     type: "youtube",
     typeLabel: "YouTube Channel (Creator Studio)",
-    logo: "/assets/logos/vj_sidhu_vlogs.png",
-    avatar: "/assets/logos/vj_sidhu_vlogs.png",
+    logo: "/assets/logos/mrwhosetheboss.png",
+    avatar: "/assets/logos/mrwhosetheboss.png",
     locations: ["Channel-wide", "Live Video Stream"],
     metrics: {
       totalFeedback: "0",
@@ -692,7 +692,7 @@ export const COMPANY_INTELLIGENCE = {
     },
     notifications: [],
     aiBrief: {
-      headline: "Live YouTube Channel Intelligence",
+      headline: "Live YouTube Channel Intelligence — Mrwhosetheboss",
       subheadline: "Sync any video or channel to extract real comments, RoBERTa sentiment scores, and DistilBERT problem clusters from FastAPI.",
       shifts: [],
     },
@@ -700,8 +700,8 @@ export const COMPANY_INTELLIGENCE = {
     recommendations: [],
     actions: [],
     sources: [
-      { id: "src-vj-1", name: "YouTube Video Comments API (Live Data API v3)", itemsCount: 0, totalFeedback: 0, type: "YouTube API", accent: "#E11D48" },
-      { id: "src-vj-2", name: "YouTube Live Comment Stream", itemsCount: 0, totalFeedback: 0, type: "YouTube API", accent: "#EA580C" },
+      { id: "src-mwtb-1", name: "YouTube Video Comments API (Live Data API v3)", itemsCount: 0, totalFeedback: 0, type: "YouTube API", accent: "#E11D48" },
+      { id: "src-mwtb-2", name: "YouTube Live Comment Stream", itemsCount: 0, totalFeedback: 0, type: "YouTube API", accent: "#EA580C" },
     ],
     recentFeedback: [],
   },
@@ -722,7 +722,7 @@ export const COMPANY_INTELLIGENCE = {
     metrics: {
       totalFeedback: "32.45M",
       totalFeedbackDelta: "+4.2% volume growth",
-      ratingAvg: "4.3 ★",
+      ratingAvg: "4.3 / 5.0",
       netSentiment: "+68%",
       negativePct: "15.8%",
       activeProblemsCount: 12,

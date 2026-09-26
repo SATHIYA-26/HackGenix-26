@@ -5,29 +5,27 @@
 
 import { apiGet } from "./client";
 import { adaptDashboardSummary } from "./adapters";
-import {
-  PROBLEMS,
-  CONNECTED_SOURCES,
-  PRODUCT_TAXONOMY,
-} from "../../components/dashboard/data/intelligenceMockData";
 
 /**
  * Fetches real-time executive dashboard metrics from FastAPI backend.
- * Returns normalized metrics, top priority problems, emerging trends, and distributions.
+ * @param {string} [accountId] - Account/company ID (e.g. "acc_manis", "acc_chepauk", "acc_spotify", "acc_vj_sidhu")
+ * @returns {Promise<any>} Normalized dashboard summary metrics
  */
-export async function getExecutiveDashboardMetrics() {
+export async function getExecutiveDashboardMetrics(accountId = null) {
   try {
-    const rawSummary = await apiGet("/dashboard/summary");
+    const query = accountId ? `?account_id=${encodeURIComponent(accountId)}` : "";
+    const rawSummary = await apiGet(`/dashboard/summary${query}`);
     const adapted = adaptDashboardSummary(rawSummary);
 
-    const criticalCount = adapted.topProblems.filter((p) => p.status === "critical").length;
+    const criticalCount = (adapted.topProblems || []).filter((p) => p.status === "critical").length;
 
     return {
       totalFeedback: adapted.totalFeedback,
       analyzedFeedback: adapted.analyzedFeedback,
+      avgSentimentScore: adapted.avgSentimentScore,
       negativeShiftPercent: Math.round(adapted.avgSentimentScore * 100) / 10,
       activeProblemsCount: adapted.totalProblems,
-      criticalProblemsCount: criticalCount || Math.min(adapted.totalProblems, 3),
+      criticalProblemsCount: criticalCount,
       emergingSignalsCount: adapted.emergingCount,
       sentimentDistribution: adapted.sentimentDistribution,
       intentDistribution: adapted.intentDistribution,
@@ -42,33 +40,23 @@ export async function getExecutiveDashboardMetrics() {
       isLive: true,
     };
   } catch (err) {
-    console.warn("Backend /dashboard/summary offline, using fallback:", err.message);
-
-    const emergingCount = PROBLEMS.filter((p) => p.status === "emerging").length;
-    const criticalCount = PROBLEMS.filter((p) => p.status === "critical").length;
-
+    console.error("Failed to fetch dashboard summary from backend:", err.message);
     return {
-      totalFeedback: 12482,
-      analyzedFeedback: 12482,
-      negativeShiftPercent: -4.2,
-      activeProblemsCount: PROBLEMS.length,
-      criticalProblemsCount: criticalCount,
-      emergingSignalsCount: emergingCount,
-      sentimentDistribution: { positive: 4500, neutral: 3200, negative: 4782 },
+      totalFeedback: 0,
+      analyzedFeedback: 0,
+      avgSentimentScore: 0,
+      negativeShiftPercent: 0,
+      activeProblemsCount: 0,
+      criticalProblemsCount: 0,
+      emergingSignalsCount: 0,
+      sentimentDistribution: { positive: 0, neutral: 0, negative: 0 },
       intentDistribution: {},
       sourceDistribution: {},
-      topProblems: PROBLEMS.slice(0, 5),
+      topProblems: [],
       emergingTrends: [],
-      topSources: CONNECTED_SOURCES.map((s) => ({
-        name: s.name,
-        count: s.itemsCount || 100,
-        type: s.type,
-      })),
+      topSources: [],
       isLive: false,
+      error: err.message,
     };
   }
-}
-
-export async function getTaxonomy() {
-  return PRODUCT_TAXONOMY;
 }

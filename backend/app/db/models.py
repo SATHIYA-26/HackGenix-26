@@ -85,6 +85,7 @@ class Feedback(Base):
     source_url = Column(String(512), nullable=True)
     text = Column(Text, nullable=False)
     rating = Column(Float, nullable=True)
+    account_id = Column(String(64), nullable=True, index=True, default="acc_manis")
     created_at = Column(DateTime, nullable=False, index=True)
     extra_metadata = Column("metadata", JSON, nullable=True)
     created_at_db = Column(DateTime, default=datetime.utcnow, nullable=False)
@@ -162,6 +163,7 @@ class ProblemCluster(Base):
 
     # Discovered Product/Feature dimensions
     product_dimension = Column(JSON, nullable=True)  # {product, feature, issue, platform, version}
+    account_id = Column(String(64), nullable=True, index=True, default="acc_manis")
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
@@ -246,6 +248,7 @@ class Action(Base):
     problem_id = Column(Integer, ForeignKey("problem_clusters.id", ondelete="CASCADE"), nullable=False, index=True)
     recommendation_id = Column(Integer, ForeignKey("recommendations.id", ondelete="SET NULL"), nullable=True, index=True)
     title = Column(String(256), nullable=False)
+    account_id = Column(String(64), nullable=True, index=True, default="acc_manis")
     description = Column(Text, nullable=True)
     action_type = Column(String(64), default="bug_fix", nullable=False)
     status = Column(String(32), default="planned", nullable=False, index=True)

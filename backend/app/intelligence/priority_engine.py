@@ -187,9 +187,9 @@ class ExplainablePriorityEngine:
             + "."
         )
 
-    def calculate_all_priorities(self) -> Dict[int, PriorityBreakdown]:
-        """Compute explainable priority scores for all problem clusters."""
-        problems, _ = self.problem_repo.get_all(limit=1000)
+    def calculate_all_priorities(self, account_id: Optional[str] = None) -> Dict[int, PriorityBreakdown]:
+        """Compute explainable priority scores for problem clusters scoped to a single account."""
+        problems, _ = self.problem_repo.get_all(limit=1000, account_id=account_id)
         max_count = max([p.feedback_count for p in problems], default=50)
 
         results = {}

@@ -22,6 +22,7 @@ class CanonicalFeedbackInput(BaseModel):
     source_url: Optional[str] = Field(None, description="Direct URL to original source item")
     text: str = Field(..., min_length=1, max_length=10000, description="Raw customer feedback text")
     rating: Optional[float] = Field(None, ge=1.0, le=5.0, description="Optional numerical rating (1-5)")
+    account_id: Optional[str] = Field("acc_manis", description="Account/Company identifier")
     created_at: datetime = Field(..., description="Timestamp when feedback was originally created at source")
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Arbitrary source metadata")
 
@@ -74,6 +75,7 @@ class FeedbackResponse(BaseModel):
     source_url: Optional[str] = None
     text: str
     rating: Optional[float] = None
+    account_id: Optional[str] = None
     created_at: datetime
     metadata: Optional[Dict[str, Any]] = Field(
         default_factory=dict,

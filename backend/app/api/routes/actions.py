@@ -51,6 +51,7 @@ def list_actions(
     problem_id: Optional[int] = Query(None, description="Filter by problem cluster ID"),
     recommendation_id: Optional[int] = Query(None, description="Filter by recommendation ID"),
     status: Optional[str] = Query(None, description="Filter by status (planned, in_progress, released, measuring, resolved)"),
+    account_id: Optional[str] = Query(None, description="Optional account/company filter"),
     limit: int = Query(50, ge=1, le=200),
     skip: int = Query(0, ge=0),
     db: Session = Depends(get_db),
@@ -61,6 +62,7 @@ def list_actions(
         problem_id=problem_id,
         recommendation_id=recommendation_id,
         status=status,
+        account_id=account_id,
         limit=limit,
         skip=skip,
     )

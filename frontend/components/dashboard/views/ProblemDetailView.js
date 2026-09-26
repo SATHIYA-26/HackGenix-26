@@ -1,56 +1,98 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowLeft, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, ExternalLink, Activity, ArrowRight, Sparkles, User, Layers, Share2, Plus, RefreshCw } from "lucide-react";
-import { PROBLEMS, RAW_FEEDBACK_ITEMS, RECOMMENDATIONS } from "../data/intelligenceMockData";
+import {
+  ArrowLeft,
+  AlertTriangle,
+  ShieldCheck,
+  CheckCircle2,
+  MessageSquare,
+  ExternalLink,
+  Activity,
+  Layers,
+  Sparkles,
+  Plus,
+  RefreshCw,
+  TrendingUp,
+  BarChart3,
+} from "lucide-react";
 import { getProblemById, getProblemEvidence } from "@/lib/api/problems";
 import { getProblemInsight } from "@/lib/api/insights";
 
 export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction, company }) {
-  const [activeTab, setActiveTab] = useState("overview"); // "overview", "evidence", "analytics"
-  const [liveProblem, setLiveProblem] = useState(null);
-  const [liveEvidence, setLiveEvidence] = useState([]);
-  const [liveInsight, setLiveInsight] = useState(null);
+  const [problem, setProblem] = useState(null);
+  const [insight, setInsight] = useState(null);
+  const [evidenceList, setEvidenceList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
+
     if (problemId) {
-      getProblemById(problemId)
-        .then((p) => {
-          if (isMounted && p) setLiveProblem(p);
-        })
-        .catch(() => {});
+      Promise.allSettled([
+        getProblemById(problemId),
+        getProblemInsight(problemId),
+        getProblemEvidence(problemId),
+      ]).then(([pRes, insRes, evRes]) => {
+        if (!isMounted) return;
 
-      getProblemInsight(problemId)
-        .then((ins) => {
-          if (isMounted && ins) setLiveInsight(ins);
-        })
-        .catch(() => {});
+        if (pRes.status === "fulfilled" && pRes.value) {
+          setProblem(pRes.value);
+          if (pRes.value.representativeFeedback?.length > 0) {
+            setEvidenceList(pRes.value.representativeFeedback);
+          }
+        }
 
-      getProblemEvidence(problemId)
-        .then((ev) => {
-          if (isMounted && ev?.length > 0) setLiveEvidence(ev);
-        })
-        .catch(() => {});
+        if (insRes.status === "fulfilled" && insRes.value) {
+          setInsight(insRes.value);
+        }
+
+        if (evRes.status === "fulfilled" && evRes.value?.items?.length > 0) {
+          setEvidenceList((prev) => (prev.length > 0 ? prev : evRes.value.items));
+        }
+
+        setIsLoading(false);
+      });
     }
+
     return () => {
       isMounted = false;
     };
   }, [problemId]);
 
-  const problemsList = company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS;
-  const problem = liveProblem || problemsList.find((p) => String(p.id) === String(problemId)) || PROBLEMS.find((p) => String(p.id) === String(problemId)) || problemsList[0] || PROBLEMS[0];
-  const allFeedback = [...(company?.recentFeedback || []), ...RAW_FEEDBACK_ITEMS];
-  const relatedFeedback = liveEvidence.length > 0 ? liveEvidence : allFeedback.filter((f) => String(f.problemId) === String(problem.id));
-  const fallbackRec = RECOMMENDATIONS.find((r) => String(r.problemId) === String(problem.id)) || RECOMMENDATIONS[0];
-  const recommendation = liveInsight
-    ? {
-        ...fallbackRec,
-        title: `Resolution: ${problem.name}`,
-        rationale: liveInsight.whyItMatters || fallbackRec.rationale,
-        actionItems: liveInsight.recommendedActions?.length > 0 ? liveInsight.recommendedActions : fallbackRec.actionItems,
-      }
-    : fallbackRec;
+  if (isLoading) {
+    return (
+      <div className="p-16 text-center bg-white rounded-xl border border-[#E5E1D8] space-y-4">
+        <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#71717A]" />
+        <p className="text-xs text-[#71717A]">Loading problem dossier from backend...</p>
+      </div>
+    );
+  }
+
+  if (!problem) {
+    return (
+      <div className="p-16 text-center bg-white rounded-xl border border-[#E5E1D8] space-y-4">
+        <AlertTriangle className="w-8 h-8 mx-auto text-[#E11D48]" />
+        <h3 className="text-base font-bold text-[#18181B]">Problem Dossier Not Found</h3>
+        <p className="text-xs text-[#71717A] max-w-sm mx-auto">
+          The requested problem cluster could not be loaded from the backend.
+        </p>
+        <button
+          onClick={onBack}
+          className="h-8 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors"
+        >
+          Back to Problems
+        </button>
+      </div>
+    );
+  }
+
+  const breakdown = problem.priorityBreakdown || {};
+  const freqScore = breakdown.frequency ?? 0.75;
+  const sevScore = breakdown.severity ?? (problem.severity ? problem.severity / 5 : 0.8);
+  const growthScore = breakdown.growth ?? Math.min(1.0, Math.max(0.1, (problem.growthRate || 0) + 0.5));
+  const userScore = breakdown.user_impact ?? (problem.userImpact ? problem.userImpact / 5 : 0.75);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
@@ -76,12 +118,12 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               {problem.status} Problem
             </span>
             <span className="text-xs text-[#71717A]">
-              Detected: {problem.firstDetected}
+              Account: {company?.name || "Active Workspace"}
             </span>
           </div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">{problem.name}</h1>
           <p className="text-xs text-[#71717A] max-w-2xl leading-relaxed">
-            {problem.shortExplanation}
+            {problem.shortExplanation || problem.summary}
           </p>
         </div>
 
@@ -110,7 +152,7 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
           <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
             Weekly Velocity
           </span>
-          <p className="text-2xl font-bold text-[#E11D48] mt-1">↑ {problem.growthLabel}</p>
+          <p className="text-2xl font-bold text-[#E11D48] mt-1">{problem.growthLabel}</p>
           <p className="text-[11px] text-[#71717A] mt-0.5">Growth vs prior 7 days</p>
         </div>
 
@@ -121,7 +163,7 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
           <p className="text-2xl font-bold text-[#E11D48] mt-1">
             {Math.round(problem.negativeSentiment * 100)}%
           </p>
-          <p className="text-[11px] text-[#71717A] mt-0.5">High dissatisfaction signal</p>
+          <p className="text-[11px] text-[#71717A] mt-0.5">Customer dissatisfaction</p>
         </div>
 
         <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white">
@@ -129,37 +171,41 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
             Priority Score
           </span>
           <p className="text-2xl font-bold text-[#18181B] mt-1 font-mono">
-            {problem.priorityScore}
+            {typeof problem.priorityScore === "number" ? problem.priorityScore.toFixed(2) : problem.priorityScore}
           </p>
-          <p className="text-[11px] text-[#71717A] mt-0.5">High product urgency</p>
+          <p className="text-[11px] text-[#71717A] mt-0.5">Composite explainable score</p>
         </div>
       </div>
 
-      {/* Section 21: Visual Traceability Chain (Signature Feature) */}
+      {/* Visual Traceability Chain */}
       <div className="p-5 rounded-2xl bg-[#FBF9F5] border border-[#E5E1D8] space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-[#71717A] uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-[#4F46E5]" /> Trace This Signal (Evidence-to-Decision Chain)
           </span>
           <span className="text-[11px] font-semibold text-[#059669] bg-[#ECFDF5] px-2 py-0.5 rounded-full border border-[#A7F3D0]">
-            100% Traceable
+            Audit Lineage Verified
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center text-center">
           <div className="p-3 rounded-xl bg-white border border-[#E5E1D8] text-xs">
-            <p className="text-[10px] text-[#71717A] uppercase font-bold">1. Signal</p>
-            <p className="font-bold text-[#18181B] truncate mt-0.5">{problem.sources.join(", ")}</p>
+            <p className="text-[10px] text-[#71717A] uppercase font-bold">1. Ingested Signals</p>
+            <p className="font-bold text-[#18181B] truncate mt-0.5">
+              {evidenceList.length} Customer Quotes
+            </p>
           </div>
           <div className="hidden md:flex justify-center text-[#A1A1AA]">→</div>
           <div className="p-3 rounded-xl bg-white border border-[#E5E1D8] text-xs">
-            <p className="text-[10px] text-[#71717A] uppercase font-bold">2. Cluster</p>
+            <p className="text-[10px] text-[#71717A] uppercase font-bold">2. Discovered Cluster</p>
             <p className="font-bold text-[#18181B] truncate mt-0.5">{problem.name}</p>
           </div>
           <div className="hidden md:flex justify-center text-[#A1A1AA]">→</div>
           <div className="p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-xs">
-            <p className="text-[10px] text-[#059669] uppercase font-bold">3. Product Decision</p>
-            <p className="font-bold text-[#065F46] truncate mt-0.5">{recommendation.title}</p>
+            <p className="text-[10px] text-[#059669] uppercase font-bold">3. Product Recommendation</p>
+            <p className="font-bold text-[#065F46] truncate mt-0.5">
+              {insight?.summary ? insight.summary.slice(0, 45) + "..." : "Roadmap Actionable"}
+            </p>
           </div>
         </div>
       </div>
@@ -168,7 +214,6 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column (2 cols): Executive Summary & Evidence Quotes */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Executive Summary (Section 16) */}
           <div className="p-6 rounded-2xl bg-white border border-[#E5E1D8] space-y-4">
             <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
               Executive Summary
@@ -178,87 +223,93 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] space-y-1">
                 <span className="text-[11px] font-bold text-[#71717A] uppercase">What is happening?</span>
                 <p className="text-xs text-[#18181B] leading-relaxed">
-                  {problem.shortExplanation}
+                  {problem.shortExplanation || problem.description}
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] space-y-1">
                 <span className="text-[11px] font-bold text-[#71717A] uppercase">Why it matters?</span>
                 <p className="text-xs text-[#E11D48] font-medium leading-relaxed">
-                  {problem.whyItMatters}
+                  {insight?.whyItMatters || breakdown.explanation || "Directly causes user churn and customer dissatisfaction."}
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] space-y-1">
-                <span className="text-[11px] font-bold text-[#71717A] uppercase">Who is affected?</span>
+                <span className="text-[11px] font-bold text-[#71717A] uppercase">Category & Impact</span>
                 <p className="text-xs text-[#18181B] leading-relaxed">
-                  {problem.affectedUsers} on {problem.platform} ({problem.version}).
+                  {problem.category} · Volume {problem.feedbackCount} mentions.
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] space-y-1">
-                <span className="text-[11px] font-bold text-[#71717A] uppercase">What changed?</span>
+                <span className="text-[11px] font-bold text-[#71717A] uppercase">Trend Velocity</span>
                 <p className="text-xs text-[#18181B] leading-relaxed">
-                  Velocity accelerated by {problem.growthLabel} since {problem.firstDetected} following the latest release.
+                  Growth rate {problem.growthLabel} with priority score of {typeof problem.priorityScore === "number" ? problem.priorityScore.toFixed(2) : problem.priorityScore}.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Section 17: Evidence (Representative Feedback Items) */}
+          {/* Evidence Quotes */}
           <div className="p-6 rounded-2xl bg-white border border-[#E5E1D8] space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-[#2563EB]" /> Grounded Evidence
+                  <MessageSquare className="w-4 h-4 text-[#2563EB]" /> Grounded Customer Quotes
                 </h2>
                 <p className="text-xs text-[#71717A]">
-                  {problem.feedbackCount} related customer voices supporting this problem classification
+                  Representative feedback items linked to this problem cluster
                 </p>
               </div>
             </div>
 
             <div className="space-y-3">
-              {relatedFeedback.length > 0 ? (
-                relatedFeedback.map((item) => (
+              {evidenceList.length > 0 ? (
+                evidenceList.map((item, idx) => (
                   <div
-                    key={item.id}
+                    key={item.id || item.feedback_id || idx}
                     onClick={() => onSelectFeedback && onSelectFeedback(item)}
                     className="p-4 rounded-xl border border-[#E5E1D8] hover:border-[#18181B] bg-white cursor-pointer transition-all space-y-2 group"
                   >
                     <p className="text-xs font-serif italic text-[#18181B] leading-relaxed">
-                      “{item.text}”
+                      "{item.text}"
                     </p>
                     <div className="flex items-center justify-between text-[11px] text-[#71717A] pt-2 border-t border-[#ECE8E0]">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-[#18181B]">{item.authorName}</span>
+                        <span className="font-semibold text-[#18181B]">
+                          {item.author || item.authorName || "Customer"}
+                        </span>
                         <span>•</span>
-                        <span>{item.source}</span>
-                        <span>•</span>
-                        <span>{item.platform}</span>
+                        <span className="capitalize">{item.source || "Customer Feedback"}</span>
+                        {item.sentiment && (
+                          <>
+                            <span>•</span>
+                            <span className="text-[#E11D48] font-medium capitalize">{item.sentiment}</span>
+                          </>
+                        )}
                       </div>
                       <span className="text-[#4F46E5] font-semibold group-hover:underline flex items-center gap-1">
-                        Inspect signal →
+                        View signal →
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="p-4 rounded-xl bg-[#FAF8F5] text-xs text-[#71717A] text-center">
-                  Representative feedback items are indexed in raw feedback store.
+                <div className="p-6 rounded-xl bg-[#FAF8F5] text-xs text-[#71717A] text-center">
+                  No individual customer quotes are currently linked to this cluster.
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Right Column (1 col): Explainability & Recommendation (Sections 19 & 20) */}
+        {/* Right Column: Explainability & AI Recommendation */}
         <div className="space-y-6">
-          {/* Section 19: Why Priority is High (Explainable AI) */}
+          {/* Explainability Weight Decomposition */}
           <div className="p-6 rounded-2xl bg-white border border-[#E5E1D8] space-y-4">
             <div>
               <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
-                Why Priority is High
+                Priority Score Breakdown
               </h2>
               <p className="text-xs text-[#71717A]">
                 Algorithmic weight decomposition (0.0 to 1.0)
@@ -269,12 +320,12 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#71717A]">Frequency Volume</span>
-                  <span className="font-bold text-[#18181B] font-mono">{problem.frequencyScore || 0.85}</span>
+                  <span className="font-bold text-[#18181B] font-mono">{Number(freqScore).toFixed(2)}</span>
                 </div>
                 <div className="h-1.5 w-full bg-[#F4F1EA] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#18181B] rounded-full"
-                    style={{ width: `${(problem.frequencyScore || 0.85) * 100}%` }}
+                    style={{ width: `${Math.min(100, Number(freqScore) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -282,12 +333,12 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#71717A]">Severity of Impact</span>
-                  <span className="font-bold text-[#E11D48] font-mono">{problem.severityScore || 0.94}</span>
+                  <span className="font-bold text-[#E11D48] font-mono">{Number(sevScore).toFixed(2)}</span>
                 </div>
                 <div className="h-1.5 w-full bg-[#F4F1EA] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#E11D48] rounded-full"
-                    style={{ width: `${(problem.severityScore || 0.94) * 100}%` }}
+                    style={{ width: `${Math.min(100, Number(sevScore) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -295,12 +346,12 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#71717A]">Growth Acceleration</span>
-                  <span className="font-bold text-[#E11D48] font-mono">{problem.growthScore || 0.88}</span>
+                  <span className="font-bold text-[#E11D48] font-mono">{Number(growthScore).toFixed(2)}</span>
                 </div>
                 <div className="h-1.5 w-full bg-[#F4F1EA] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#E11D48] rounded-full"
-                    style={{ width: `${(problem.growthScore || 0.88) * 100}%` }}
+                    style={{ width: `${Math.min(100, Number(growthScore) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -308,50 +359,54 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#71717A]">Affected User Base</span>
-                  <span className="font-bold text-[#18181B] font-mono">{problem.userImpactScore || 0.92}</span>
+                  <span className="font-bold text-[#18181B] font-mono">{Number(userScore).toFixed(2)}</span>
                 </div>
                 <div className="h-1.5 w-full bg-[#F4F1EA] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#18181B] rounded-full"
-                    style={{ width: `${(problem.userImpactScore || 0.92) * 100}%` }}
+                    style={{ width: `${Math.min(100, Number(userScore) * 100)}%` }}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] text-[11px] text-[#71717A] leading-relaxed">
-              <strong>Explainability Note:</strong> The score of{" "}
-              <strong className="text-[#18181B]">{problem.priorityScore}</strong> is driven primarily by rapid weekly
-              growth ({problem.growthLabel}), critical monetary severity, and repeated checkout friction on Android.
-            </div>
+            {breakdown.explanation && (
+              <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] text-[11px] text-[#71717A] leading-relaxed">
+                <strong>Explainability:</strong> {breakdown.explanation}
+              </div>
+            )}
           </div>
 
-          {/* Section 20: AI Recommendation Panel */}
+          {/* AI Recommendation Panel */}
           <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] space-y-4">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#059669]" />
               <span className="text-xs font-bold text-[#059669] uppercase tracking-wider">
-                AI-Generated Recommendation
+                AI Problem Insight
               </span>
             </div>
 
             <div>
-              <h3 className="text-sm font-bold text-[#065F46]">{recommendation.title}</h3>
+              <h3 className="text-sm font-bold text-[#065F46]">
+                {insight?.summary || `Resolution Strategy for ${problem.name}`}
+              </h3>
               <p className="text-xs text-[#047857] mt-1.5 leading-relaxed">
-                {recommendation.rationale}
+                {insight?.whyItMatters || "Address root customer friction to improve user retention and satisfaction."}
               </p>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-[#A7F3D0]/60">
-              <p className="text-[11px] font-bold text-[#065F46] uppercase">Suggested Roadmap Fixes:</p>
-              <div className="text-xs text-[#065F46] space-y-1.5">
-                {recommendation.actionItems?.map((act, idx) => (
-                  <p key={idx} className="leading-relaxed">
-                    {act}
-                  </p>
-                ))}
+            {insight?.recommendedActions && insight.recommendedActions.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-[#A7F3D0]/60">
+                <p className="text-[11px] font-bold text-[#065F46] uppercase">Suggested Actions:</p>
+                <div className="text-xs text-[#065F46] space-y-1.5">
+                  {insight.recommendedActions.map((act, idx) => (
+                    <p key={idx} className="leading-relaxed">
+                      • {act}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <button
               onClick={() => onOpenCreateAction && onOpenCreateAction(problem)}

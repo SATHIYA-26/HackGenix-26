@@ -25,8 +25,12 @@ class FeedbackRepository:
         source: Optional[str] = None,
         sentiment: Optional[str] = None,
         intent: Optional[str] = None,
+        account_id: Optional[str] = None,
     ) -> Tuple[List[Feedback], int]:
         query = self.db.query(Feedback).options(joinedload(Feedback.analysis))
+
+        if account_id:
+            query = query.filter(Feedback.account_id == account_id)
 
         if source:
             query = query.filter(Feedback.source == source)
@@ -53,12 +57,15 @@ class FeedbackRepository:
         elif hasattr(item, "metadata") and isinstance(item.metadata, dict):
             meta = item.metadata
 
+        account_id = getattr(item, "account_id", None) or meta.get("account_id", "acc_manis")
+
         db_feedback = Feedback(
             feedback_id=item.feedback_id,
             source=item.source,
             source_url=item.source_url,
             text=item.text,
             rating=item.rating,
+            account_id=account_id,
             created_at=item.created_at,
             extra_metadata=meta,
         )
@@ -71,24 +78,36 @@ class FeedbackRepository:
         created_records: List[Feedback] = []
         for item in items:
             existing = self.get_by_feedback_id(item.feedback_id)
-            if not existing:
-                meta = {}
-                if hasattr(item, "extra_metadata") and isinstance(item.extra_metadata, dict):
-                    meta = item.extra_metadata
-                elif hasattr(item, "metadata") and isinstance(item.metadata, dict):
-                    meta = item.metadata
+            meta = {}
+            if hasattr(item, "extra_metadata") and isinstance(item.extra_metadata, dict):
+                meta = item.extra_metadata
+            elif hasattr(item, "metadata") and isinstance(item.metadata, dict):
+                meta = item.metadata
 
+            account_id = getattr(item, "account_id", None) or meta.get("account_id", "acc_manis")
+
+            if not existing:
                 db_item = Feedback(
                     feedback_id=item.feedback_id,
                     source=item.source,
                     source_url=item.source_url,
                     text=item.text,
                     rating=item.rating,
+                    account_id=account_id,
                     created_at=item.created_at,
                     extra_metadata=meta,
                 )
                 self.db.add(db_item)
                 created_records.append(db_item)
+            else:
+                # Update existing record if moving to new account or updating source
+                if account_id and existing.account_id != account_id:
+                    existing.account_id = account_id
+                if item.source_url:
+                    existing.source_url = item.source_url
+                if meta:
+                    existing.extra_metadata = meta
+                created_records.append(existing)
 
         if created_records:
             self.db.commit()
@@ -108,34 +127,43 @@ class FeedbackRepository:
             .all()
         )
 
-    def count(self) -> int:
-        return self.db.query(func.count(Feedback.id)).scalar() or 0
+    def count(self, account_id: Optional[str] = None) -> int:
+        q = self.db.query(func.count(Feedback.id))
+        if account_id:
+            q = q.filter(Feedback.account_id == account_id)
+        return q.scalar() or 0
 
-    def count_analyzed(self) -> int:
-        return self.db.query(func.count(FeedbackAnalysis.id)).scalar() or 0
+    def count_analyzed(self, account_id: Optional[str] = None) -> int:
+        q = self.db.query(func.count(FeedbackAnalysis.id)).join(Feedback, FeedbackAnalysis.feedback_id == Feedback.feedback_id)
+        if account_id:
+            q = q.filter(Feedback.account_id == account_id)
+        return q.scalar() or 0
 
-    def get_sentiment_distribution(self) -> Dict[str, int]:
-        results = (
+    def get_sentiment_distribution(self, account_id: Optional[str] = None) -> Dict[str, int]:
+        q = (
             self.db.query(FeedbackAnalysis.sentiment, func.count(FeedbackAnalysis.id))
-            .group_by(FeedbackAnalysis.sentiment)
-            .all()
+            .join(Feedback, FeedbackAnalysis.feedback_id == Feedback.feedback_id)
         )
+        if account_id:
+            q = q.filter(Feedback.account_id == account_id)
+        results = q.group_by(FeedbackAnalysis.sentiment).all()
         return {sentiment: count for sentiment, count in results}
 
-    def get_intent_distribution(self) -> Dict[str, int]:
-        results = (
+    def get_intent_distribution(self, account_id: Optional[str] = None) -> Dict[str, int]:
+        q = (
             self.db.query(FeedbackAnalysis.intent, func.count(FeedbackAnalysis.id))
-            .group_by(FeedbackAnalysis.intent)
-            .all()
+            .join(Feedback, FeedbackAnalysis.feedback_id == Feedback.feedback_id)
         )
+        if account_id:
+            q = q.filter(Feedback.account_id == account_id)
+        results = q.group_by(FeedbackAnalysis.intent).all()
         return {intent: count for intent, count in results}
 
-    def get_source_distribution(self) -> Dict[str, int]:
-        results = (
-            self.db.query(Feedback.source, func.count(Feedback.id))
-            .group_by(Feedback.source)
-            .all()
-        )
+    def get_source_distribution(self, account_id: Optional[str] = None) -> Dict[str, int]:
+        q = self.db.query(Feedback.source, func.count(Feedback.id))
+        if account_id:
+            q = q.filter(Feedback.account_id == account_id)
+        results = q.group_by(Feedback.source).all()
         return {source: count for source, count in results}
 
     def save_analysis(

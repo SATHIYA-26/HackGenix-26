@@ -20,10 +20,11 @@ def list_problems(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
     sort_by_priority: bool = Query(True),
+    account_id: Optional[str] = Query(None, description="Optional account/company filter"),
     db: Session = Depends(get_db),
 ):
     repo = ProblemRepository(db)
-    problems, _ = repo.get_all(skip=skip, limit=limit, sort_by_priority=sort_by_priority)
+    problems, _ = repo.get_all(skip=skip, limit=limit, sort_by_priority=sort_by_priority, account_id=account_id)
 
     response_items = []
     for p in problems:
@@ -48,6 +49,7 @@ def list_problems(
             priority_score=p.priority_score,
             priority_breakdown=breakdown,
             product_dimension=p.product_dimension,
+            account_id=p.account_id,
             created_at=p.created_at,
             updated_at=p.updated_at,
         )

@@ -31,6 +31,7 @@ class ActionCreate(BaseModel):
     assignee: Optional[str] = Field(None, description="Owner / engineering lead")
     jira_issue_key: Optional[str] = Field(None, description="Jira, Linear, or GitHub issue key (e.g. ENG-104)")
     target_version: Optional[str] = Field(None, description="Target release version (e.g. v4.2.2)")
+    account_id: Optional[str] = Field("acc_manis", description="Account identifier")
 
 
 class ActionUpdate(BaseModel):
@@ -74,6 +75,7 @@ class ActionResponse(BaseModel):
     action_id: str
     problem_id: int
     recommendation_id: Optional[int] = None
+    account_id: Optional[str] = None
     title: str
     description: Optional[str] = None
     action_type: str

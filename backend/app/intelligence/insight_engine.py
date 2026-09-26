@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 
 from app.core.logging import logger
@@ -28,20 +28,21 @@ class IntelligenceCoordinator:
         self.llm_service = LLMInsightService(db)
         self.traceability_engine = TraceabilityEngine(db)
 
-    def run_full_intelligence_cycle(self) -> Dict[str, Any]:
-        """Execute the end-to-end intelligence cycle across all problem clusters."""
-        logger.info("Starting Full Intelligence Cycle...")
+    def run_full_intelligence_cycle(self, account_id: Optional[str] = None) -> Dict[str, Any]:
+        """Execute the end-to-end intelligence cycle scoped to a single account's problem clusters."""
+        scope_label = f"account '{account_id}'" if account_id else "ALL accounts"
+        logger.info(f"Starting Full Intelligence Cycle for {scope_label}...")
 
         # 1. Trends
-        trends = self.trend_engine.analyze_all_problems()
+        trends = self.trend_engine.analyze_all_problems(account_id=account_id)
         logger.info(f"Analyzed trends for {len(trends)} problems.")
 
         # 2. Priorities
-        priorities = self.priority_engine.calculate_all_priorities()
+        priorities = self.priority_engine.calculate_all_priorities(account_id=account_id)
         logger.info(f"Calculated explainable priorities for {len(priorities)} problems.")
 
         # 3. Recommendations
-        recommendations = self.recommendation_engine.generate_all_recommendations()
+        recommendations = self.recommendation_engine.generate_all_recommendations(account_id=account_id)
         logger.info(f"Generated {len(recommendations)} evidence-backed recommendations.")
 
         # 4. LLM Insights

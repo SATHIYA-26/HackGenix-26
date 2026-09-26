@@ -52,6 +52,7 @@ class FeedbackService:
         source: Optional[str] = None,
         sentiment: Optional[str] = None,
         intent: Optional[str] = None,
+        account_id: Optional[str] = None,
     ) -> Tuple[List[Feedback], int]:
         skip = (page - 1) * limit
         return self.feedback_repo.get_all(
@@ -60,6 +61,7 @@ class FeedbackService:
             source=source,
             sentiment=sentiment,
             intent=intent,
+            account_id=account_id,
         )
 
     def _dispatch_background_task(self, feedback_id: str) -> None:

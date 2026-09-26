@@ -17,6 +17,7 @@ class ActionRepository:
             action_id=act_id,
             problem_id=item.problem_id,
             recommendation_id=item.recommendation_id,
+            account_id=getattr(item, "account_id", None) or "acc_manis",
             title=item.title,
             description=item.description,
             action_type=item.action_type.value if hasattr(item.action_type, "value") else str(item.action_type),
@@ -42,10 +43,13 @@ class ActionRepository:
         problem_id: Optional[int] = None,
         recommendation_id: Optional[int] = None,
         status: Optional[str] = None,
+        account_id: Optional[str] = None,
         limit: int = 50,
         skip: int = 0,
     ) -> Tuple[List[Action], int]:
         query = self.db.query(Action)
+        if account_id:
+            query = query.filter(Action.account_id == account_id)
         if problem_id is not None:
             query = query.filter(Action.problem_id == problem_id)
         if recommendation_id is not None:

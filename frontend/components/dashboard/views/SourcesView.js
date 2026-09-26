@@ -1,29 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Globe, Plus, CheckCircle2, AlertCircle, RefreshCw, ShieldCheck } from "lucide-react";
-import { CONNECTED_SOURCES } from "../data/intelligenceMockData";
+import { useState, useEffect, useCallback } from "react";
+import { Plus, RefreshCw, ShieldCheck } from "lucide-react";
 import YouTubeLiveExtractorCard from "../components/YouTubeLiveExtractorCard";
+import SourceLogo from "../components/SourceLogo";
 import { getConnectedSources } from "@/lib/api/sources";
 
 export default function SourcesView({ onOpenConnectSource, company, onAddFeedbackItems, onVideoAnalyzed }) {
   const [liveSources, setLiveSources] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchSources = useCallback((accId = company?.id) => {
+    setIsRefreshing(true);
+    getConnectedSources(accId)
+      .then((res) => {
+        if (res?.length > 0) setLiveSources(res);
+      })
+      .catch((err) => console.warn("Live sources fetch notice:", err))
+      .finally(() => setIsRefreshing(false));
+  }, [company?.id]);
 
   useEffect(() => {
-    let isMounted = true;
-    getConnectedSources()
-      .then((res) => {
-        if (isMounted && res?.length > 0) setLiveSources(res);
-      })
-      .catch((err) => console.warn("Live sources fetch notice:", err));
+    fetchSources(company?.id);
+  }, [fetchSources, company?.id]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // Use company sources; fallback to backend-fetched sources; merge counts
+  const fallbackSources = company?.sources || [];
+  let sourcesList = [];
+  if (liveSources.length > 0) {
+    sourcesList = liveSources.map((ls) => {
+      const compMatch = fallbackSources.find(
+        (cs) =>
+          cs.type?.toLowerCase() === ls.type?.toLowerCase() ||
+          cs.name?.toLowerCase().includes(ls.name?.toLowerCase()) ||
+          ls.name?.toLowerCase().includes(cs.type?.toLowerCase())
+      );
+      const count =
+        (ls.totalFeedback || ls.itemsCount || 0) ||
+        (compMatch?.totalFeedback || compMatch?.itemsCount || 0);
 
-  const fallbackSources = company?.sources && company.sources.length > 0 ? company.sources : CONNECTED_SOURCES;
-  const sourcesList = liveSources.length > 0 ? liveSources : fallbackSources;
+      return {
+        ...ls,
+        totalFeedback: count,
+        itemsCount: count,
+      };
+    });
+  } else {
+    sourcesList = fallbackSources;
+  }
+
   const activeCount = sourcesList.filter((s) => s.status !== "disconnected").length;
   const totalIngested = sourcesList.reduce(
     (acc, s) => acc + (s.totalFeedback || s.itemsCount || 0),
@@ -53,8 +78,14 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
       {/* ─── LIVE YOUTUBE API V3 INGESTION & STATS ENGINE ─── */}
       <YouTubeLiveExtractorCard
         company={company}
-        onAddFeedbackItems={onAddFeedbackItems}
-        onVideoAnalyzed={onVideoAnalyzed}
+        onAddFeedbackItems={(items) => {
+          fetchSources(company?.id);
+          if (onAddFeedbackItems) onAddFeedbackItems(items);
+        }}
+        onVideoAnalyzed={(res) => {
+          fetchSources(company?.id);
+          if (onVideoAnalyzed) onVideoAnalyzed(res);
+        }}
       />
 
       {/* Pipeline Summary Bar */}
@@ -70,7 +101,7 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
         <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white">
           <span className="text-[11px] font-semibold text-[#71717A] uppercase">Total Ingested</span>
           <p className="text-2xl font-bold text-[#18181B] mt-1">
-            {totalIngested > 0 ? totalIngested.toLocaleString() : "14,280"}
+            {totalIngested.toLocaleString()}
           </p>
           <p className="text-[11px] text-[#71717A] mt-0.5">Reviews, comments, & tickets</p>
         </div>
@@ -86,6 +117,7 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sourcesList.map((src) => {
           const isConnected = src.status === "connected";
+          const volumeCount = src.totalFeedback ?? src.itemsCount ?? 0;
 
           return (
             <div
@@ -94,12 +126,14 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] flex items-center justify-center p-2">
-                    {src.icon ? (
-                      <img src={src.icon} alt={src.name} className="w-full h-full object-contain" />
-                    ) : (
-                      <Globe className="w-5 h-5 text-[#71717A]" />
-                    )}
+                  <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#ECE8E0] flex items-center justify-center p-2 shadow-2xs">
+                    <SourceLogo
+                      source={src.source || src.type}
+                      name={src.name}
+                      type={src.type}
+                      icon={src.icon}
+                      className="w-5 h-5"
+                    />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-[#18181B]">{src.name}</h3>
@@ -126,7 +160,9 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
               <div className="grid grid-cols-3 gap-2 pt-3 border-t border-[#ECE8E0] text-center text-xs">
                 <div>
                   <span className="text-[10px] text-[#71717A] block">Feedback Volume</span>
-                  <span className="font-bold text-[#18181B]">{src.totalFeedback ? src.totalFeedback.toLocaleString() : src.itemsCount?.toLocaleString() || 0}</span>
+                  <span className="font-bold text-[#18181B]">
+                    {volumeCount.toLocaleString()}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[10px] text-[#71717A] block">Last Sync</span>
@@ -145,13 +181,14 @@ export default function SourcesView({ onOpenConnectSource, company, onAddFeedbac
                 {isConnected ? (
                   <button
                     onClick={() => {
+                      fetchSources(company?.id);
                       if (src.type === "youtube" || src.name.toLowerCase().includes("youtube")) {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="text-xs font-semibold text-[#7C3AED] hover:text-[#6D28D9] flex items-center gap-1"
+                    className="text-xs font-semibold text-[#7C3AED] hover:text-[#6D28D9] flex items-center gap-1 transition-colors"
                   >
-                    <RefreshCw className="w-3 h-3" /> Live Sync
+                    <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} /> Live Sync
                   </button>
                 ) : (
                   <button

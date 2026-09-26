@@ -55,7 +55,7 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
       const resp = await fetch("/api/youtube/fetch-video", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ videoUrlOrId: videoUrl.trim(), maxComments: 100 }),
+        body: JSON.stringify({ videoUrlOrId: videoUrl.trim(), maxComments: 100, accountId: company?.id }),
       });
 
       const data = await resp.json();
@@ -98,9 +98,10 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          channelHandleOrId: company?.handle || "@VJ_Sidhu_Vlogs",
+          channelHandleOrId: company?.handle || "@Mrwhosetheboss",
           maxVideos,
           commentsPerVideo,
+          accountId: company?.id,
         }),
       });
 
@@ -304,6 +305,24 @@ export default function YouTubeLiveExtractorCard({ onAddFeedbackItems, company, 
                 </p>
               </div>
             </div>
+
+            {/* NLP Intent Breakdown (DistilBERT) */}
+            {videoResult.stats?.intentBreakdown && Object.keys(videoResult.stats.intentBreakdown).length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-[#ECE8E0]">
+                <p className="text-xs font-bold text-[#18181B] flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-[#7C3AED]" />
+                  DistilBERT Intent Breakdown
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Object.entries(videoResult.stats.intentBreakdown).map(([intent, count]) => (
+                    <div key={intent} className="p-2 rounded-lg bg-[#FAF5FF] border border-[#DDD6FE] text-xs">
+                      <span className="text-[10px] font-bold text-[#7C3AED] uppercase tracking-wider block truncate">{intent.replace(/_/g, " ")}</span>
+                      <span className="text-sm font-bold text-[#18181B]">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Extracted Comments Stream Preview */}
             <div className="space-y-2 pt-2">

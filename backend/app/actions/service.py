@@ -221,6 +221,7 @@ class ActionService:
         problem_id: Optional[int] = None,
         recommendation_id: Optional[int] = None,
         status: Optional[str] = None,
+        account_id: Optional[str] = None,
         limit: int = 50,
         skip: int = 0,
     ) -> Dict[str, Any]:
@@ -228,6 +229,7 @@ class ActionService:
             problem_id=problem_id,
             recommendation_id=recommendation_id,
             status=status,
+            account_id=account_id,
             limit=limit,
             skip=skip,
         )

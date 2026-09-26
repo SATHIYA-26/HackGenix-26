@@ -13,8 +13,11 @@ class RecommendationRepository:
         self,
         skip: int = 0,
         limit: int = 50,
+        account_id: Optional[str] = None,
     ) -> Tuple[List[Recommendation], int]:
         query = self.db.query(Recommendation).options(joinedload(Recommendation.problem))
+        if account_id:
+            query = query.join(Recommendation.problem).filter(ProblemCluster.account_id == account_id)
         total = query.count()
         items = query.order_by(desc(Recommendation.created_at)).offset(skip).limit(limit).all()
         return items, total

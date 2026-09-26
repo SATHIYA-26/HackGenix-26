@@ -351,6 +351,7 @@ class YouTubeLiveService:
         max_comments: int = 50,
         max_videos: int = 5,
         run_nlp: bool = True,
+        account_id: str = "acc_mrwhosetheboss",
     ) -> Dict[str, Any]:
         """High-level orchestration:
         1. Extract video or channel comments via YouTube Data API v3.
@@ -400,6 +401,7 @@ class YouTubeLiveService:
                     source_url=c.get("source_url"),
                     text=c["text"],
                     rating=None,
+                    account_id=account_id,
                     created_at=dt,
                     metadata=c.get("metadata") or {
                         "video_id": c.get("video_id"),
@@ -407,6 +409,7 @@ class YouTubeLiveService:
                         "channel_title": c.get("channel_title"),
                         "author": c.get("author"),
                         "like_count": c.get("like_count", 0),
+                        "account_id": account_id,
                     },
                 )
             )
@@ -422,19 +425,23 @@ class YouTubeLiveService:
         analysis_map = {}
 
         if run_nlp and feedback_ids:
-            logger.info(f"Running NLP Pipeline on {len(feedback_ids)} live YouTube comments...")
+            logger.info(f"Running NLP Pipeline on {len(feedback_ids)} live YouTube comments for account '{account_id}'...")
             pipeline = NLPPipeline(db)
             analyses = pipeline.process_batch(feedback_ids)
             analyzed_count = len(analyses)
             analysis_map = {a.feedback_id: a for a in analyses}
 
-            # Discover problems using HDBSCAN & BERTopic
-            discovered_problems = pipeline.discover_problems()
+            # Discover problems using HDBSCAN & BERTopic scoped to account
+            discovered_problems = pipeline.discover_problems(account_id=account_id)
             problems_count = len(discovered_problems)
+            for p in discovered_problems:
+                p.account_id = account_id
+            db.commit()
 
             # Re-calculate trends, priorities, recommendations, and executive LLM insights
+            # Scoped to this account only — never cross-account.
             coordinator = IntelligenceCoordinator(db)
-            intelligence_summary = coordinator.run_full_intelligence_cycle()
+            intelligence_summary = coordinator.run_full_intelligence_cycle(account_id=account_id)
 
         # Calculate sentiment breakdown and stats
         pos_count = sum(1 for a in analysis_map.values() if getattr(a, "sentiment", None) == "positive")
@@ -454,15 +461,28 @@ class YouTubeLiveService:
         formatted_comments = []
         for c in all_raw_comments:
             a = analysis_map.get(c["id"])
+            if a:
+                sent = getattr(a, "sentiment", "neutral")
+                conf = getattr(a, "sentiment_confidence", 0.75)
+                if sent == "positive":
+                    calc_score = round(conf, 2)
+                elif sent == "negative":
+                    calc_score = round(-conf, 2)
+                else:
+                    calc_score = 0.0
+            else:
+                sent = "neutral"
+                calc_score = 0.0
+
             formatted_comments.append({
                 "id": c["id"],
                 "authorName": c.get("author", "Anonymous"),
                 "authorAvatar": c.get("author_avatar", ""),
                 "text": c["text"],
                 "likeCount": c.get("like_count", 0),
-                "sentiment": getattr(a, "sentiment", "negative") if a else "negative",
-                "sentimentScore": getattr(a, "sentiment_score", -0.5) if a else -0.5,
-                "intent": getattr(a, "intent", "feedback") if a else "feedback",
+                "sentiment": sent,
+                "sentimentScore": calc_score,
+                "intent": getattr(a, "intent", "other") if a else "other",
                 "isReply": c.get("is_reply", False),
                 "createdAt": c.get("created_at"),
                 "sourceUrl": c.get("source_url"),

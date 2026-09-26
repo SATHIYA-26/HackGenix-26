@@ -4,7 +4,6 @@
  */
 
 import { apiGet, apiPost } from "./client";
-import { CONNECTED_SOURCES } from "../../components/dashboard/data/intelligenceMockData";
 
 /**
  * Triggers live YouTube extraction, canonical normalization, and full NLP analysis.
@@ -14,6 +13,7 @@ import { CONNECTED_SOURCES } from "../../components/dashboard/data/intelligenceM
  * @param {number} [params.maxComments=50] - Number of comments to extract
  * @param {number} [params.maxVideos=5] - Number of videos if channel
  * @param {boolean} [params.runNlp=true] - Run NLP & problem discovery immediately
+ * @param {string} [params.accountId="acc_vj_sidhu"] - Target account ID to tag feedback with
  * @returns {Promise<any>} Extraction and pipeline summary
  */
 export async function syncYouTubeLive({
@@ -22,6 +22,7 @@ export async function syncYouTubeLive({
   maxComments = 50,
   maxVideos = 5,
   runNlp = true,
+  accountId = "acc_vj_sidhu",
 }) {
   const payload = {
     url: url || undefined,
@@ -29,6 +30,7 @@ export async function syncYouTubeLive({
     max_comments: maxComments,
     max_videos: maxVideos,
     run_nlp: runNlp,
+    account_id: accountId || "acc_vj_sidhu",
   };
 
   return await apiPost("/connectors/youtube/live-sync", payload, {
@@ -37,32 +39,32 @@ export async function syncYouTubeLive({
 }
 
 /**
- * Lists all registered connectors and operational status.
+ * Lists all registered connectors and operational status with live counts.
+ * @param {string} [accountId] - Optional account ID for real-time channel counts
  */
-export async function getConnectedSources() {
+export async function getConnectedSources(accountId) {
   try {
-    const connectors = await apiGet("/connectors");
-    return connectors.map((c, i) => ({
+    const url = accountId ? `/connectors?account_id=${encodeURIComponent(accountId)}` : "/connectors";
+    const connectors = await apiGet(url);
+    return (connectors || []).map((c) => ({
       id: `src-${c.source}`,
-      name: c.name || c.source.toUpperCase(),
+      source: c.source,
+      name: c.name || c.source.replace("_", " ").toUpperCase(),
+      description: c.description || `Streaming pipeline for ${c.name || c.source}`,
       type: c.source,
-      status: "connected",
-      lastSync: "Live",
+      status: c.status || "connected",
+      lastSync: c.lastSync || "Live",
       health: "100%",
-      icon: c.source === "youtube" ? "Play" : "Globe",
-      accent: c.source === "youtube" ? "#EF4444" : "#0284C7",
-      bgAccent: c.source === "youtube" ? "#FEF2F2" : "#F0F9FF",
-      borderAccent: c.source === "youtube" ? "#FECACA" : "#BAE6FD",
+      totalFeedback: c.total_feedback ?? c.itemsCount ?? 0,
+      itemsCount: c.total_feedback ?? c.itemsCount ?? 0,
+      latency: c.latency || "Live",
+      icon: c.icon || c.source,
+      accent: c.accent || (c.source === "youtube" ? "#EF4444" : "#0284C7"),
+      bgAccent: c.bgAccent || (c.source === "youtube" ? "#FEF2F2" : "#F0F9FF"),
+      borderAccent: c.borderAccent || (c.source === "youtube" ? "#FECACA" : "#BAE6FD"),
     }));
   } catch (err) {
-    console.warn("Backend /connectors failed, falling back to cached config:", err.message);
-    return [...CONNECTED_SOURCES];
+    console.error("Backend /connectors failed:", err.message);
+    return [];
   }
-}
-
-/**
- * Purges all mock / test records from database to start completely fresh.
- */
-export async function purgeFeedbackDatabase() {
-  return await apiPost("/feedback/reset?confirm=true", {});
 }

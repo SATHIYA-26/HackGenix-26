@@ -16,7 +16,18 @@ import {
   Layers,
   Play,
   X,
+  Flame,
+  Clock,
+  ThumbsUp,
+  ThumbsDown,
+  BarChart2,
+  HelpCircle,
 } from "lucide-react";
+import SourceLogo from "../components/SourceLogo";
+
+import { getExecutiveDashboardMetrics } from "@/lib/api/dashboard";
+import { getProblems } from "@/lib/api/problems";
+import { getFeedbackList } from "@/lib/api/feedback";
 
 function YouTubeIcon({ className = "w-5 h-5" }) {
   return (
@@ -25,17 +36,6 @@ function YouTubeIcon({ className = "w-5 h-5" }) {
     </svg>
   );
 }
-import {
-  USER_PROFILE,
-  AI_BRIEF,
-  PROBLEMS,
-  RAW_FEEDBACK_ITEMS,
-  CONNECTED_SOURCES,
-  getCompanyIntelligence,
-} from "../data/intelligenceMockData";
-import { getExecutiveDashboardMetrics } from "@/lib/api/dashboard";
-import { getProblems } from "@/lib/api/problems";
-import DateRangeFilter, { formatDateShort } from "../components/DateRangeFilter";
 
 export default function HomeView({
   onSelectProblem,
@@ -45,204 +45,100 @@ export default function HomeView({
   activeVideoFocus = null,
   onClearVideoFocus = () => {},
 }) {
-  const [selectedRange, setSelectedRange] = useState({
-    preset: "1m",
-    label: "1 Month",
-    startDate: null,
-    endDate: null,
-    days: 30,
-  });
-  const [showShareToast, setShowShareToast] = useState(false);
+  const accountId = company?.id || "acc_manis";
+
   const [liveDashboard, setLiveDashboard] = useState(null);
-  const [liveProblems, setLiveProblems] = useState([]);
+  const [problems, setProblems] = useState([]);
+  const [recentFeedback, setRecentFeedback] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showShareToast, setShowShareToast] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    getExecutiveDashboardMetrics()
-      .then((data) => {
-        if (isMounted && data) {
-          setLiveDashboard(data);
-        }
-      })
-      .catch((err) => console.warn("Live dashboard fetch error:", err));
+    setIsLoading(true);
 
-    getProblems()
-      .then((res) => {
-        if (isMounted && res?.data?.length > 0) {
-          setLiveProblems(res.data);
-        }
+    Promise.all([
+      getExecutiveDashboardMetrics(accountId),
+      getProblems({ accountId }),
+      getFeedbackList({ accountId, limit: 5 }),
+    ])
+      .then(([dashData, probData, fbData]) => {
+        if (!isMounted) return;
+        setLiveDashboard(dashData);
+        setProblems(probData?.data || []);
+        setRecentFeedback(fbData?.data || []);
+        setIsLoading(false);
       })
-      .catch((err) => console.warn("Live problems fetch error:", err));
+      .catch((err) => {
+        console.error("Dashboard fetch error:", err);
+        if (isMounted) setIsLoading(false);
+      });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [accountId, activeVideoFocus]);
 
-  const comp = company || getCompanyIntelligence("acc_manis");
-  const compProblems = liveProblems.length > 0 ? liveProblems : (comp.problems && comp.problems.length > 0 ? comp.problems : PROBLEMS);
-  const recentFeedback = comp.recentFeedback && comp.recentFeedback.length > 0 ? comp.recentFeedback : RAW_FEEDBACK_ITEMS.slice(0, 3);
-  const sourcesList = liveDashboard?.topSources?.length > 0 ? liveDashboard.topSources : (comp.sources && comp.sources.length > 0 ? comp.sources : CONNECTED_SOURCES);
-  const aiBrief = comp.aiBrief || AI_BRIEF;
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard?.writeText(window.location.href);
+      setShowShareToast(true);
+      setTimeout(() => setShowShareToast(false), 2500);
+    }
+  };
 
-  // ─── DYNAMIC DATA SCALING BASED ON SELECTED DATE RANGE ───
-  const days = selectedRange.days || 30;
-  const scale = days / 30;
-
-  // Base raw volume (use liveDashboard total if connected)
-  const baseVolume = liveDashboard?.totalFeedback || (parseInt((comp.metrics?.totalFeedback || "14,280").replace(/,/g, ""), 10) || 14280);
-  const dynamicTotalFeedback = liveDashboard ? liveDashboard.totalFeedback : Math.max(140, Math.round(baseVolume * scale));
-  const dynamicTotalFeedbackFormatted = dynamicTotalFeedback.toLocaleString();
-
-  // Dynamic Deltas & Sentiments
-  let dynamicDelta = liveDashboard?.isLive ? "● Real FastAPI Signal" : "+12.4% review surge";
-  let dynamicRating = comp.metrics?.ratingAvg?.replace(" ★", " / 5.0") || "4.4 / 5.0";
-  let dynamicNetSentiment = liveDashboard?.avgSentimentScore !== undefined ? `${liveDashboard.avgSentimentScore > 0 ? "+" : ""}${Math.round(liveDashboard.avgSentimentScore * 100)}%` : "+78.4%";
-
-  let positivePct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.positive / liveDashboard.totalFeedback) * 100) : 76.2;
-  let neutralPct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.neutral / liveDashboard.totalFeedback) * 100) : 14.1;
-  let negativePct = liveDashboard?.sentimentDistribution && liveDashboard.totalFeedback > 0 ? Math.round((liveDashboard.sentimentDistribution.negative / liveDashboard.totalFeedback) * 100) : 9.7;
-  let activeProblemsCount = liveDashboard?.activeProblemsCount ?? compProblems.length;
-  let emergingCount = liveDashboard?.emergingSignalsCount ?? 3;
-
-  // ─── OVERRIDES WHEN FOCUSING ON A SPECIFIC ATTACHED YOUTUBE VIDEO ───
   const isVideoFocus = !!activeVideoFocus?.video;
   const videoMeta = activeVideoFocus?.video;
   const videoStats = activeVideoFocus?.stats;
-  const videoComments = activeVideoFocus?.comments || [];
 
-  if (isVideoFocus && videoStats) {
-    dynamicNetSentiment = videoStats.netSentiment || "+0%";
-    positivePct = videoStats.positivePct ?? 0;
-    neutralPct = videoStats.neutralPct ?? 0;
-    negativePct = videoStats.negativePct ?? 0;
-  }
+  const totalFb = (isVideoFocus && videoStats?.totalCommentsExtracted != null)
+    ? videoStats.totalCommentsExtracted
+    : (liveDashboard?.totalFeedback ?? 0);
+  const analyzedFb = (isVideoFocus && videoStats?.totalCommentsExtracted != null)
+    ? videoStats.totalCommentsExtracted
+    : (liveDashboard?.analyzedFeedback ?? 0);
+  const avgSentiment = (isVideoFocus && videoStats?.netSentiment != null)
+    ? (parseFloat(videoStats.netSentiment) / 100)
+    : (liveDashboard?.avgSentimentScore ?? 0.0);
+  const activeProblemsCount = (isVideoFocus && activeVideoFocus?.problemsDiscovered != null)
+    ? activeVideoFocus.problemsDiscovered
+    : (liveDashboard?.activeProblemsCount ?? problems.length);
+  const emergingCount = liveDashboard?.emergingSignalsCount ?? 0;
 
-  if (days <= 1) {
-    dynamicDelta = "+4.8% daily intake";
-    dynamicRating = "4.6 / 5.0";
-    dynamicNetSentiment = "+83.2%";
-    positivePct = 81.0;
-    neutralPct = 12.5;
-    negativePct = 6.5;
-    activeProblemsCount = Math.min(3, compProblems.length);
-    emergingCount = 1;
-  } else if (days <= 7) {
-    dynamicDelta = "+18.2% weekly surge";
-    dynamicRating = "4.5 / 5.0";
-    dynamicNetSentiment = "+81.4%";
-    positivePct = 78.8;
-    neutralPct = 13.1;
-    negativePct = 8.1;
-    activeProblemsCount = Math.min(5, compProblems.length);
-    emergingCount = 2;
-  } else if (days <= 35) {
-    dynamicDelta = "+12.4% review surge";
-    dynamicRating = "4.4 / 5.0";
-    dynamicNetSentiment = "+78.4%";
-    positivePct = 76.2;
-    neutralPct = 14.1;
-    negativePct = 9.7;
-    activeProblemsCount = Math.min(8, compProblems.length);
-    emergingCount = 3;
-  } else if (days <= 95) {
-    dynamicDelta = "+8.1% quarterly growth";
-    dynamicRating = "4.3 / 5.0";
-    dynamicNetSentiment = "+74.2%";
-    positivePct = 72.4;
-    neutralPct = 15.8;
-    negativePct = 11.8;
-    activeProblemsCount = Math.min(12, compProblems.length);
-    emergingCount = 5;
-  } else {
-    dynamicDelta = "+15.6% aggregate expansion";
-    dynamicRating = "4.3 / 5.0";
-    dynamicNetSentiment = "+75.0%";
-    positivePct = 73.5;
-    neutralPct = 15.2;
-    negativePct = 11.3;
-    activeProblemsCount = compProblems.length;
-    emergingCount = Math.min(6, compProblems.length);
-  }
+  const sentimentDist = liveDashboard?.sentimentDistribution || { positive: 0, neutral: 0, negative: 0 };
+  const posCount = (isVideoFocus && videoStats?.positiveCount != null) ? videoStats.positiveCount : (sentimentDist.positive || 0);
+  const neuCount = (isVideoFocus && videoStats?.neutralCount != null) ? videoStats.neutralCount : (sentimentDist.neutral || 0);
+  const negCount = (isVideoFocus && videoStats?.negativeCount != null) ? videoStats.negativeCount : (sentimentDist.negative || 0);
+  const sentimentTotal = posCount + neuCount + negCount || totalFb || 1;
 
-  const rangeLabelText = selectedRange.preset === "custom" && selectedRange.startDate && selectedRange.endDate
-    ? `${formatDateShort(new Date(selectedRange.startDate))} – ${formatDateShort(new Date(selectedRange.endDate))}`
-    : selectedRange.label || "1 Month";
+  const posPct = (isVideoFocus && videoStats?.positivePct != null) ? videoStats.positivePct : Math.round((posCount / sentimentTotal) * 100);
+  const neuPct = (isVideoFocus && videoStats?.neutralPct != null) ? videoStats.neutralPct : Math.round((neuCount / sentimentTotal) * 100);
+  const negPct = (isVideoFocus && videoStats?.negativePct != null) ? videoStats.negativePct : Math.round((negCount / sentimentTotal) * 100);
 
-  const emergingProblems = compProblems
-    .filter((p) => p.status === "emerging" || p.status === "critical")
-    .slice(0, Math.max(2, Math.min(4, activeProblemsCount)))
-    .map((p) => ({
-      ...p,
-      feedbackCount: Math.max(1, Math.round(p.feedbackCount * Math.min(2.5, Math.max(0.12, scale)))),
-    }));
-
-  const priorityProblems = [...compProblems]
-    .sort((a, b) => b.priorityScore - a.priorityScore)
-    .slice(0, 3)
-    .map((p) => ({
-      ...p,
-      feedbackCount: Math.max(1, Math.round(p.feedbackCount * Math.min(2.5, Math.max(0.12, scale)))),
-    }));
-
-  const displaySources = sourcesList.map((src) => {
-    const count = src.totalFeedback ?? src.itemsCount ?? 0;
-    const scaledCount = Math.max(1, Math.round(count * scale));
-    return {
-      ...src,
-      scaledCount,
-    };
-  });
-
-  const handleShare = () => {
-    setShowShareToast(true);
-    setTimeout(() => setShowShareToast(false), 2500);
-  };
-
-  const finalTotalFeedbackFormatted = isVideoFocus
-    ? `${videoStats?.totalCommentsExtracted || videoComments.length} Extracted`
-    : dynamicTotalFeedbackFormatted;
-
-  const finalDelta = isVideoFocus
-    ? `${videoMeta?.commentCount || 0} on YouTube`
-    : dynamicDelta;
-
-  const finalRating = isVideoFocus
-    ? `${videoStats?.positivePct || 0}% Pos · ${videoStats?.negativePct || 0}% Neg`
-    : `Average: ${dynamicRating}`;
-
-  const finalFeedbackList = isVideoFocus && videoComments.length > 0
-    ? videoComments.slice(0, 3).map((c) => ({
-        id: c.id,
-        text: c.text,
-        authorName: c.authorName,
-        source: c.source,
-        sentiment: c.sentiment,
-        rating: c.sentiment === "positive" ? 5 : (c.sentiment === "negative" ? 1 : 3),
-        createdAt: c.createdAt,
-      }))
-    : recentFeedback;
+  const netSentimentDisplay = (isVideoFocus && videoStats?.netSentiment != null)
+    ? videoStats.netSentiment
+    : `${avgSentiment >= 0 ? "+" : ""}${Math.round(avgSentiment * 100)}%`;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
       {/* ─── UNIFIED HEADER: COMPANY PERSONA GREETING & CONTROLS ─── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#ECE8E0] pb-6">
         <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#7C3AED]">
+              Live Backend Signal
+            </span>
+          </div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">
-            Welcome back, {comp.name}
+            Welcome back, {company?.name || "Business Workspace"}
           </h1>
           <p className="text-xs text-[#71717A] mt-1">
-            {comp.ownerName} ({comp.ownerRole}) · Executive Voice of Customer Intelligence for {comp.typeLabel}
+            {company?.ownerName} ({company?.ownerRole}) · Voice of Customer Platform for {company?.typeLabel || company?.category}
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Calendar & Timeframe Filter */}
-          <DateRangeFilter
-            selectedRange={selectedRange}
-            onRangeChange={(range) => setSelectedRange(range)}
-          />
-
           <button
             onClick={handleShare}
             className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors flex items-center gap-1.5"
@@ -255,7 +151,7 @@ export default function HomeView({
             onClick={() => onNavigate("problems")}
             className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors"
           >
-            Explore {compProblems.length} Problems
+            Explore {problems.length} Problems
           </button>
 
           <button
@@ -268,27 +164,46 @@ export default function HomeView({
         </div>
       </div>
 
+      {/* ─── EMPTY STATE BANNER (FOR CLEAN YOUTUBE OR EMPTY ACCOUNTS) ─── */}
+      {totalFb === 0 && !isLoading && (
+        <div className="p-8 rounded-2xl bg-gradient-to-br from-[#FAF5FF] via-white to-[#FAF8F5] border border-[#DDD6FE] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-bold">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Workspace Ready for Live Ingestion</span>
+            </div>
+            <h2 className="text-lg font-bold text-[#18181B] font-serif">
+              No feedback records ingested for {company?.name} yet
+            </h2>
+            <p className="text-xs text-[#71717A] max-w-xl leading-relaxed">
+              Connect external customer sources or enter a YouTube video URL in the Sources tab. Our FastAPI backend will automatically run RoBERTa sentiment analysis, DistilBERT intent classification, and discover actionable problem clusters.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate("sources")}
+            className="h-10 px-5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 shrink-0"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>Go to Sources & Ingest YouTube</span>
+          </button>
+        </div>
+      )}
+
       {/* ─── ACTIVE VIDEO FOCUS BANNER (WHEN ATTACHED FROM SOURCES) ─── */}
       {isVideoFocus && (
         <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FAF5FF] via-[#F3E8FF] to-[#FAF8F5] border border-[#DDD6FE] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shrink-0 shadow-xs">
+            <div className="w-11 h-11 rounded-xl bg-[#E11D48] text-white flex items-center justify-center shrink-0 shadow-xs">
               <YouTubeIcon className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-[#7C3AED] text-white px-2 py-0.5 rounded-full">
-                  Focusing on Video Alone
+                  Focused YouTube Video Stream
                 </span>
-                {activeVideoFocus.backendStatus === "forwarded_to_backend" ? (
-                  <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> External NLP Backend Synced
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-medium text-[#71717A] bg-white border border-[#E5E1D8] px-2 py-0.5 rounded-full">
-                    Built-in Stats Engine Active (Fallback)
-                  </span>
-                )}
+                <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Live NLP Extracted
+                </span>
               </div>
               <h3 className="text-sm font-bold text-[#18181B] mt-1 font-serif line-clamp-1">
                 {videoMeta?.title}
@@ -305,7 +220,7 @@ export default function HomeView({
               className="h-8 px-3 rounded-lg bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <X className="w-3.5 h-3.5" />
-              <span>Show Full Channel</span>
+              <span>Clear Focus</span>
             </button>
           </div>
         </div>
@@ -314,376 +229,386 @@ export default function HomeView({
       {showShareToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in">
           <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
-          <span>{comp.name} Dashboard snapshot link copied to clipboard!</span>
+          <span>{company?.name} snapshot link copied to clipboard!</span>
         </div>
       )}
 
-      {/* ─── EXECUTIVE METRICS BAR (DYNAMICALLY COMPUTED) ─── */}
+      {/* ─── EXECUTIVE METRICS BAR ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
-          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            {isVideoFocus ? "Extracted Voice" : "Total Customer Voice"}
-          </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">{finalTotalFeedbackFormatted}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">▲ {finalDelta}</p>
-        </div>
-
-        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
-          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Net Sentiment
-          </span>
-          <p className="text-2xl font-bold text-[#059669] mt-1">{dynamicNetSentiment}</p>
-          <p className="text-[11px] text-[#059669] mt-0.5 font-semibold">{finalRating}</p>
-        </div>
-
-        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
-          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Active Problem Clusters
-          </span>
-          <p className="text-2xl font-bold text-[#18181B] mt-1">{activeProblemsCount}</p>
-          <p className="text-[11px] text-[#E11D48] mt-0.5 font-semibold">Filtered for {rangeLabelText}</p>
-        </div>
-
-        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
-          <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
-            Emerging Signals
-          </span>
-          <p className="text-2xl font-bold text-[#D97706] mt-1">{emergingCount}</p>
-          <p className="text-[11px] text-[#D97706] mt-0.5 font-semibold">Velocity surges</p>
-        </div>
-      </div>
-
-      {/* ─── AI BRIEF: COMPANY-SPECIFIC SHIFTS DETECTED IN SELECTED TIMEFRAME ─── */}
-      <div className="p-6 rounded-2xl bg-gradient-to-br from-[#FAF5FF]/80 via-[#FBF9F5] to-white border border-[#DDD6FE] shadow-2xs relative overflow-hidden">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-6 h-6 rounded-md bg-[#7C3AED] text-white flex items-center justify-center shadow-xs">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+              Total Ingested Voice
+            </span>
+            <MessageSquare className="w-4 h-4 text-[#71717A]" />
           </div>
-          <span className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
-            {aiBrief.headline}
-          </span>
+          <p className="text-2xl font-bold text-[#18181B] mt-2">{totalFb.toLocaleString()}</p>
+          <div className="flex items-center gap-1 text-[11px] text-[#059669] mt-1 font-semibold">
+            <TrendingUp className="w-3 h-3" />
+            <span>{analyzedFb} analyzed via RoBERTa</span>
+          </div>
         </div>
 
-        <h2 className="text-base font-bold text-[#18181B] mb-4 font-serif">
-          3 important customer feedback shifts detected in {rangeLabelText} across {dynamicTotalFeedbackFormatted} total signals:
-        </h2>
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+              Net Sentiment Score
+            </span>
+            <Activity className="w-4 h-4 text-[#059669]" />
+          </div>
+          <p className={`text-2xl font-bold mt-2 ${avgSentiment >= 0 ? "text-[#059669]" : "text-[#E11D48]"}`}>
+            {netSentimentDisplay}
+          </p>
+          <p className="text-[11px] text-[#71717A] mt-1 font-semibold">
+            Scale: -1.00 (Friction) to +1.00 (Delight)
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {aiBrief.shifts.map((shift) => (
-            <div
-              key={shift.id}
-              onClick={() => onSelectProblem(shift.problemId)}
-              className="p-4 rounded-xl bg-white border border-[#E5E1D8] hover:border-[#7C3AED] cursor-pointer transition-all hover:shadow-sm flex flex-col justify-between group"
-            >
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono text-[#71717A] mb-2">
-                  <span className="font-bold text-[#18181B]">{shift.number}</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F5F3FF] font-sans font-semibold text-[#7C3AED] border border-[#DDD6FE]">
-                    {shift.category}
-                  </span>
-                </div>
-                <p className="text-xs text-[#18181B] font-medium leading-relaxed group-hover:text-[#7C3AED] transition-colors">
-                  {shift.text}
-                </p>
-              </div>
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+              Discovered Problems
+            </span>
+            <AlertTriangle className="w-4 h-4 text-[#D97706]" />
+          </div>
+          <p className="text-2xl font-bold text-[#18181B] mt-2">{activeProblemsCount}</p>
+          <p className="text-[11px] text-[#71717A] mt-1 font-semibold">
+            HDBSCAN & BERTopic clustered
+          </p>
+        </div>
 
-              <div className="mt-4 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-[11px] text-[#71717A]">
-                <span className="font-mono text-[#E11D48] font-bold">{shift.sentiment}</span>
-                <span className="text-[#7C3AED] font-semibold flex items-center gap-1 group-hover:underline">
-                  Inspect evidence →
-                </span>
-              </div>
-            </div>
-          ))}
+        <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] transition-colors">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
+              Emerging Signals
+            </span>
+            <Flame className="w-4 h-4 text-[#E11D48]" />
+          </div>
+          <p className="text-2xl font-bold text-[#E11D48] mt-2">{emergingCount}</p>
+          <p className="text-[11px] text-[#E11D48] mt-1 font-semibold">
+            Accelerating volume spikes
+          </p>
         </div>
       </div>
 
-      {/* ─── 2-COLUMN LAYOUT: EMERGING PROBLEMS + CUSTOMER HEALTH TRAJECTORY ─── */}
+      {/* ─── 2-COLUMN LAYOUT: TOP PRIORITY PROBLEMS + SENTIMENT HEALTH ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left (2 cols): Emerging Problems */}
+        {/* Left (2 cols): Discovered Problems */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#D97706]" /> Emerging & Critical Problems
+                <AlertTriangle className="w-4 h-4 text-[#D97706]" /> Priority Problem Clusters
               </h2>
               <p className="text-xs text-[#71717A]">
-                Problems with accelerating volume or high negative sentiment in {rangeLabelText}
+                Ranked by composite explainable priority formula from backend
               </p>
             </div>
             <button
               onClick={() => onNavigate("problems")}
-              className="text-xs font-semibold text-[#4F46E5] hover:underline"
+              className="text-xs font-semibold text-[#7C3AED] hover:underline flex items-center gap-1"
             >
-              View all 15 &rarr;
+              <span>View all</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="space-y-3">
-            {emergingProblems.map((prob) => (
-              <div
-                key={prob.id}
-                onClick={() => onSelectProblem(prob.id)}
-                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all hover:shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 group"
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        prob.status === "critical"
-                          ? "bg-[#E11D48]"
-                          : prob.status === "emerging"
-                          ? "bg-[#D97706]"
-                          : "bg-[#059669]"
-                      }`}
-                    />
-                    <h3 className="text-xs font-bold text-[#18181B] group-hover:text-[#4F46E5] transition-colors truncate">
-                      {prob.name}
-                    </h3>
-                  </div>
-                  <p className="text-xs text-[#71717A] line-clamp-1">{prob.summary}</p>
-                  <div className="flex items-center gap-2 text-[11px] text-[#71717A] pt-1">
-                    <span className="bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#ECE8E0] font-mono">
-                      {prob.platform}
-                    </span>
-                    <span>•</span>
-                    <span>{prob.product}</span>
-                    <span>•</span>
-                    <span className="font-mono">{prob.version}</span>
-                  </div>
-                </div>
+          {problems.length === 0 ? (
+            <div className="p-8 text-center bg-white rounded-xl border border-[#E5E1D8] text-xs text-[#71717A]">
+              No active problem clusters discovered yet for this account.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {problems.slice(0, 5).map((prob) => {
+                const breakdown = prob.priorityBreakdown || {};
+                return (
+                  <div
+                    key={prob.id}
+                    onClick={() => onSelectProblem(prob.id)}
+                    className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all hover:shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                  >
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`w-2 h-2 rounded-full shrink-0 ${
+                            prob.status === "critical"
+                              ? "bg-[#E11D48]"
+                              : prob.status === "emerging"
+                              ? "bg-[#D97706]"
+                              : "bg-[#059669]"
+                          }`}
+                        />
+                        <h3 className="text-xs font-bold text-[#18181B] group-hover:text-[#7C3AED] transition-colors truncate">
+                          {prob.name}
+                        </h3>
+                      </div>
+                      <p className="text-xs text-[#71717A] line-clamp-1">{prob.summary}</p>
+                      
+                      {/* Priority Factor Pills */}
+                      <div className="flex items-center gap-2 text-[10px] text-[#71717A] pt-1 flex-wrap">
+                        <span className="bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#ECE8E0] font-mono">
+                          Score: {prob.priorityScore?.toFixed(2)}
+                        </span>
+                        {breakdown.frequency !== undefined && (
+                          <span className="text-[#71717A]">
+                            Freq: {breakdown.frequency}
+                          </span>
+                        )}
+                        {breakdown.severity !== undefined && (
+                          <span className="text-[#E11D48]">
+                            Sev: {breakdown.severity}
+                          </span>
+                        )}
+                        {breakdown.growth !== undefined && (
+                          <span className="text-[#D97706]">
+                            Growth: {breakdown.growth}
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-6 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#ECE8E0]">
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-[#18181B]">{prob.feedbackCount} mentions</p>
-                    <p className="text-[11px] font-semibold text-[#E11D48]">↑ {prob.growthLabel}</p>
+                    <div className="flex items-center gap-6 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#ECE8E0]">
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-[#18181B]">{prob.feedbackCount} feedback</p>
+                        <p className={`text-[11px] font-semibold ${prob.growthRate >= 0 ? "text-[#E11D48]" : "text-[#059669]"}`}>
+                          {prob.growthLabel}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-[#E11D48]">
+                          {Math.round(prob.negativeSentiment * 100)}% Neg
+                        </p>
+                        <span className="text-[10px] uppercase font-bold text-[#71717A]">{prob.status}</span>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-[#FAF8F5] group-hover:bg-[#18181B] group-hover:text-white flex items-center justify-center transition-colors">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-[#E11D48]">
-                      {Math.round(prob.negativeSentiment * 100)}% Neg
-                    </p>
-                    <p className="text-[11px] text-[#71717A]">Score {prob.priorityScore}</p>
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-[#FAF8F5] group-hover:bg-[#18181B] group-hover:text-white flex items-center justify-center transition-colors">
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Right (1 col): Customer Health & Sentiment Trajectory */}
+        {/* Right (1 col): Sentiment Health Distribution */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#059669]" /> Customer Health
+              <Activity className="w-4 h-4 text-[#059669]" /> Sentiment Breakdown
             </h2>
-            <span className="text-[11px] font-mono font-bold text-[#71717A] uppercase">{rangeLabelText} Trend</span>
+            <span className="text-[11px] font-mono font-bold text-[#71717A] uppercase">RoBERTa NLP</span>
           </div>
 
           <div className="p-5 rounded-xl border border-[#E5E1D8] bg-white space-y-5">
             <div>
               <span className="text-xs font-semibold text-[#71717A]">Net Customer Sentiment</span>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-bold text-[#059669]">{dynamicNetSentiment}</span>
-                <span className="text-xs font-semibold text-[#059669]">▲ +4.2%</span>
+                <span className={`text-3xl font-bold ${avgSentiment >= 0 ? "text-[#059669]" : "text-[#E11D48]"}`}>
+                  {netSentimentDisplay}
+                </span>
               </div>
               <p className="text-xs text-[#71717A] mt-1">
-                Calculated across {dynamicTotalFeedbackFormatted} verified reviews in {rangeLabelText}
+                Calculated across {totalFb.toLocaleString()} customer feedback items
               </p>
             </div>
 
-            {/* Micro Sentiment Trajectory Bars */}
+            {/* Sentiment Trajectory Bars */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B]">Positive Delight</span>
-                <span className="font-bold text-[#059669]">{positivePct}%</span>
+                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
+                  <ThumbsUp className="w-3.5 h-3.5 text-[#059669]" /> Positive Sentiment
+                </span>
+                <span className="font-bold text-[#059669]">{posCount} ({posPct}%)</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#059669] rounded-full transition-all duration-500" style={{ width: `${positivePct}%` }} />
+                <div className="h-full bg-[#059669] rounded-full transition-all duration-500" style={{ width: `${posPct}%` }} />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B]">Neutral / Informational</span>
-                <span className="font-bold text-[#64748B]">{neutralPct}%</span>
+                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#64748B]" /> Neutral Sentiment
+                </span>
+                <span className="font-bold text-[#64748B]">{neuCount} ({neuPct}%)</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#64748B] rounded-full transition-all duration-500" style={{ width: `${neutralPct}%` }} />
+                <div className="h-full bg-[#64748B] rounded-full transition-all duration-500" style={{ width: `${neuPct}%` }} />
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B]">Negative / Friction</span>
-                <span className="font-bold text-[#E11D48]">{negativePct}%</span>
+                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
+                  <ThumbsDown className="w-3.5 h-3.5 text-[#E11D48]" /> Negative Friction
+                </span>
+                <span className="font-bold text-[#E11D48]">{negCount} ({negPct}%)</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                <div className="h-full bg-[#E11D48] rounded-full transition-all duration-500" style={{ width: `${negativePct}%` }} />
+                <div className="h-full bg-[#E11D48] rounded-full transition-all duration-500" style={{ width: `${negPct}%` }} />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#ECE8E0] text-xs text-[#71717A] space-y-1">
-              <p className="font-semibold text-[#18181B]">Top Health Alert:</p>
-              <p className="leading-relaxed">
-                Negative ratio jumped to 21% among users who attempted checkout on v4.2.1.
-              </p>
-            </div>
+            {/* Intent Breakdown */}
+            {liveDashboard?.intentDistribution && Object.keys(liveDashboard.intentDistribution).length > 0 && (
+              <div className="pt-4 border-t border-[#ECE8E0] space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#71717A]">
+                  DistilBERT Intent Classification
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {Object.entries(liveDashboard.intentDistribution).map(([intent, count]) => (
+                    <span
+                      key={intent}
+                      className="text-[11px] px-2 py-0.5 rounded-full bg-[#F4F1EA] text-[#18181B] font-medium border border-[#E5E1D8]"
+                    >
+                      {intent}: <strong>{count}</strong>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ─── 3-COLUMN BOTTOM GRID: PRIORITY AREAS, CONNECTED SOURCES & RECENT VOICE ─── */}
+      {/* ─── 3-COLUMN BOTTOM GRID: EMERGING TRENDS, CONNECTED SOURCES & RECENT VOICE ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Col 1: Priority Areas with Explainability */}
+        {/* Col 1: Emerging Trends */}
         <div className="space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
-              Priority Areas (Ranked by Evidence)
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#7C3AED]" /> Emerging Trends
             </h2>
             <p className="text-xs text-[#71717A]">
-              Explainable weighting driving team attention
+              Velocity comparison across 7d windows
             </p>
           </div>
 
-          <div className="space-y-3">
-            {priorityProblems.map((prob, idx) => (
-              <div
-                key={prob.id}
-                onClick={() => onSelectProblem(prob.id)}
-                className="p-4 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all flex items-start gap-3.5 group"
-              >
-                <div className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#ECE8E0] text-xs font-bold text-[#18181B] flex items-center justify-center shrink-0">
-                  0{idx + 1}
-                </div>
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-[#18181B] group-hover:text-[#4F46E5] truncate">
-                      {prob.name}
-                    </p>
-                    <span className="text-xs font-bold text-[#18181B] bg-[#F4F1EA] px-2 py-0.5 rounded">
-                      {prob.priorityScore}
-                    </span>
-                  </div>
-                  <p className="text-xs font-medium text-[#E11D48] line-clamp-1">
-                    {prob.whyItMatters}
-                  </p>
-                  <p className="text-[11px] text-[#71717A]">
-                    {prob.feedbackCount} items · {prob.growthLabel} velocity
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Col 2: Volume Distribution by Connected Sources */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-1.5">
-                <Globe className="w-4 h-4 text-[#0284C7]" /> Sources Distribution
-              </h2>
-              <p className="text-xs text-[#71717A]">
-                Live continuous pipelines for {rangeLabelText}
+          <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3">
+            {(!liveDashboard?.emergingTrends || liveDashboard.emergingTrends.length === 0) ? (
+              <p className="text-xs text-[#71717A] text-center py-4">
+                No emerging spike trends detected currently.
               </p>
-            </div>
-            <button
-              onClick={() => onNavigate("sources")}
-              className="text-xs font-semibold text-[#4F46E5] hover:underline"
-            >
-              Manage &rarr;
-            </button>
-          </div>
-
-          <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3.5">
-            {displaySources.map((src) => {
-              const count = src.scaledCount || 0;
-              return (
-                <div key={src.id} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: src.accent || "#0284C7" }}
-                      />
-                      <span className="font-semibold text-[#18181B]">{src.name}</span>
-                    </div>
-                    <span className="font-mono text-[11px] text-[#71717A]">
-                      {count.toLocaleString()} items
+            ) : (
+              liveDashboard.emergingTrends.map((trend) => (
+                <div
+                  key={trend.id}
+                  onClick={() => onSelectProblem(trend.problemId)}
+                  className="p-3 rounded-lg bg-[#FAF8F5] border border-[#ECE8E0] hover:border-[#7C3AED] cursor-pointer transition-colors space-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#18181B] truncate">{trend.problemName}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FFF1F2] text-[#E11D48] font-bold">
+                      {trend.growthPercent}
                     </span>
                   </div>
-                  <div className="h-1.5 w-full rounded-full bg-[#ECE8E0] overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        backgroundColor: src.accent || "#0284C7",
-                        width: `${Math.min(100, Math.max(5, (count / (dynamicTotalFeedback || 1)) * 100))}%`,
-                      }}
-                    />
+                  <div className="flex items-center justify-between text-[11px] text-[#71717A]">
+                    <span>Current: {trend.currentCount} items</span>
+                    <span>Baseline: {trend.previousCount} items</span>
                   </div>
                 </div>
-              );
-            })}
-
-            {(comp?.type === "youtube" || comp?.id === "acc_vj_sidhu" || (comp?.category && comp.category.toLowerCase().includes("youtube"))) && (
-              <button
-                onClick={() => onNavigate("sources")}
-                className="w-full mt-2 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-xs font-semibold text-[#7C3AED] hover:text-[#6D28D9] transition-colors group"
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse"></span>
-                  Live YouTube Video & Channel Extractor
-                </span>
-                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-              </button>
+              ))
             )}
           </div>
         </div>
 
-        {/* Col 3: Recent Customer Voice (Traceable Quotes) */}
+        {/* Col 2: Ingested Sources */}
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-[#0284C7]" /> Connected Sources
+            </h2>
+            <p className="text-xs text-[#71717A]">
+              Customer channels feeding the platform
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3">
+            {(!liveDashboard?.topSources || liveDashboard.topSources.length === 0) ? (
+              <p className="text-xs text-[#71717A] text-center py-4">
+                No active source connections found.
+              </p>
+            ) : (
+              liveDashboard.topSources.map((src) => (
+                <div
+                  key={src.name}
+                  className="p-3 rounded-lg border border-[#ECE8E0] flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-md bg-[#FAF8F5] border border-[#ECE8E0] flex items-center justify-center p-1 shrink-0">
+                      <SourceLogo source={src.type || src.name} name={src.name} type={src.type} className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-[#18181B]">{src.name}</p>
+                      <p className="text-[10px] text-[#71717A]">Source Channel</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-bold text-[#18181B]">{src.count.toLocaleString()}</span>
+                    <p className="text-[10px] text-[#059669]">Ingested</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Col 3: Recent Customer Feedback */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-[#2563EB]" /> Customer Voice
+                <MessageSquare className="w-4 h-4 text-[#7C3AED]" /> Recent Customer Voice
               </h2>
               <p className="text-xs text-[#71717A]">
-                Original customer text
+                Latest normalized customer records
               </p>
             </div>
             <button
               onClick={() => onNavigate("feedback")}
-              className="text-xs font-semibold text-[#4F46E5] hover:underline"
+              className="text-xs font-semibold text-[#7C3AED] hover:underline flex items-center gap-1"
             >
-              Feed &rarr;
+              <span>Explore</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="space-y-3">
-            {finalFeedbackList.map((fb) => (
-              <div
-                key={fb.id}
-                onClick={() => onSelectFeedback(fb)}
-                className="p-3.5 rounded-xl border border-[#E5E1D8] bg-white hover:border-[#18181B] cursor-pointer transition-all space-y-2 group"
-              >
-                <p className="text-xs font-serif italic text-[#18181B] leading-relaxed line-clamp-2">
-                  “{fb.text}”
-                </p>
-                <div className="flex items-center justify-between text-[11px] text-[#71717A] pt-1 border-t border-[#ECE8E0]">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#18181B]">{fb.authorName}</span>
-                    <span>•</span>
-                    <span>{fb.source}</span>
+          <div className="p-4 rounded-xl border border-[#E5E1D8] bg-white space-y-3">
+            {recentFeedback.length === 0 ? (
+              <p className="text-xs text-[#71717A] text-center py-4">
+                No customer voice records available yet.
+              </p>
+            ) : (
+              recentFeedback.slice(0, 3).map((fb) => (
+                <div
+                  key={fb.id}
+                  onClick={() => onSelectFeedback(fb)}
+                  className="p-3 rounded-lg bg-[#FAF8F5] border border-[#ECE8E0] hover:border-[#7C3AED] cursor-pointer transition-colors space-y-1"
+                >
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-[#18181B] truncate max-w-[140px]">{fb.authorName}</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
+                        fb.sentiment === "positive"
+                          ? "bg-[#ECFDF5] text-[#059669]"
+                          : fb.sentiment === "negative"
+                          ? "bg-[#FFF1F2] text-[#E11D48]"
+                          : "bg-[#F4F1EA] text-[#64748B]"
+                      }`}
+                    >
+                      {fb.sentiment}
+                    </span>
                   </div>
-                  <span className="text-[#4F46E5] font-semibold group-hover:underline flex items-center gap-1">
-                    Trace →
-                  </span>
+                  <p className="text-xs text-[#71717A] line-clamp-2 leading-relaxed">
+                    "{fb.text}"
+                  </p>
+                  <p className="text-[10px] text-[#A1A1AA] pt-1">
+                    Source: {fb.source} · {fb.rating ? `Rating: ${fb.rating}/5` : "Unrated"}
+                  </p>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

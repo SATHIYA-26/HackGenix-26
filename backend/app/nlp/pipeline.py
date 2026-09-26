@@ -139,19 +139,22 @@ class NLPPipeline:
         logger.info(f"Processed batch of {len(analyses)} feedback items through NLP pipeline.")
         return analyses
 
-    def discover_problems(self) -> List[ProblemCluster]:
-        """Perform HDBSCAN density clustering and BERTopic problem discovery on all valid embeddings.
-        
-        Discovers problem clusters, extracts human-readable problem topics, and links feedback.
+    def discover_problems(self, account_id: Optional[str] = None) -> List[ProblemCluster]:
+        """Perform HDBSCAN density clustering and BERTopic problem discovery on valid embeddings.
+
+        Scoped to a single account when account_id is provided — never mixes feedback
+        across different business accounts.
         """
-        # Fetch all feedback items that have embeddings and are not noise
-        embeddings_records = (
+        query = (
             self.db.query(FeedbackEmbedding, FeedbackAnalysis, Feedback)
             .join(FeedbackAnalysis, FeedbackAnalysis.feedback_id == FeedbackEmbedding.feedback_id)
             .join(Feedback, Feedback.feedback_id == FeedbackEmbedding.feedback_id)
             .filter(FeedbackAnalysis.is_noise.is_(False))
-            .all()
         )
+        if account_id:
+            query = query.filter(Feedback.account_id == account_id)
+
+        embeddings_records = query.all()
 
         if len(embeddings_records) < 5:
             logger.info("Fewer than 5 feedback embeddings available. Skipping problem discovery.")
@@ -189,7 +192,6 @@ class NLPPipeline:
             # Compute average sentiment for this cluster
             cluster_sentiments = []
             for fid in cluster_res.feedback_ids:
-                # Find matching record
                 for r in embeddings_records:
                     if r[0].feedback_id == fid:
                         sent_val = -1.0 if r[1].sentiment == "negative" else (1.0 if r[1].sentiment == "positive" else 0.0)
@@ -203,21 +205,22 @@ class NLPPipeline:
             severity = round(min(1.0, 0.4 + (neg_ratio * 0.5)), 2)
             user_impact = round(min(1.0, 0.3 + (len(cluster_res.feedback_ids) / 100.0)), 2)
 
-            # Create or update problem in DB
+            # Create or update problem in DB — scoped to this account
             problem = self.problem_repo.create_or_update(
                 name=topic_def.name,
                 description=topic_def.description,
                 feedback_count=len(cluster_res.feedback_ids),
                 average_sentiment=round(avg_sentiment, 2),
-                growth_rate=0.0,  # Will be updated by Trend Engine in Phase 3
+                growth_rate=0.0,
                 severity=severity,
                 user_impact=user_impact,
-                priority_score=0.50,  # Will be computed by Priority Engine in Phase 3
+                priority_score=0.50,
                 frequency_score=round(min(1.0, len(cluster_res.feedback_ids) / 50.0), 2),
                 severity_score=severity,
                 growth_score=0.50,
                 user_impact_score=user_impact,
                 negative_sentiment_score=round(neg_ratio, 2),
+                account_id=account_id,
             )
 
             # Link feedback items to this problem
@@ -228,3 +231,4 @@ class NLPPipeline:
 
         logger.info(f"Problem discovery created/updated {len(discovered_problems)} problem clusters.")
         return discovered_problems
+

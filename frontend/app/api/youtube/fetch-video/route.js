@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { videoUrlOrId, maxComments = 50, apiKey } = body;
+    const { videoUrlOrId, maxComments = 50, apiKey, accountId, account_id } = body;
 
     if (!videoUrlOrId || !videoUrlOrId.trim()) {
       return NextResponse.json(
@@ -22,6 +22,7 @@ export async function POST(request) {
         max_comments: maxComments,
         run_nlp: true,
         api_key: apiKey || undefined,
+        account_id: account_id || accountId || undefined,
       }),
     });
 

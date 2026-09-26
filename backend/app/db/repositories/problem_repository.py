@@ -29,8 +29,11 @@ class ProblemRepository:
         skip: int = 0,
         limit: int = 50,
         sort_by_priority: bool = True,
+        account_id: Optional[str] = None,
     ) -> Tuple[List[ProblemCluster], int]:
         query = self.db.query(ProblemCluster)
+        if account_id:
+            query = query.filter(ProblemCluster.account_id == account_id)
         if sort_by_priority:
             query = query.order_by(desc(ProblemCluster.priority_score))
         else:
@@ -56,6 +59,7 @@ class ProblemRepository:
         user_impact_score: float = 0.0,
         negative_sentiment_score: float = 0.0,
         product_dimension: Optional[Dict[str, Any]] = None,
+        account_id: Optional[str] = "acc_manis",
     ) -> ProblemCluster:
         existing = self.get_by_name(name)
         if existing:
@@ -71,6 +75,8 @@ class ProblemRepository:
             existing.growth_score = growth_score
             existing.user_impact_score = user_impact_score
             existing.negative_sentiment_score = negative_sentiment_score
+            if account_id:
+                existing.account_id = account_id
             if product_dimension:
                 existing.product_dimension = product_dimension
             self.db.commit()
@@ -92,6 +98,7 @@ class ProblemRepository:
             user_impact_score=user_impact_score,
             negative_sentiment_score=negative_sentiment_score,
             product_dimension=product_dimension or {},
+            account_id=account_id or (product_dimension.get("account_id") if product_dimension else "acc_manis"),
         )
         self.db.add(problem)
         self.db.commit()
@@ -131,5 +138,8 @@ class ProblemRepository:
         results = self.db.execute(stmt).fetchall()
         return [r[0] for r in results]
 
-    def count(self) -> int:
-        return self.db.query(ProblemCluster).count()
+    def count(self, account_id: Optional[str] = None) -> int:
+        query = self.db.query(ProblemCluster)
+        if account_id:
+            query = query.filter(ProblemCluster.account_id == account_id)
+        return query.count()

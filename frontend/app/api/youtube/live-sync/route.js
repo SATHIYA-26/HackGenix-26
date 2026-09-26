@@ -3,7 +3,14 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { channelHandleOrId = "@VJ_Sidhu_Vlogs", maxVideos = 5, commentsPerVideo = 20, apiKey } = body;
+    const {
+      channelHandleOrId = "@VJ_Sidhu_Vlogs",
+      maxVideos = 5,
+      commentsPerVideo = 20,
+      apiKey,
+      accountId,
+      account_id,
+    } = body;
 
     // Call FastAPI Backend Live YouTube Channel Ingestion & NLP Pipeline
     const backendApiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
@@ -16,6 +23,7 @@ export async function POST(request) {
         max_comments: commentsPerVideo,
         run_nlp: true,
         api_key: apiKey || undefined,
+        account_id: account_id || accountId || undefined,
       }),
     });
 

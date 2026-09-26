@@ -5,16 +5,17 @@
 
 import { apiGet } from "./client";
 import { adaptTrend, adaptProblem } from "./adapters";
-import { PROBLEMS } from "../../components/dashboard/data/intelligenceMockData";
 
 /**
  * Fetches real sliding-window trend calculations and emerging spike detections.
+ * @param {string} [accountId] - Account ID filter
  */
-export async function getTrendsData() {
+export async function getTrendsData(accountId = null) {
   try {
+    const accParam = accountId ? `?account_id=${encodeURIComponent(accountId)}` : "";
     const [rawTrends, rawProblems] = await Promise.all([
-      apiGet("/trends"),
-      apiGet("/problems?status=all&limit=100").catch(() => []),
+      apiGet(`/trends${accParam}`),
+      apiGet(`/problems${accParam ? accParam + "&limit=100" : "?limit=100"}`).catch(() => []),
     ]);
 
     const trends = (Array.isArray(rawTrends) ? rawTrends : []).map(adaptTrend);
@@ -30,12 +31,15 @@ export async function getTrendsData() {
         growthRate: t.growthRate,
         growthLabel: t.growthPercent,
         growthPercent: t.growthPercent,
+        currentCount: t.currentCount,
+        previousCount: t.previousCount,
+        timeWindow: t.timeWindow,
         shortExplanation: p.shortExplanation || `Recent volume shift: ${t.currentCount} current mentions vs ${t.previousCount} baseline.`,
         firstDetected: p.firstDetected || "Recent sync",
-        feedbackCount: t.currentCount || p.feedbackCount || 12,
+        feedbackCount: t.currentCount || p.feedbackCount || 0,
         product: p.product || "Core Application",
         platform: p.platform || "Multi-channel",
-        priorityScore: p.priorityScore || 85,
+        priorityScore: p.priorityScore || 0.8,
         status: t.isEmerging ? "emerging" : p.status || "active",
         isEmerging: t.isEmerging,
       };
@@ -44,7 +48,7 @@ export async function getTrendsData() {
     const enriched = trends.map(enrichTrend);
 
     const rising = enriched
-      .filter((t) => t.growthRate > 0.05)
+      .filter((t) => t.growthRate > 0)
       .sort((a, b) => b.growthRate - a.growthRate);
 
     const declining = enriched
@@ -54,43 +58,21 @@ export async function getTrendsData() {
     const emerging = enriched.filter((t) => t.isEmerging);
 
     return {
-      rising: rising.length > 0 ? rising : enriched.slice(0, 5),
-      declining: declining.length > 0 ? declining : [],
-      emerging: emerging.length > 0 ? emerging : enriched.slice(0, 3),
-      allTrends: enriched,
-      isLive: true,
-      sentimentTrajectory: [
-        { date: "Day 1", positive: 450, negative: 180, neutral: 120 },
-        { date: "Day 5", positive: 480, negative: 210, neutral: 110 },
-        { date: "Day 10", positive: 510, negative: 320, neutral: 130 },
-        { date: "Day 15", positive: 530, negative: 460, neutral: 140 },
-        { date: "Day 20", positive: 520, negative: 490, neutral: 125 },
-        { date: "Day 25", positive: 560, negative: 540, neutral: 135 },
-        { date: "Day 30", positive: 590, negative: 510, neutral: 140 },
-      ],
-    };
-  } catch (err) {
-    console.warn("Backend /trends offline, using fallback:", err.message);
-
-    const rising = PROBLEMS.filter((p) => p.growthRate > 0.25).sort((a, b) => b.growthRate - a.growthRate);
-    const declining = PROBLEMS.filter((p) => p.growthRate < 0).sort((a, b) => a.growthRate - b.growthRate);
-    const emerging = PROBLEMS.filter((p) => p.status === "emerging");
-
-    return {
       rising,
       declining,
       emerging,
-      isLive: false,
-      sentimentTrajectory: [],
+      allTrends: enriched,
+      isLive: true,
     };
-  }
-}
-
-export async function getEmergingSignals() {
-  try {
-    const rawEmerging = await apiGet("/trends/emerging");
-    return (Array.isArray(rawEmerging) ? rawEmerging : []).map(adaptTrend);
   } catch (err) {
-    return PROBLEMS.filter((p) => p.status === "emerging");
+    console.error("Failed to fetch trends from backend:", err.message);
+    return {
+      rising: [],
+      declining: [],
+      emerging: [],
+      allTrends: [],
+      isLive: false,
+      error: err.message,
+    };
   }
 }

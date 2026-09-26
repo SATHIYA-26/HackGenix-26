@@ -96,9 +96,10 @@ class TrendDetectionEngine:
         self,
         window_days: int = 7,
         reference_time: Optional[datetime] = None,
+        account_id: Optional[str] = None,
     ) -> List[Trend]:
-        """Compute trends across all registered problem clusters."""
-        problems, _ = self.problem_repo.get_all(limit=1000)
+        """Compute trends across problem clusters scoped to a single account."""
+        problems, _ = self.problem_repo.get_all(limit=1000, account_id=account_id)
         trends = []
         for p in problems:
             trend = self.analyze_problem_trend(

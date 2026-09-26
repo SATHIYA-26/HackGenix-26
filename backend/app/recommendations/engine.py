@@ -81,9 +81,9 @@ class RecommendationEngine:
         logger.info(f"Generated recommendation for Problem {problem_id} ('{problem.name}'). Confidence: {confidence}")
         return rec
 
-    def generate_all_recommendations(self) -> List[Recommendation]:
-        """Generate recommendations for all problem clusters."""
-        problems, _ = self.problem_repo.get_all(limit=1000)
+    def generate_all_recommendations(self, account_id: Optional[str] = None) -> List[Recommendation]:
+        """Generate recommendations for problem clusters scoped to a single account."""
+        problems, _ = self.problem_repo.get_all(limit=1000, account_id=account_id)
         recommendations = []
         for p in problems:
             rec = self.generate_recommendation_for_problem(p.id)

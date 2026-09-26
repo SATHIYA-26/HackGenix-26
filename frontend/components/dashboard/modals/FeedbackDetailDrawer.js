@@ -1,22 +1,21 @@
 "use client";
 
 import { X, ExternalLink, ThumbsUp, Tag, ShieldCheck, Sparkles, CornerDownRight, ArrowRight, Star } from "lucide-react";
-import { RAW_FEEDBACK_ITEMS } from "../data/intelligenceMockData";
 
 export default function FeedbackDetailDrawer({ isOpen, feedback, onClose, onSelectProblem }) {
   if (!isOpen || !feedback) return null;
 
-  const formattedDate = new Date(feedback.createdAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formattedDate = feedback.createdAt
+    ? new Date(feedback.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Recent";
 
-  const similarItems = RAW_FEEDBACK_ITEMS.filter(
-    (item) => item.id !== feedback.id && item.problemId === feedback.problemId
-  ).slice(0, 2);
+  const similarItems = feedback.similarItems || [];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end animate-in fade-in duration-150">

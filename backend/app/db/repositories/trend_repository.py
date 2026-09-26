@@ -14,8 +14,11 @@ class TrendRepository:
         only_emerging: bool = False,
         skip: int = 0,
         limit: int = 50,
+        account_id: Optional[str] = None,
     ) -> Tuple[List[Trend], int]:
         query = self.db.query(Trend).options(joinedload(Trend.problem))
+        if account_id:
+            query = query.join(Trend.problem).filter(ProblemCluster.account_id == account_id)
         if only_emerging:
             query = query.filter(Trend.is_emerging.is_(True))
 
@@ -67,5 +70,8 @@ class TrendRepository:
         self.db.refresh(trend)
         return trend
 
-    def count_emerging(self) -> int:
-        return self.db.query(Trend).filter(Trend.is_emerging.is_(True)).count()
+    def count_emerging(self, account_id: Optional[str] = None) -> int:
+        q = self.db.query(Trend).filter(Trend.is_emerging.is_(True))
+        if account_id:
+            q = q.join(Trend.problem).filter(ProblemCluster.account_id == account_id)
+        return q.count()

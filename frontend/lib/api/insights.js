@@ -4,8 +4,6 @@
  */
 
 import { apiGet } from "./client";
-import { adaptFeedback } from "./adapters";
-import { AI_BRIEF, PROBLEMS, getFullFeedbackDatabase } from "../../components/dashboard/data/intelligenceMockData";
 
 /**
  * Fetches executive LLM insight synthesis for a specific problem cluster.
@@ -26,17 +24,18 @@ export async function getProblemInsight(problemId) {
       isLive: true,
     };
   } catch (err) {
-    console.warn(`Problem insight fallback for ${problemId}:`, err.message);
+    console.error(`Failed to fetch insight for problem #${problemId}:`, err.message);
     return null;
   }
 }
 
 /**
- * Fetches executive weekly AI brief.
+ * Fetches executive weekly AI brief tailored per account.
  */
-export async function getAIBrief() {
+export async function getAIBrief(accountId = null) {
   try {
-    const summary = await apiGet("/dashboard/summary");
+    const query = accountId ? `?account_id=${encodeURIComponent(accountId)}` : "";
+    const summary = await apiGet(`/dashboard/summary${query}`);
     const top = summary.top_priority_problems || [];
 
     if (top.length > 0) {
@@ -55,65 +54,56 @@ export async function getAIBrief() {
         isLive: true,
       };
     }
-  } catch (err) {
-    console.warn("AI brief live fetch offline, using fallback:", err.message);
-  }
-  return AI_BRIEF;
-}
 
-/**
- * Semantic grounded AI question answering.
- */
-export async function askAIQuestion(query) {
-  try {
-    // 1. Semantic search across pgvector feedback
-    const searchRes = await apiGet(`/analysis/search?query=${encodeURIComponent(query)}&limit=5`);
-    const hits = (searchRes.results || []).map((r) => adaptFeedback(r.feedback));
-
-    if (hits.length > 0) {
-      const topHit = hits[0];
-      return {
-        answer: `Identified relevant customer signals matching "${query}". Top complaint cites: "${topHit.text}". Identified intent: ${topHit.intent} with ${topHit.sentiment} sentiment.`,
-        problemId: topHit.problemId || "1",
-        problemName: topHit.problemName || "Semantic Search Match",
-        evidenceCount: hits.length,
-        negativeSentiment: "88%",
-        concentratedIn: `${topHit.source.toUpperCase()} (${topHit.platform})`,
-        recommendedAction: "Review related feedback cluster and deploy targeted mitigation.",
-        citations: hits.slice(0, 3),
-        isLive: true,
-      };
-    }
-  } catch (err) {
-    console.warn("Ask AI live semantic search offline, using local response:", err.message);
-  }
-
-  const q = query.toLowerCase();
-  if (q.includes("payment") || q.includes("upi") || q.includes("checkout")) {
-    const upiProblem = PROBLEMS.find((p) => p.id === "prob-1");
-    const evidence = getFullFeedbackDatabase().filter((f) => f.problemId === "prob-1");
     return {
-      answer: `UPI payment failures increased 74% this week, with 127 total related customer feedback items identified. 91% of feedback expresses severe negative sentiment.`,
-      problemId: "prob-1",
-      problemName: upiProblem.name,
-      evidenceCount: evidence.length,
-      negativeSentiment: "91%",
-      concentratedIn: "Android v4.2.1 (Checkout)",
-      recommendedAction: "Audit Razorpay/Juspay webhook idempotency handler and deploy graceful retry banner.",
-      citations: evidence.slice(0, 3),
+      headline: "Customer Signal Summary",
+      subheadline: "No high-priority friction clusters currently detected for this workspace.",
+      shifts: [],
+      isLive: true,
+    };
+  } catch (err) {
+    console.error("AI brief live fetch offline:", err.message);
+    return {
+      headline: "Customer Signal Summary",
+      subheadline: "No live signals available.",
+      shifts: [],
       isLive: false,
     };
   }
-
-  return {
-    answer: `Analysis across customer feedback indicates that stability and core journeys represent the highest priority friction clusters this week.`,
-    problemId: "prob-1",
-    problemName: "General Feedback Intelligence Synthesis",
-    evidenceCount: 120,
-    negativeSentiment: "64%",
-    concentratedIn: "Cross-platform ecosystem",
-    recommendedAction: "Focus on checkout reliability to protect core product metrics.",
-    citations: getFullFeedbackDatabase().slice(0, 2),
-    isLive: false,
-  };
 }
+
+/**
+ * Interactive Q&A against customer feedback and problem clusters.
+ */
+export async function askAIQuestion(query, accountId = null) {
+  try {
+    const accParam = accountId ? `&account_id=${encodeURIComponent(accountId)}` : "";
+    const results = await apiGet(`/analysis/search?query=${encodeURIComponent(query)}&limit=5${accParam}`);
+    
+    if (Array.isArray(results) && results.length > 0) {
+      const top = results[0];
+      const text = top.feedback?.text || top.text || "Identified relevant customer feedback.";
+      return {
+        answer: text,
+        concentratedIn: top.feedback?.source || "Customer Reviews",
+        evidenceCount: results.length,
+        items: results,
+      };
+    }
+
+    return {
+      answer: `Analysis completed for query: "${query}". No direct matching friction clusters found.`,
+      concentratedIn: "Direct Ingestion",
+      evidenceCount: 0,
+      items: [],
+    };
+  } catch (err) {
+    return {
+      answer: `Signal synthesis: "${query}". Review ongoing customer feedback streams.`,
+      concentratedIn: "Review Channels",
+      evidenceCount: 1,
+      items: [],
+    };
+  }
+}
+

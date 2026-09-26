@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertTriangle, ArrowRight, Filter, Search, LayoutGrid, List, ChevronRight, RefreshCw } from "lucide-react";
-import { PROBLEMS } from "../data/intelligenceMockData";
+import { AlertTriangle, ArrowRight, Filter, Search, LayoutGrid, List, ChevronRight, RefreshCw, FolderSearch } from "lucide-react";
 import { getProblems } from "@/lib/api/problems";
 
 export default function ProblemsView({ onSelectProblem, company }) {
@@ -10,31 +9,27 @@ export default function ProblemsView({ onSelectProblem, company }) {
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("table"); // "table" or "grid"
-  const [liveProblems, setLiveProblems] = useState([]);
+  const [problemsList, setProblemsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    let isMounted = true;
+  const fetchProblems = () => {
     setIsLoading(true);
-    getProblems({ status: activeTab, search: searchQuery, sort: "priority" })
+    getProblems({ accountId: company?.id, sort: "priority" })
       .then((res) => {
-        if (isMounted && res?.data?.length > 0) {
-          setLiveProblems(res.data);
-        }
+        setProblemsList(res?.data || []);
       })
-      .catch((err) => console.warn("Live problems fetch error:", err))
+      .catch((err) => {
+        console.warn("Problems fetch error:", err);
+        setProblemsList([]);
+      })
       .finally(() => {
-        if (isMounted) setIsLoading(false);
+        setIsLoading(false);
       });
+  };
 
-    return () => {
-      isMounted = false;
-    };
-  }, [activeTab, searchQuery]);
-
-  const problemsList = liveProblems.length > 0
-    ? liveProblems
-    : (company?.problems && company.problems.length > 0 ? company.problems : PROBLEMS);
+  useEffect(() => {
+    fetchProblems();
+  }, [company?.id]);
 
   const filteredProblems = problemsList.filter((p) => {
     if (activeTab !== "all" && p.status !== activeTab) return false;
@@ -44,12 +39,18 @@ export default function ProblemsView({ onSelectProblem, company }) {
       const matchName = (p.name || "").toLowerCase().includes(q);
       const matchExpl = (p.shortExplanation || "").toLowerCase().includes(q);
       const matchProd = (p.product || "").toLowerCase().includes(q);
-      if (!matchName && !matchExpl && !matchProd) return false;
+      const matchCat = (p.category || "").toLowerCase().includes(q);
+      if (!matchName && !matchExpl && !matchProd && !matchCat) return false;
     }
     return true;
   });
 
-  const categories = Array.from(new Set(problemsList.map((p) => p.category)));
+  const categories = Array.from(new Set(problemsList.map((p) => p.category).filter(Boolean)));
+
+  const countByStatus = (status) => {
+    if (status === "all") return problemsList.length;
+    return problemsList.filter((p) => p.status === status).length;
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
@@ -58,30 +59,40 @@ export default function ProblemsView({ onSelectProblem, company }) {
         <div>
           <h1 className="text-2xl font-bold text-[#18181B] font-serif">Customer Problems</h1>
           <p className="text-xs text-[#71717A] mt-1">
-            Discover what customers are struggling with across all ingestion channels.
+            Algorithmic problem clusters and explainable priority scores for {company?.name || "your account"}.
           </p>
         </div>
 
-        {/* View Toggle */}
-        <div className="flex items-center rounded-lg border border-[#E5E1D8] bg-white p-0.5 self-start">
+        {/* View Toggle & Refresh */}
+        <div className="flex items-center gap-2 self-start">
           <button
-            onClick={() => setViewMode("table")}
-            className={`p-1.5 rounded transition-colors ${
-              viewMode === "table" ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
-            }`}
-            title="Table View"
+            onClick={fetchProblems}
+            disabled={isLoading}
+            className="p-1.5 rounded-lg border border-[#E5E1D8] bg-white text-[#71717A] hover:text-[#18181B] transition-colors"
+            title="Refresh problems"
           >
-            <List className="w-4 h-4" />
+            <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
           </button>
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-1.5 rounded transition-colors ${
-              viewMode === "grid" ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
-            }`}
-            title="Card Grid View"
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </button>
+          <div className="flex items-center rounded-lg border border-[#E5E1D8] bg-white p-0.5">
+            <button
+              onClick={() => setViewMode("table")}
+              className={`p-1.5 rounded transition-colors ${
+                viewMode === "table" ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
+              }`}
+              title="Table View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-1.5 rounded transition-colors ${
+                viewMode === "grid" ? "bg-[#18181B] text-white" : "text-[#71717A] hover:text-[#18181B]"
+              }`}
+              title="Card Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -90,31 +101,33 @@ export default function ProblemsView({ onSelectProblem, company }) {
         {/* Status Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
           {[
-            { id: "all", label: "All", count: PROBLEMS.length },
-            { id: "emerging", label: "Emerging", count: PROBLEMS.filter((p) => p.status === "emerging").length },
-            { id: "growing", label: "Growing", count: PROBLEMS.filter((p) => p.status === "growing").length },
-            { id: "critical", label: "Critical", count: PROBLEMS.filter((p) => p.status === "critical").length },
-            { id: "resolved", label: "Resolved", count: PROBLEMS.filter((p) => p.status === "resolved").length },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                activeTab === tab.id
-                  ? "bg-[#18181B] text-white"
-                  : "bg-white text-[#71717A] border border-[#E5E1D8] hover:bg-[#F4F1EA]"
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  activeTab === tab.id ? "bg-[#27272A] text-white" : "bg-[#F4F1EA] text-[#71717A]"
+            { id: "all", label: "All" },
+            { id: "critical", label: "Critical" },
+            { id: "emerging", label: "Emerging" },
+            { id: "monitoring", label: "Monitoring" },
+          ].map((tab) => {
+            const count = countByStatus(tab.id);
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  activeTab === tab.id
+                    ? "bg-[#18181B] text-white"
+                    : "bg-white text-[#71717A] border border-[#E5E1D8] hover:bg-[#F4F1EA]"
                 }`}
               >
-                {tab.count}
-              </span>
-            </button>
-          ))}
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                    activeTab === tab.id ? "bg-[#27272A] text-white" : "bg-[#F4F1EA] text-[#71717A]"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Filter controls */}
@@ -130,23 +143,40 @@ export default function ProblemsView({ onSelectProblem, company }) {
             />
           </div>
 
-          <select
-            className="bg-white border border-[#E5E1D8] rounded-lg px-2.5 py-1.5 text-xs text-[#18181B] outline-none"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          {categories.length > 0 && (
+            <select
+              className="bg-white border border-[#E5E1D8] rounded-lg px-2.5 py-1.5 text-xs text-[#18181B] outline-none"
+              value={selectedProduct}
+              onChange={(e) => setSelectedProduct(e.target.value)}
+            >
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
-      {/* Main Content: Table or Cards */}
-      {viewMode === "table" ? (
+      {/* Main Content */}
+      {isLoading ? (
+        <div className="p-12 text-center bg-white rounded-xl border border-[#E5E1D8] space-y-3">
+          <RefreshCw className="w-6 h-6 animate-spin mx-auto text-[#71717A]" />
+          <p className="text-xs text-[#71717A]">Loading problem clusters from backend...</p>
+        </div>
+      ) : filteredProblems.length === 0 ? (
+        <div className="p-12 text-center bg-white rounded-xl border border-[#E5E1D8] space-y-3">
+          <FolderSearch className="w-8 h-8 mx-auto text-[#A1A1AA]" />
+          <h3 className="text-sm font-bold text-[#18181B]">No Problem Clusters Found</h3>
+          <p className="text-xs text-[#71717A] max-w-sm mx-auto">
+            {problemsList.length === 0
+              ? "No problem clusters have been generated for this account yet. Connect a feedback source like YouTube or run problem analysis."
+              : "No problem clusters match the selected filters."}
+          </p>
+        </div>
+      ) : viewMode === "table" ? (
         <div className="bg-white rounded-xl border border-[#E5E1D8] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -156,7 +186,7 @@ export default function ProblemsView({ onSelectProblem, company }) {
                   <th className="px-5 py-3.5">Category</th>
                   <th className="px-5 py-3.5">Mentions</th>
                   <th className="px-5 py-3.5">Growth</th>
-                  <th className="px-5 py-3.5">Sentiment</th>
+                  <th className="px-5 py-3.5">Negative Ratio</th>
                   <th className="px-5 py-3.5">Priority</th>
                   <th className="px-5 py-3.5">Status</th>
                   <th className="px-5 py-3.5 text-right">Action</th>
@@ -195,15 +225,15 @@ export default function ProblemsView({ onSelectProblem, company }) {
                             : "text-[#059669]"
                         }
                       >
-                        {prob.growthRate > 0 ? "↑" : "↓"} {prob.growthLabel}
+                        {prob.growthLabel}
                       </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap font-medium text-[#E11D48]">
-                      {Math.round(prob.negativeSentiment * 100)}% Neg
+                      {Math.round(prob.negativeSentiment * 100)}%
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span className="font-mono font-bold text-[#18181B] bg-[#FAF8F5] px-2 py-0.5 rounded border border-[#ECE8E0]">
-                        {prob.priorityScore}
+                        {typeof prob.priorityScore === "number" ? prob.priorityScore.toFixed(2) : prob.priorityScore}
                       </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
@@ -213,8 +243,6 @@ export default function ProblemsView({ onSelectProblem, company }) {
                             ? "bg-[#FFF1F2] text-[#E11D48]"
                             : prob.status === "emerging"
                             ? "bg-[#FEF3C7] text-[#D97706]"
-                            : prob.status === "resolved"
-                            ? "bg-[#ECFDF5] text-[#059669]"
                             : "bg-[#F1F5F9] text-[#64748B]"
                         }`}
                       >
@@ -248,15 +276,13 @@ export default function ProblemsView({ onSelectProblem, company }) {
                         ? "bg-[#FFF1F2] text-[#E11D48]"
                         : prob.status === "emerging"
                         ? "bg-[#FEF3C7] text-[#D97706]"
-                        : prob.status === "resolved"
-                        ? "bg-[#ECFDF5] text-[#059669]"
                         : "bg-[#F1F5F9] text-[#64748B]"
                     }`}
                   >
                     {prob.status}
                   </span>
                   <span className="font-mono text-xs font-bold text-[#18181B]">
-                    Score {prob.priorityScore}
+                    Score {typeof prob.priorityScore === "number" ? prob.priorityScore.toFixed(2) : prob.priorityScore}
                   </span>
                 </div>
 
@@ -288,7 +314,7 @@ export default function ProblemsView({ onSelectProblem, company }) {
               </div>
 
               <div className="mt-4 pt-3 border-t border-[#ECE8E0] flex items-center justify-between text-[11px] text-[#71717A]">
-                <span>{prob.product} · {prob.platform}</span>
+                <span>{prob.product || prob.category}</span>
                 <span className="font-bold text-[#18181B] group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
                   View dossier →
                 </span>
