@@ -148,8 +148,8 @@ export default function ReviewrApp({ initialView = "landing" }) {
 
   return (
     <>
-      {/* Ambient Gradient Glow (Only for non-landing views) */}
-      {activeView !== "landing" && <div className="bg-glow-wrapper" aria-hidden="true" />}
+      {/* Ambient Gradient Glow */}
+      <div className="bg-glow-wrapper" aria-hidden="true" />
 
       {/* Top Sticky Navigation Bar */}
       <Navbar

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, X, Sparkles, ArrowRight, ShieldCheck, Star } from "lucide-react";
 import { HERO_FINANCIAL_MODELS } from "../lib/mockData";
+import LandingBackgroundVideo from "./LandingBackgroundVideo";
 
 export default function LandingView({ isActive, onOpenDemoModal, onScrollToSection }) {
   const [timeframe, setTimeframe] = useState("90d");
@@ -12,20 +13,7 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
 
   return (
     <section id="landingView" className={`view-section ${isActive ? "active" : ""}`}>
-      {/* Background YouTube Video Stream (Runs only on Home Landing Page, not in Dashboard) */}
-      {isActive && (
-        <div className="landing-bg-video-container" aria-hidden="true">
-          <iframe
-            className="landing-bg-video-iframe"
-            src="https://www.youtube-nocookie.com/embed/eYBEJBfq_Zs?autoplay=1&mute=1&loop=1&playlist=eYBEJBfq_Zs&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1"
-            title="Background Tech Stream"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            tabIndex="-1"
-          />
-          <div className="landing-bg-video-overlay" />
-        </div>
-      )}
-
+      <LandingBackgroundVideo isActive={isActive} />
       <div className="landing-wrapper">
         {/* Hero Section */}
         <div className="landing-hero">
@@ -259,7 +247,7 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
               <div className="wwd-card">
                 <div className="wwd-badge-row">
                   <div className="wwd-step-pill">Step 1</div>
-                  <div className="wwd-icon-circle" style={{ background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA" }}>
+                  <div className="wwd-icon-circle" style={{ background: "#EFF6FF", color: "#3B82F6" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <polyline points="7 10 12 15 17 10" />
@@ -279,11 +267,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
                 <div className="wwd-badge-row">
                   <div
                     className="wwd-step-pill"
-                    style={{ background: "rgba(124, 58, 237, 0.15)", color: "#C084FC", borderColor: "rgba(124, 58, 237, 0.35)" }}
+                    style={{ background: "#F5F3FF", color: "#7C3AED", borderColor: "rgba(124,58,237,0.2)" }}
                   >
                     Step 2
                   </div>
-                  <div className="wwd-icon-circle" style={{ background: "rgba(124, 58, 237, 0.15)", color: "#C084FC" }}>
+                  <div className="wwd-icon-circle" style={{ background: "#F5F3FF", color: "#7C3AED" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <circle cx="12" cy="12" r="10" />
                       <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -303,11 +291,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
                 <div className="wwd-badge-row">
                   <div
                     className="wwd-step-pill"
-                    style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399", borderColor: "rgba(16, 185, 129, 0.35)" }}
+                    style={{ background: "#ECFDF5", color: "#059669", borderColor: "rgba(16,185,129,0.2)" }}
                   >
                     Step 3
                   </div>
-                  <div className="wwd-icon-circle" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34D399" }}>
+                  <div className="wwd-icon-circle" style={{ background: "#ECFDF5", color: "#059669" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
@@ -558,11 +546,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
                           </span>
                           <span className="pf-mock-time">Real-time</span>
                         </div>
-                        <div className="pf-summary-box" style={{ background: "rgba(124, 58, 237, 0.15)", border: "1px solid rgba(124, 58, 237, 0.3)" }}>
-                          <div className="pf-summary-heading" style={{ color: "#C084FC" }}>
+                        <div className="pf-summary-box" style={{ background: "#F5F3FF", border: "1px solid rgba(124,58,237,0.2)" }}>
+                          <div className="pf-summary-heading" style={{ color: "#7C3AED" }}>
                             <span>Reviewr Agent Report</span>
                           </div>
-                          <p className="pf-summary-text" style={{ color: "#E4E4E7" }}>
+                          <p className="pf-summary-text" style={{ color: "var(--text-dark)" }}>
                             "Identified 34 new 1-star reviews in Chennai related to table queue delays. Suggested operational
                             fix: Deploy weekend pager tokens to reduce walkaways by ₹1.8L/mo."
                           </p>
@@ -670,11 +658,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
                           </span>
                           <span className="pf-mock-time">Multi-Location</span>
                         </div>
-                        <div className="pf-summary-box" style={{ background: "rgba(59, 130, 246, 0.15)", border: "1px solid rgba(59, 130, 246, 0.3)" }}>
-                          <div className="pf-summary-heading" style={{ color: "#60A5FA" }}>
+                        <div className="pf-summary-box" style={{ background: "#EFF6FF", border: "1px solid rgba(59,130,246,0.2)" }}>
+                          <div className="pf-summary-heading" style={{ color: "#3B82F6" }}>
                             <span>Program ROI: 14.8x Lift</span>
                           </div>
-                          <p className="pf-summary-text" style={{ color: "#E4E4E7" }}>
+                          <p className="pf-summary-text" style={{ color: "var(--text-dark)" }}>
                             Connected 5 business entities, tracking 32.5M+ customer interactions with zero manual review
                             reading required.
                           </p>
@@ -707,7 +695,7 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
             {/* The Problem */}
             <div className="solution-card problem-side">
               <div>
-                <span className="portal-type-badge youtube" style={{ background: "rgba(225, 29, 72, 0.2)", color: "#FB7185" }}>
+                <span className="portal-type-badge youtube" style={{ background: "#FFE4E6", color: "#E11D48" }}>
                   The Legacy Problem
                 </span>
                 <h3 className="pipeline-step-title" style={{ marginTop: "10px", fontSize: "1.35rem" }}>
@@ -750,7 +738,7 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
             {/* The Reviewr Solution */}
             <div className="solution-card solution-side">
               <div>
-                <span className="portal-type-badge play_store" style={{ background: "rgba(16, 185, 129, 0.2)", color: "#34D399" }}>
+                <span className="portal-type-badge play_store" style={{ background: "#ECFDF5", color: "#059669" }}>
                   The Reviewr Solution
                 </span>
                 <h3 className="pipeline-step-title" style={{ marginTop: "10px", fontSize: "1.35rem" }}>
@@ -870,7 +858,7 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
                 <div className="pricing-header">
                   <span className="cm-branch-tag">Creator & Retail</span>
                   <h3 className="pricing-plan-name">Starter Plan</h3>
-                  <p style={{ fontSize: "0.85rem", color: "#A1A1AA" }}>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                     Ideal for single stores, local gyms, and YouTube creators.
                   </p>
                 </div>
@@ -907,11 +895,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
             <div className="pricing-card featured">
               <div>
                 <div className="pricing-header">
-                  <span className="cm-branch-tag" style={{ background: "rgba(124, 58, 237, 0.2)", color: "#C084FC" }}>
+                  <span className="cm-branch-tag" style={{ background: "#F3E8FF", color: "#7C3AED" }}>
                     Multi-Branch & Apps
                   </span>
                   <h3 className="pricing-plan-name">Growth Business</h3>
-                  <p style={{ fontSize: "0.85rem", color: "#A1A1AA" }}>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                     For multi-location chains like Mani's Biriyani, H&M, and sports stores.
                   </p>
                 </div>
@@ -951,11 +939,11 @@ export default function LandingView({ isActive, onOpenDemoModal, onScrollToSecti
             <div className="pricing-card">
               <div>
                 <div className="pricing-header">
-                  <span className="cm-branch-tag" style={{ background: "rgba(16, 185, 129, 0.2)", color: "#34D399" }}>
+                  <span className="cm-branch-tag" style={{ background: "#ECFDF5", color: "#059669" }}>
                     Enterprise & Publishers
                   </span>
                   <h3 className="pricing-plan-name">Enterprise Scale</h3>
-                  <p style={{ fontSize: "0.85rem", color: "#A1A1AA" }}>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
                     For high-volume publishers like Spotify and national retail brands.
                   </p>
                 </div>
