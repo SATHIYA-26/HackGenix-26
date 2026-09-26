@@ -5,17 +5,17 @@ from app.core.exceptions import LLMServiceError
 
 
 class LLMClient:
-    """Configurable client for OpenAI-compatible LLM endpoints."""
+    """Configurable client for Groq and OpenAI-compatible LLM endpoints."""
 
     def __init__(self):
-        self.api_key = settings.OPENAI_API_KEY
+        self.api_key = (settings.GROQ_API_KEY or settings.OPENAI_API_KEY or "").strip()
         self.base_url = settings.OPENAI_BASE_URL
         self.model = settings.LLM_MODEL
         self.temperature = settings.LLM_TEMPERATURE
         self.timeout = settings.LLM_TIMEOUT_SECONDS
 
         self.client = None
-        if self.api_key and self.api_key.strip():
+        if self.api_key:
             try:
                 from openai import OpenAI
                 self.client = OpenAI(
@@ -23,9 +23,10 @@ class LLMClient:
                     base_url=self.base_url,
                     timeout=self.timeout,
                 )
-                logger.info(f"OpenAI LLM client initialized for model '{self.model}'.")
+                provider = "Groq" if "groq.com" in self.base_url else "OpenAI-compatible"
+                logger.info(f"{provider} LLM client initialized for model '{self.model}' at {self.base_url}.")
             except Exception as exc:
-                logger.warning(f"Could not initialize OpenAI client ({exc}). Will use fallback.")
+                logger.warning(f"Could not initialize LLM client ({exc}). Will use deterministic fallback.")
 
     @property
     def is_available(self) -> bool:
