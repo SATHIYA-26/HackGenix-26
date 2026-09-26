@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   ChevronsUpDown,
   Check,
+  Pin,
 } from "lucide-react";
 import HomeView from "./views/HomeView";
 import ProblemsView from "./views/ProblemsView";
@@ -105,7 +106,9 @@ export default function DashboardShell({
   const [selectedAccountId, setSelectedAccountId] = useState(currentAccountId || "acc_manis");
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
 
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarPinned, setIsSidebarPinned] = useState(false);
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const isSidebarExpanded = isSidebarPinned || isSidebarHovered;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Modals state
@@ -267,167 +270,209 @@ export default function DashboardShell({
       <div className="absolute inset-0 pointer-events-none z-0 opacity-70 bg-[radial-gradient(circle_at_50%_-10%,rgba(124,58,237,0.08)_0%,rgba(216,180,254,0.04)_35%,rgba(251,249,245,0)_70%),radial-gradient(circle_at_90%_20%,rgba(139,92,246,0.05)_0%,rgba(251,249,245,0)_50%)]" />
 
       {/* ─── DESKTOP & TABLET SIDEBAR ─── */}
-      <aside
-        className={`bg-white/95 backdrop-blur-md border-r border-[#E5E1D8] flex flex-col shrink-0 transition-all duration-200 z-30 relative ${isSidebarCollapsed ? "w-[72px]" : "w-[250px]"
-          } hidden md:flex`}
+      <div
+        className={`hidden md:block shrink-0 transition-all duration-300 ease-in-out relative ${
+          isSidebarPinned ? "w-[250px]" : "w-[68px]"
+        }`}
       >
-        {/* Workspace Brand & Company Switcher Header */}
-        <div className="relative border-b border-[#ECE8E0]">
-          <div className="h-16 flex items-center justify-between px-3">
-            <button
-              onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-              className={`flex items-center gap-2.5 overflow-hidden text-left p-1.5 rounded-xl hover:bg-[#F5F3FF] transition-all flex-1 min-w-0 ${isSidebarCollapsed ? "justify-center p-1" : ""
+        <aside
+          onMouseEnter={() => setIsSidebarHovered(true)}
+          onMouseLeave={() => {
+            setIsSidebarHovered(false);
+            setIsCompanyDropdownOpen(false);
+          }}
+          className={`bg-white/95 backdrop-blur-md border-r border-[#E5E1D8] flex flex-col transition-all duration-300 ease-in-out z-40 ${
+            isSidebarPinned
+              ? "relative w-[250px] h-full"
+              : isSidebarHovered
+              ? "absolute left-0 top-0 bottom-0 h-full w-[250px] shadow-2xl"
+              : "relative w-[68px] h-full"
+          }`}
+        >
+          {/* Workspace Brand & Company Switcher Header */}
+          <div className="relative border-b border-[#ECE8E0]">
+            <div className="h-16 flex items-center justify-between px-3">
+              <button
+                onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
+                className={`flex items-center gap-2.5 overflow-hidden text-left p-1.5 rounded-xl hover:bg-[#F5F3FF] transition-all flex-1 min-w-0 ${
+                  !isSidebarExpanded ? "justify-center p-1" : ""
                 }`}
-              title={isSidebarCollapsed ? `${company.name} (Click to switch company)` : undefined}
-            >
-              <img
-                src={company.logo}
-                alt={company.name}
-                className="w-8 h-8 rounded-lg object-cover border border-[#E5E1D8] shadow-xs shrink-0 bg-white"
-              />
-              {!isSidebarCollapsed && (
-                <div className="min-w-0 flex-1">
-                  <span className="text-xs font-bold tracking-tight text-[#18181B] truncate block font-serif">
-                    {company.name}
-                  </span>
-                  <span className="text-[10px] text-[#71717A] block truncate font-medium">
-                    {company.category}
-                  </span>
-                </div>
-              )}
-              {!isSidebarCollapsed && (
-                <ChevronsUpDown className="w-3.5 h-3.5 text-[#71717A] shrink-0" />
-              )}
-            </button>
+                title={company.name}
+              >
+                <img
+                  src={company.logo}
+                  alt={company.name}
+                  className="w-8 h-8 rounded-lg object-cover border border-[#E5E1D8] shadow-xs shrink-0 bg-white"
+                />
+                {isSidebarExpanded && (
+                  <div className="min-w-0 flex-1 animate-in fade-in duration-200">
+                    <span className="text-xs font-bold tracking-tight text-[#18181B] truncate block font-serif">
+                      {company.name}
+                    </span>
+                    <span className="text-[10px] text-[#71717A] block truncate font-medium">
+                      {company.category}
+                    </span>
+                  </div>
+                )}
+                {isSidebarExpanded && (
+                  <ChevronsUpDown className="w-3.5 h-3.5 text-[#71717A] shrink-0" />
+                )}
+              </button>
 
-            <button
-              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-1.5 rounded-lg text-[#71717A] hover:bg-[#F5F3FF] hover:text-[#7C3AED] transition-colors ml-1 shrink-0"
-              title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            </button>
-          </div>
+              {isSidebarExpanded && (
+                <button
+                  onClick={() => setIsSidebarPinned(!isSidebarPinned)}
+                  className={`p-1.5 rounded-lg transition-colors ml-1 shrink-0 ${
+                    isSidebarPinned
+                      ? "bg-[#F5F3FF] text-[#7C3AED]"
+                      : "text-[#71717A] hover:bg-[#F5F3FF] hover:text-[#7C3AED]"
+                  }`}
+                  title={isSidebarPinned ? "Unpin sidebar (collapse to icons)" : "Pin sidebar open"}
+                >
+                  <Pin className={`w-3.5 h-3.5 ${isSidebarPinned ? "fill-current" : ""}`} />
+                </button>
+              )}
+            </div>
 
-          {/* Interactive Company Workspace Switcher Dropdown */}
-          {isCompanyDropdownOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setIsCompanyDropdownOpen(false)}
-              />
-              <div className="absolute top-16 left-2 right-2 bg-white rounded-xl shadow-2xl border border-[#E5E1D8] p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="px-2.5 py-1.5 border-b border-[#ECE8E0] mb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#7C3AED]">
-                    Company Workspace Switcher
-                  </p>
-                  <p className="text-[11px] text-[#71717A]">
-                    Instant 1-click multi-business switch
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  {DEMO_COMPANIES.map((c) => {
-                    const isSelected = c.id === selectedAccountId;
-                    return (
-                      <button
-                        key={c.id}
-                        onClick={() => handleSelectCompany(c.id)}
-                        className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all ${isSelected
-                          ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] font-semibold"
-                          : "hover:bg-[#FAF8FF] text-[#18181B]"
+            {/* Interactive Company Workspace Switcher Dropdown */}
+            {isCompanyDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsCompanyDropdownOpen(false)}
+                />
+                <div className="absolute top-16 left-2 right-2 bg-white rounded-xl shadow-2xl border border-[#E5E1D8] p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="px-2.5 py-1.5 border-b border-[#ECE8E0] mb-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#7C3AED]">
+                      Company Workspace Switcher
+                    </p>
+                    <p className="text-[11px] text-[#71717A]">
+                      Instant 1-click multi-business switch
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    {DEMO_COMPANIES.map((c) => {
+                      const isSelected = c.id === selectedAccountId;
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => handleSelectCompany(c.id)}
+                          className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all ${
+                            isSelected
+                              ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] font-semibold"
+                              : "hover:bg-[#FAF8FF] text-[#18181B]"
                           }`}
-                      >
-                        <img
-                          src={c.logo}
-                          alt={c.name}
-                          className="w-7 h-7 rounded-md object-cover border border-[#E5E1D8]/40 shrink-0 bg-white"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between">
-                            <p className={`text-xs font-bold truncate ${isSelected ? "text-[#7C3AED]" : "text-[#18181B]"}`}>
-                              {c.name}
-                            </p>
-                            <span
-                              className={`text-[9px] px-1 rounded font-medium ${isSelected ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#F4F1EA] text-[#71717A]"
+                        >
+                          <img
+                            src={c.logo}
+                            alt={c.name}
+                            className="w-7 h-7 rounded-md object-cover border border-[#E5E1D8]/40 shrink-0 bg-white"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between">
+                              <p
+                                className={`text-xs font-bold truncate ${
+                                  isSelected ? "text-[#7C3AED]" : "text-[#18181B]"
                                 }`}
+                              >
+                                {c.name}
+                              </p>
+                              <span
+                                className={`text-[9px] px-1 rounded font-medium ${
+                                  isSelected
+                                    ? "bg-[#7C3AED]/10 text-[#7C3AED]"
+                                    : "bg-[#F4F1EA] text-[#71717A]"
+                                }`}
+                              >
+                                {c.badge}
+                              </span>
+                            </div>
+                            <p
+                              className={`text-[10px] truncate ${
+                                isSelected ? "text-[#7C3AED]/80" : "text-[#71717A]"
+                              }`}
                             >
-                              {c.badge}
-                            </span>
+                              {c.owner}
+                            </p>
                           </div>
-                          <p className={`text-[10px] truncate ${isSelected ? "text-[#7C3AED]/80" : "text-[#71717A]"}`}>
-                            {c.owner}
-                          </p>
-                        </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-[#7C3AED] shrink-0 ml-1" />}
-                      </button>
-                    );
-                  })}
+                          {isSelected && <Check className="w-3.5 h-3.5 text-[#7C3AED] shrink-0 ml-1" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Navigation Items */}
-        <nav className="flex-1 py-4 px-2.5 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive =
-              (item.id === "dashboard"
-                ? activeNav === "dashboard" || activeNav === "home" || activeNav === "dashboards"
-                : activeNav === item.id) && !selectedProblemId;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${isActive
-                  ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] shadow-2xs font-bold"
-                  : "text-[#71717A] hover:bg-[#FAF8FF] hover:text-[#7C3AED]"
-                  } ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
-                title={isSidebarCollapsed ? item.label : undefined}
-              >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#7C3AED]" : "text-[#71717A]"}`} />
-                {!isSidebarCollapsed && <span className="flex-1 text-left truncate">{item.label}</span>}
-                {!isSidebarCollapsed && item.badge ? (
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#FFF1F2] text-[#E11D48]"
-                      }`}
-                  >
-                    {item.badge}
-                  </span>
-                ) : null}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Sidebar Footer Company Owner Profile */}
-        <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]/80">
-          <div className="flex items-center gap-2.5">
-            <img
-              src={company.avatar || company.logo}
-              alt={company.ownerName}
-              className="w-8 h-8 rounded-full object-cover border border-[#E5E1D8] shrink-0 bg-white"
-            />
-            {!isSidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-[#18181B] truncate">{company.ownerName}</p>
-                <p className="text-[10px] text-[#71717A] truncate">{company.ownerRole}</p>
-              </div>
-            )}
-            {!isSidebarCollapsed && (
-              <button
-                onClick={onNavigateLanding}
-                className="text-[#71717A] hover:text-[#7C3AED] p-1.5 rounded-lg hover:bg-[#F5F3FF] transition-colors"
-                title="Return to Marketing Overview"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              </>
             )}
           </div>
-        </div>
-      </aside>
+
+          {/* Navigation Items */}
+          <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive =
+                (item.id === "dashboard"
+                  ? activeNav === "dashboard" || activeNav === "home" || activeNav === "dashboards"
+                  : activeNav === item.id) && !selectedProblemId;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    isActive
+                      ? "bg-[#F5F3FF] text-[#7C3AED] border border-[#DDD6FE] shadow-2xs font-bold"
+                      : "text-[#71717A] hover:bg-[#FAF8FF] hover:text-[#7C3AED]"
+                  } ${!isSidebarExpanded ? "justify-center px-0" : ""}`}
+                  title={!isSidebarExpanded ? item.label : undefined}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-[#7C3AED]" : "text-[#71717A]"}`} />
+                  {isSidebarExpanded && (
+                    <span className="flex-1 text-left truncate animate-in fade-in duration-150">
+                      {item.label}
+                    </span>
+                  )}
+                  {isSidebarExpanded && item.badge ? (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold animate-in fade-in duration-150 ${
+                        isActive ? "bg-[#7C3AED]/10 text-[#7C3AED]" : "bg-[#FFF1F2] text-[#E11D48]"
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Sidebar Footer Company Owner Profile */}
+          <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]/80">
+            <div className={`flex items-center gap-2.5 ${!isSidebarExpanded ? "justify-center" : ""}`}>
+              <img
+                src={company.avatar || company.logo}
+                alt={company.ownerName}
+                className="w-8 h-8 rounded-full object-cover border border-[#E5E1D8] shrink-0 bg-white"
+                title={!isSidebarExpanded ? `${company.ownerName} (${company.ownerRole})` : undefined}
+              />
+              {isSidebarExpanded && (
+                <div className="flex-1 min-w-0 animate-in fade-in duration-150">
+                  <p className="text-xs font-bold text-[#18181B] truncate">{company.ownerName}</p>
+                  <p className="text-[10px] text-[#71717A] truncate">{company.ownerRole}</p>
+                </div>
+              )}
+              {isSidebarExpanded && (
+                <button
+                  onClick={onNavigateLanding}
+                  className="text-[#71717A] hover:text-[#7C3AED] p-1.5 rounded-lg hover:bg-[#F5F3FF] transition-colors shrink-0"
+                  title="Return to Marketing Overview"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </aside>
+      </div>
 
       {/* ─── MOBILE DRAWER MENU ─── */}
       {isMobileMenuOpen && (
