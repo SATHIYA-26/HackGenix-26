@@ -18,11 +18,13 @@ import {
 } from "lucide-react";
 import { getProblemById, getProblemEvidence } from "@/lib/api/problems";
 import { getProblemInsight } from "@/lib/api/insights";
+import { getActions } from "@/lib/api/actions";
 
-export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction, company }) {
+export default function ProblemDetailView({ problemId, onBack, onSelectFeedback, onOpenCreateAction, company, onNavigateToActions }) {
   const [problem, setProblem] = useState(null);
   const [insight, setInsight] = useState(null);
   const [evidenceList, setEvidenceList] = useState([]);
+  const [linkedAction, setLinkedAction] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,11 +32,14 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
     setIsLoading(true);
 
     if (problemId) {
+      const numericProbId = parseInt(String(problemId).replace(/\D/g, "") || "0", 10);
+
       Promise.allSettled([
         getProblemById(problemId),
         getProblemInsight(problemId),
         getProblemEvidence(problemId),
-      ]).then(([pRes, insRes, evRes]) => {
+        getActions({ accountId: company?.id }),
+      ]).then(([pRes, insRes, evRes, actRes]) => {
         if (!isMounted) return;
 
         if (pRes.status === "fulfilled" && pRes.value) {
@@ -52,6 +57,13 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
           setEvidenceList((prev) => (prev.length > 0 ? prev : evRes.value.items));
         }
 
+        if (actRes.status === "fulfilled" && actRes.value?.data) {
+          const match = actRes.value.data.find(
+            (a) => String(a.problemId) === String(problemId) || String(a.problemId) === String(numericProbId)
+          );
+          if (match) setLinkedAction(match);
+        }
+
         setIsLoading(false);
       });
     }
@@ -59,7 +71,7 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
     return () => {
       isMounted = false;
     };
-  }, [problemId]);
+  }, [problemId, company?.id]);
 
   if (isLoading) {
     return (
@@ -128,13 +140,34 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
         </div>
 
         <div className="flex items-center gap-2.5 self-start md:self-auto">
-          <button
-            onClick={() => onOpenCreateAction && onOpenCreateAction(problem)}
-            className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Product Action</span>
-          </button>
+          {linkedAction ? (
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 ${
+                linkedAction.status === "In Progress"
+                  ? "bg-[#EFF6FF] text-[#2563EB] border-[#BFDBFE]"
+                  : linkedAction.status === "Released"
+                  ? "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]"
+                  : "bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]"
+              }`}>
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Action: {linkedAction.status}
+              </span>
+              <button
+                onClick={() => onNavigateToActions && onNavigateToActions()}
+                className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-[#18181B] text-xs font-semibold hover:bg-[#FAF8F5] transition-colors flex items-center gap-1 shadow-2xs"
+              >
+                <span>Roadmap →</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => onOpenCreateAction && onOpenCreateAction(problem)}
+              className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Product Action</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -408,13 +441,47 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
               </div>
             )}
 
-            <button
-              onClick={() => onOpenCreateAction && onOpenCreateAction(problem)}
-              className="w-full mt-2 h-9 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Convert to Product Action</span>
-            </button>
+            {linkedAction ? (
+              <div className="mt-3 p-3.5 rounded-xl bg-white border border-[#A7F3D0] shadow-2xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#065F46]">
+                    <CheckCircle2 className="w-4 h-4 text-[#059669]" />
+                    <span>Product Action Active</span>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                    linkedAction.status === "In Progress"
+                      ? "bg-[#EFF6FF] text-[#2563EB]"
+                      : linkedAction.status === "Released"
+                      ? "bg-[#ECFDF5] text-[#059669]"
+                      : "bg-[#FEF3C7] text-[#D97706]"
+                  }`}>
+                    {linkedAction.status}
+                  </span>
+                </div>
+                <p className="text-xs font-semibold text-[#18181B] line-clamp-1">
+                  {linkedAction.title}
+                </p>
+                <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[#ECE8E0]">
+                  <span className="text-[#71717A]">
+                    Assignee: <strong className="text-[#18181B]">{linkedAction.owner || linkedAction.assignee}</strong>
+                  </span>
+                  <button
+                    onClick={() => onNavigateToActions && onNavigateToActions()}
+                    className="font-bold text-[#059669] hover:underline flex items-center gap-1"
+                  >
+                    View in Actions Roadmap →
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => onOpenCreateAction && onOpenCreateAction(problem)}
+                className="w-full mt-2 h-9 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Convert to Product Action</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

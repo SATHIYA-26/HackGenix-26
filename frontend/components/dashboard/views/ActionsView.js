@@ -14,12 +14,14 @@ import {
   Rocket,
   BarChart2,
   ClipboardList,
+  Trash2,
 } from "lucide-react";
 import {
   getActions,
   startActionImplementation,
   releaseAction,
   measureActionImpact,
+  deleteAction,
 } from "@/lib/api/actions";
 
 export default function ActionsView({ onSelectProblem, company }) {
@@ -84,6 +86,24 @@ export default function ActionsView({ onSelectProblem, company }) {
       fetchActions();
     } catch (err) {
       console.error("Measure impact error:", err);
+    } finally {
+      setProcessingId(null);
+      setTimeout(() => setStatusMessage(""), 4000);
+    }
+  };
+
+  const handleDelete = async (act) => {
+    if (typeof window !== "undefined" && !window.confirm(`Are you sure you want to remove the action "${act.title}"?`)) {
+      return;
+    }
+    setProcessingId(act.id);
+    try {
+      await deleteAction(act.actionId || act.id);
+      setStatusMessage(`Action "${act.title}" removed.`);
+      fetchActions();
+    } catch (err) {
+      console.warn("Delete action error:", err);
+      setActionsList((prev) => prev.filter((a) => a.id !== act.id));
     } finally {
       setProcessingId(null);
       setTimeout(() => setStatusMessage(""), 4000);
@@ -302,6 +322,14 @@ export default function ActionsView({ onSelectProblem, company }) {
                         <span>Re-measure Impact</span>
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDelete(act)}
+                      disabled={isProcessing}
+                      title="Delete action"
+                      className="p-1.5 rounded-lg border border-[#E5E1D8] text-[#71717A] hover:text-[#DC2626] hover:border-[#FECACA] hover:bg-[#FEF2F2] transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>

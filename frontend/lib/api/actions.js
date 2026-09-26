@@ -120,3 +120,13 @@ export async function releaseAction(actionId, releaseVersion = "v1.0.1") {
 export async function measureActionImpact(actionId) {
   return await apiPost(`/actions/${actionId}/measure`);
 }
+
+/**
+ * Permanently deletes an action item.
+ */
+export async function deleteAction(actionId) {
+  return await apiFetch(`/actions/${actionId}`, {
+    method: "DELETE",
+  });
+}
+

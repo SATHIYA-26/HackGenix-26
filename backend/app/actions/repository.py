@@ -13,6 +13,20 @@ class ActionRepository:
 
     def create(self, item: ActionCreate, baseline_metrics: Optional[Dict[str, Any]] = None, action_id: Optional[str] = None) -> Action:
         act_id = action_id or f"act_{uuid.uuid4().hex[:10]}"
+        init_status = "planned"
+        if getattr(item, "status", None):
+            s_val = str(item.status).lower().strip()
+            if "progress" in s_val:
+                init_status = "in_progress"
+            elif "release" in s_val:
+                init_status = "released"
+            elif "measur" in s_val:
+                init_status = "measuring"
+            elif "resolv" in s_val:
+                init_status = "resolved"
+            else:
+                init_status = "planned"
+
         action = Action(
             action_id=act_id,
             problem_id=item.problem_id,
@@ -21,7 +35,7 @@ class ActionRepository:
             title=item.title,
             description=item.description,
             action_type=item.action_type.value if hasattr(item.action_type, "value") else str(item.action_type),
-            status="planned",
+            status=init_status,
             assignee=item.assignee,
             jira_issue_key=item.jira_issue_key,
             release_version=item.target_version,
@@ -74,6 +88,19 @@ class ActionRepository:
 
     def delete(self, id: int) -> bool:
         action = self.get_by_id(id)
+        if action:
+            self.db.delete(action)
+            self.db.commit()
+            return True
+        return False
+
+    def delete_by_action_id(self, action_id: str) -> bool:
+        action = self.get_by_action_id(action_id)
+        if not action:
+            try:
+                action = self.get_by_id(int(action_id))
+            except ValueError:
+                pass
         if action:
             self.db.delete(action)
             self.db.commit()

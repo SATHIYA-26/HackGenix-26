@@ -1,18 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, CheckCircle2, ArrowRight, Calendar, User, Target, Sparkles, RefreshCw } from "lucide-react";
 import { createAction } from "@/lib/api/actions";
 
 export default function CreateActionModal({ isOpen, problem, onClose, onActionCreated, company }) {
-  const [title, setTitle] = useState(
-    problem ? `Investigate & resolve ${problem.name}` : "Investigate customer feedback friction"
-  );
+  const [title, setTitle] = useState("Investigate customer feedback friction");
   const [owner, setOwner] = useState(company?.ownerName || "Engineering Team");
   const [targetDate, setTargetDate] = useState("2026-10-05");
   const [targetMetric, setTargetMetric] = useState("Deflect 80%+ of related negative customer complaints");
   const [status, setStatus] = useState("In Progress");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (problem?.name) {
+      setTitle(`Resolve: ${problem.name}`);
+    } else {
+      setTitle("Investigate customer feedback friction");
+    }
+    if (company?.ownerName) {
+      setOwner(company.ownerName);
+    }
+    setStatus("In Progress");
+  }, [problem, company, isOpen]);
 
   if (!isOpen) return null;
 
@@ -21,12 +31,14 @@ export default function CreateActionModal({ isOpen, problem, onClose, onActionCr
     setIsSubmitting(true);
 
     const problemNumericId = parseInt(String(problem?.id || "1").replace(/\D/g, "") || "1", 10);
+    const mappedStatus = status === "In Progress" ? "in_progress" : status === "Released" ? "released" : "planned";
 
     try {
       await createAction({
         problem_id: problemNumericId,
         title,
         description: targetMetric,
+        status: mappedStatus,
         assignee: owner,
         account_id: company?.id || "acc_manis",
       });
@@ -51,9 +63,9 @@ export default function CreateActionModal({ isOpen, problem, onClose, onActionCr
         sourceTrace: `Traced to ${problem ? problem.feedbackCount : 127} customer voices`,
         milestones: [
           { name: "Root cause analysis with engineering team", done: true },
-          { name: "Build prototype fix & unit tests", done: false },
-          { name: "Deploy to staging canary environment", done: false },
-          { name: "Post-release customer feedback monitoring", done: false },
+          { name: "Build prototype fix & unit tests", done: status !== "Planned" },
+          { name: "Deploy to staging canary environment", done: status === "Released" },
+          { name: "Post-release customer feedback monitoring", done: status === "Released" },
         ],
       });
     }

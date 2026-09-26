@@ -54,10 +54,49 @@ class ActionService:
             if not rec:
                 raise EntityNotFoundException(f"Recommendation with id {payload.recommendation_id} does not exist.")
 
+        # Check for existing action on same problem & account to prevent duplicate creation
+        existing = (
+            self.db.query(Action)
+            .filter(
+                Action.problem_id == payload.problem_id,
+                Action.account_id == payload.account_id,
+            )
+            .order_by(Action.created_at.desc())
+            .first()
+        )
+        if existing and (existing.title == payload.title or existing.status in ["planned", "in_progress"]):
+            update_data = {}
+            if payload.assignee:
+                update_data["assignee"] = payload.assignee
+            if payload.description:
+                update_data["description"] = payload.description
+            if payload.title:
+                update_data["title"] = payload.title
+            if getattr(payload, "status", None):
+                s_val = str(payload.status).lower().strip()
+                if "progress" in s_val:
+                    update_data["status"] = "in_progress"
+                elif "release" in s_val:
+                    update_data["status"] = "released"
+                elif "planned" in s_val:
+                    update_data["status"] = "planned"
+            if update_data:
+                existing = self.repo.update(existing, update_data)
+            logger.info(f"Updated existing Action '{existing.action_id}' (Status: {existing.status}) for Problem {problem.id} avoiding duplicate.")
+            return existing
+
         baseline = self._snapshot_baseline_metrics(problem)
         action = self.repo.create(payload, baseline_metrics=baseline)
         logger.info(f"Created Action '{action.action_id}' (Status: {action.status}) for Problem {problem.id} ('{problem.name}').")
         return action
+
+    def delete_action(self, action_id: str) -> bool:
+        """Permanently remove an action."""
+        success = self.repo.delete_by_action_id(action_id)
+        if not success:
+            raise EntityNotFoundException(f"Action '{action_id}' does not exist.")
+        logger.info(f"Action '{action_id}' deleted successfully.")
+        return True
 
     def create_from_recommendation(
         self,

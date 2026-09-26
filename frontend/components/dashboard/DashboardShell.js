@@ -637,6 +637,7 @@ export default function DashboardShell({
                 onBack={handleBackToProblems}
                 onSelectFeedback={handleSelectFeedback}
                 onOpenCreateAction={(prob) => handleOpenCreateAction(prob)}
+                onNavigateToActions={() => handleNavClick("actions")}
               />
             ) : (
               <>

@@ -120,3 +120,15 @@ def measure_action_impact(
     """Closed-loop verification: Evaluates post-release customer feedback against baseline to measure resolution."""
     service = ActionService(db)
     return service.measure_impact(action_id)
+
+
+@router.delete("/{action_id}", status_code=status.HTTP_200_OK)
+def delete_action(
+    action_id: str,
+    db: Session = Depends(get_db),
+):
+    """Permanently delete an action item."""
+    service = ActionService(db)
+    service.delete_action(action_id)
+    return {"message": f"Action '{action_id}' deleted successfully.", "action_id": action_id}
+

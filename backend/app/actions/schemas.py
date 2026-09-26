@@ -28,6 +28,7 @@ class ActionCreate(BaseModel):
     title: str = Field(..., min_length=3, max_length=256, description="Action title")
     description: Optional[str] = Field(None, description="Detailed implementation plan or scope")
     action_type: ActionType = Field(default=ActionType.BUG_FIX, description="Type of engineering or product action")
+    status: Optional[str] = Field(default="planned", description="Initial lifecycle status (planned, in_progress, released)")
     assignee: Optional[str] = Field(None, description="Owner / engineering lead")
     jira_issue_key: Optional[str] = Field(None, description="Jira, Linear, or GitHub issue key (e.g. ENG-104)")
     target_version: Optional[str] = Field(None, description="Target release version (e.g. v4.2.2)")
