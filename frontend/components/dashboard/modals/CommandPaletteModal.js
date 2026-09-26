@@ -91,7 +91,7 @@ export default function CommandPaletteModal({ isOpen, onClose, onSelectProblem, 
               <div>
                 <p className="text-xs font-bold text-[#7C3AED]">Ask AI Feedback Assistant</p>
                 <p className="text-xs text-[#4F46E5] truncate">
-                  {query ? `Ask AI: "${query}" with evidence backing` : "Ask questions across 12,480+ customer reviews"}
+                  {query ? `Ask AI: "${query}" with evidence backing` : "Ask questions from reviews"}
                 </p>
               </div>
             </div>

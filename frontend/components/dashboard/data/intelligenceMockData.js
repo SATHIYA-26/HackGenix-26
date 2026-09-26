@@ -49,7 +49,7 @@ export const USER_PROFILE = {
 
 export const AI_BRIEF = {
   headline: "Customer Signal Summary",
-  subheadline: "3 important customer feedback shifts detected this week across 12,480 total signals:",
+  subheadline: "3 important customer feedback shifts detected this week across customer signals:",
   shifts: [
     {
       id: "shift-1",

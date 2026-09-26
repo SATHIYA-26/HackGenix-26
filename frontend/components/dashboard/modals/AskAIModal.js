@@ -113,7 +113,7 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
             <div>
               <h2 className="text-sm font-bold text-[#18181B]">Ask Your Customer Feedback Data</h2>
               <p className="text-xs text-[#71717A]">
-                Source-grounded NLP responses backed by 12,480+ customer voices
+                Source-grounded NLP responses backed by customer voices
               </p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
                 Synthesizing customer feedback signals...
               </p>
               <p className="text-xs text-[#71717A] max-w-sm">
-                Parsing 12,480 raw feedback snippets, computing aspect sentiment clusters, and verifying evidence tokens.
+                Parsing raw feedback snippets, computing aspect sentiment clusters, and verifying evidence tokens.
               </p>
             </div>
           )}
