@@ -78,16 +78,27 @@ export async function getAIBrief(accountId = null) {
 export async function askAIQuestion(query, accountId = null) {
   try {
     const accParam = accountId ? `&account_id=${encodeURIComponent(accountId)}` : "";
-    const results = await apiGet(`/analysis/search?query=${encodeURIComponent(query)}&limit=5${accParam}`);
+    const raw = await apiGet(`/analysis/search?query=${encodeURIComponent(query)}&top_k=5${accParam}`);
     
-    if (Array.isArray(results) && results.length > 0) {
-      const top = results[0];
+    // Support both direct array or { query, results, total_searched } object from backend
+    const items = Array.isArray(raw) ? raw : (raw?.results || []);
+    
+    if (items.length > 0) {
+      const top = items[0];
       const text = top.feedback?.text || top.text || "Identified relevant customer feedback.";
+      const source = top.feedback?.source || top.source || "Customer Reviews";
+      const sourceDisplay = source === "youtube" ? "YouTube Comments" : (source === "google_maps" ? "Google Maps Reviews" : "Customer Reviews");
       return {
         answer: text,
-        concentratedIn: top.feedback?.source || "Customer Reviews",
-        evidenceCount: results.length,
-        items: results,
+        concentratedIn: sourceDisplay,
+        evidenceCount: items.length,
+        items: items,
+        citations: items.map((it) => ({
+          text: it.text || it.feedback?.text,
+          source: it.source || it.feedback?.source,
+          url: it.source_url || it.feedback?.source_url,
+          score: it.similarity_score,
+        })),
       };
     }
 

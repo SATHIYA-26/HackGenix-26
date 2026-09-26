@@ -31,16 +31,21 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
     try {
       try {
         const aiRes = await askAIQuestion(q);
-        if (aiRes) {
+        if (aiRes && aiRes.evidenceCount > 0) {
+          const topCitation = aiRes.citations?.[0];
+          const topQuote = topCitation?.text || aiRes.items?.[0]?.text;
+          const sourceName = aiRes.concentratedIn || (topCitation?.source === "youtube" ? "YouTube Comments" : "Connected customer channels");
+          const simScore = topCitation?.score ? `${(topCitation.score * 100).toFixed(0)}% semantic match` : "Direct semantic match";
           setResponse({
-            headline: aiRes.answer || "Customer signal analysis completed.",
-            summary: `Identified relevant customer signals: ${aiRes.answer}`,
-            concentration: aiRes.concentratedIn || "Connected customer channels",
+            headline: `Verified customer feedback matching: "${q}"`,
+            summary: `Found ${aiRes.evidenceCount} verified customer voices across ${sourceName}.\n\nTop customer signal: "${topQuote}"`,
+            concentration: `${sourceName} · ${simScore}`,
             whyItMatters: "Direct customer dissatisfaction impacts retention and brand trust.",
-            evidenceCount: aiRes.evidenceCount || 1,
+            evidenceCount: aiRes.evidenceCount,
             targetProblemId: aiRes.problemId || "prob-1",
-            representativeQuote: aiRes.citations?.[0]?.text ? `“${aiRes.citations[0].text}”` : "Customer feedback indicates repeated friction in this area.",
-            recommendedAction: aiRes.recommendedAction || "Investigate the root issue and deploy UX remediation.",
+            representativeQuote: topQuote ? `“${topQuote}”` : "Customer feedback indicates repeated friction in this area.",
+            sourceUrl: topCitation?.url || null,
+            recommendedAction: aiRes.recommendedAction || "Investigate the root issue and deploy UX or content improvements based on customer signals.",
           });
           return;
         }
@@ -231,9 +236,21 @@ export default function AskAIModal({ isOpen, onClose, initialQuery = "", onOpenP
 
               {/* Representative Customer Voice Quote */}
               <div className="p-4 rounded-xl bg-[#FAF8F5] border-l-4 border-[#18181B] border border-[#E5E1D8]">
-                <p className="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1">
-                  Representative Customer Evidence
-                </p>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">
+                    Representative Customer Evidence
+                  </p>
+                  {response.sourceUrl && (
+                    <a
+                      href={response.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-semibold text-[#7C3AED] hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>View Original Source</span> ↗
+                    </a>
+                  )}
+                </div>
                 <p className="text-sm italic text-[#18181B] font-serif leading-relaxed">
                   {response.representativeQuote}
                 </p>
