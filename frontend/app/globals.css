@@ -2875,6 +2875,640 @@ body.cursor-active .dovetail-cursor-spotlight {
   }
 }
 
+/* ==========================================================================
+   VIEW 1: LANDING PAGE — YOUTUBE BACKGROUND VIDEO & CINEMATIC GLASS THEME
+   Applies exclusively to Home Landing Page (Never in Dashboard)
+   ========================================================================== */
+
+.cm-nav.cm-nav-landing {
+  background: rgba(9, 10, 16, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cm-nav.cm-nav-landing .cm-logo-text {
+  color: #FFFFFF;
+}
+
+.cm-nav.cm-nav-landing .cm-nav-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cm-nav.cm-nav-landing .cm-nav-link:hover,
+.cm-nav.cm-nav-landing .cm-nav-link.active {
+  color: #FFFFFF;
+}
+
+.cm-nav.cm-nav-landing .cm-btn-outline {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+}
+
+.cm-nav.cm-nav-landing .cm-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.cm-nav.cm-nav-landing .cm-btn-primary {
+  background: #7C3AED;
+  color: #FFFFFF;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.45);
+}
+
+.cm-nav.cm-nav-landing .cm-btn-primary:hover {
+  background: #6D28D9;
+  box-shadow: 0 0 25px rgba(124, 58, 237, 0.6);
+}
+
+#landingView {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* Background YouTube Video Cover Container */
+.landing-bg-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #07080D;
+}
+
+.landing-bg-video-iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw; /* 16:9 ratio */
+  min-height: 100vh;
+  min-width: 177.78vh; /* 16:9 ratio */
+  transform: translate(-50%, -50%) scale(1.25);
+  border: 0;
+  pointer-events: none;
+  opacity: 0.88;
+}
+
+.landing-bg-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 50% 18%, rgba(9, 10, 16, 0.62) 0%, rgba(6, 7, 12, 0.88) 100%),
+    linear-gradient(180deg, rgba(8, 9, 15, 0.65) 0%, rgba(8, 9, 15, 0.58) 30%, rgba(7, 8, 13, 0.85) 75%, rgba(6, 7, 11, 0.96) 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#landingView .landing-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+/* Landing typography adjustments */
+#landingView .landing-hero-title {
+  color: #FFFFFF;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+}
+
+#landingView .landing-hero-title em {
+  color: #C084FC;
+  text-shadow: 0 0 35px rgba(192, 132, 252, 0.45);
+}
+
+#landingView .landing-hero-sub {
+  color: #E4E4E7;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Hero ROI Card Dark Glass */
+#landingView .hero-roi-card {
+  background: rgba(15, 17, 26, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+#landingView .roi-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landingView .roi-header-title {
+  color: #FFFFFF;
+}
+
+#landingView .roi-timeframe-selector {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#landingView .roi-tf-btn {
+  color: #A1A1AA;
+}
+
+#landingView .roi-tf-btn.active, 
+#landingView .roi-tf-btn:hover {
+  background: #7C3AED;
+  color: #FFFFFF;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.4);
+}
+
+#landingView .roi-metric-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#landingView .roi-metric-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+#landingView .roi-metric-label {
+  color: #D4D4D8;
+}
+
+#landingView .roi-metric-val {
+  color: #FFFFFF;
+}
+
+#landingView .roi-metric-sub {
+  color: #A1A1AA;
+}
+
+#landingView .roi-tag-pos {
+  color: #34D399;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+#landingView .roi-tag-violet {
+  color: #C084FC;
+  background: rgba(168, 85, 247, 0.18);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+#landingView .roi-graph-stage {
+  background: radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12), transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.12), transparent 50%),
+              rgba(10, 11, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#landingView .roi-grid-line {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+#landingView .roi-grid-line span {
+  color: #71717A;
+}
+
+#landingView .roi-milestone {
+  background: rgba(20, 22, 34, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#landingView .roi-milestone.m-right {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+#landingView .m-title {
+  color: #FFFFFF;
+}
+
+#landingView .m-sub {
+  color: #A1A1AA;
+}
+
+#landingView .roi-footer-ticker {
+  background: rgba(10, 11, 18, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#landingView .ticker-label {
+  color: #C084FC;
+}
+
+#landingView .ticker-item {
+  color: #D4D4D8;
+}
+
+#landingView .ticker-item strong {
+  color: #34D399;
+}
+
+/* Landing Section Titles & Tags */
+#landingView .landing-section-tag {
+  color: #C084FC;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+}
+
+#landingView .landing-section-title {
+  color: #FFFFFF;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+}
+
+#landingView .cm-section-desc {
+  color: #D4D4D8;
+}
+
+/* What We Do Cards */
+#landingView .wwd-card {
+  background: rgba(16, 18, 28, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .wwd-card:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.6), 0 0 24px rgba(124, 58, 237, 0.15);
+}
+
+#landingView .wwd-step-pill {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+#landingView .wwd-title {
+  color: #FFFFFF;
+}
+
+#landingView .wwd-desc {
+  color: #D4D4D8;
+}
+
+/* Real-Life Example Card */
+#landingView .wwd-example-card {
+  background: rgba(16, 18, 28, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .wwd-example-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 14px;
+}
+
+#landingView .wwd-example-tag {
+  color: #C084FC;
+}
+
+#landingView .wwd-example-title {
+  color: #FFFFFF;
+}
+
+#landingView .wwd-review-sample {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+#landingView .wwd-quote-text {
+  color: #F4F4F5;
+}
+
+#landingView .wwd-quote-icon {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+#landingView .wwd-sample-author {
+  color: #A1A1AA;
+}
+
+#landingView .pos-highlight {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34D399;
+}
+
+#landingView .neg-highlight {
+  background: rgba(225, 29, 72, 0.25);
+  color: #FB7185;
+}
+
+#landingView .wwd-breakdown-col.before {
+  background: rgba(225, 29, 72, 0.08);
+  border: 1px solid rgba(225, 29, 72, 0.25);
+}
+
+#landingView .wwd-breakdown-col.after {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+#landingView .wwd-col-header strong {
+  color: #FFFFFF;
+}
+
+#landingView .wwd-col-body p {
+  color: #D4D4D8;
+}
+
+#landingView .aspect-badge.pos {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+#landingView .aspect-badge.neg {
+  background: rgba(225, 29, 72, 0.18);
+  color: #FB7185;
+  border: 1px solid rgba(225, 29, 72, 0.35);
+}
+
+#landingView .wwd-action-callout {
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  color: #E4E4E7;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.1);
+}
+
+/* Interactive Platform Showcase */
+#landingView .platform-showcase-card {
+  background: rgba(16, 18, 28, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+#landingView .platform-tabs-nav {
+  background: rgba(10, 11, 18, 0.65);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landingView .pf-tab-btn {
+  color: #A1A1AA;
+}
+
+#landingView .pf-tab-btn:hover {
+  color: #FFFFFF;
+}
+
+#landingView .pf-tab-btn.active {
+  background: #7C3AED;
+  color: #FFFFFF;
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.4);
+}
+
+#landingView .pf-hero-title {
+  color: #FFFFFF;
+}
+
+#landingView .pf-hero-desc {
+  color: #D4D4D8;
+}
+
+#landingView .pf-action-link {
+  color: #C084FC;
+}
+
+#landingView .pf-action-link:hover {
+  color: #DDD6FE;
+}
+
+#landingView .pf-right-stage {
+  background: rgba(10, 12, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landingView .pf-stage-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+#landingView .pf-app-icon {
+  background: rgba(25, 28, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#landingView .pf-mock-insight-card {
+  background: rgba(20, 23, 35, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .pf-mock-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landingView .pf-mock-tag {
+  color: #C084FC;
+}
+
+#landingView .pf-mock-time {
+  color: #71717A;
+}
+
+#landingView .pf-bar-label {
+  color: #E4E4E7;
+}
+
+#landingView .pf-bar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#landingView .pf-bar-count {
+  color: #FFFFFF;
+}
+
+#landingView .pf-summary-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#landingView .pf-summary-heading {
+  color: #C084FC;
+}
+
+#landingView .pf-summary-text {
+  color: #D4D4D8;
+}
+
+#landingView .pf-bottom-subtabs {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#landingView .pf-subtab {
+  color: #71717A;
+}
+
+#landingView .pf-subtab:hover {
+  color: #D4D4D8;
+}
+
+#landingView .pf-subtab.active {
+  color: #C084FC;
+  border-bottom-color: #C084FC;
+}
+
+/* Solution vs Problem Cards */
+#landingView .solution-card {
+  background: rgba(16, 18, 28, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .solution-card.problem-side {
+  border-top: 4px solid #E11D48;
+}
+
+#landingView .solution-card.solution-side {
+  border-top: 4px solid #10B981;
+  background: rgba(16, 18, 28, 0.82);
+}
+
+#landingView .pipeline-step-title {
+  color: #FFFFFF;
+}
+
+#landingView .solution-list-item {
+  color: #D4D4D8;
+}
+
+#landingView .solution-list-item strong {
+  color: #FFFFFF;
+}
+
+/* Pipeline Step Boxes */
+#landingView .pipeline-step-box {
+  background: rgba(16, 18, 28, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+#landingView .pipeline-step-box:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .pipeline-step-num {
+  background: rgba(124, 58, 237, 0.25);
+  border: 1px solid rgba(124, 58, 237, 0.45);
+  color: #C084FC;
+}
+
+#landingView .pipeline-step-desc {
+  color: #A1A1AA;
+}
+
+#landingView .pipeline-step-desc code {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #C084FC;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+#landingView .pipeline-step-tag {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #D4D4D8;
+}
+
+/* Pricing Cards */
+#landingView .pricing-card {
+  background: rgba(16, 18, 28, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.5);
+}
+
+#landingView .pricing-card:hover {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+#landingView .pricing-card.featured {
+  border: 2px solid #7C3AED;
+  background: rgba(22, 24, 38, 0.88);
+  box-shadow: 0 0 35px rgba(124, 58, 237, 0.25), 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+#landingView .pricing-card.featured::before {
+  background: #7C3AED;
+  color: #FFFFFF;
+}
+
+#landingView .pricing-plan-name {
+  color: #FFFFFF;
+}
+
+#landingView .pricing-price-row {
+  color: #FFFFFF;
+}
+
+#landingView .pricing-currency {
+  color: #A1A1AA;
+}
+
+#landingView .pricing-val {
+  color: #FFFFFF;
+}
+
+#landingView .pricing-period {
+  color: #71717A;
+}
+
+#landingView .pricing-feature-item {
+  color: #D4D4D8;
+}
+
+#landingView .pricing-check {
+  color: #34D399;
+}
+
+#landingView .cm-branch-tag {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #D4D4D8;
+}
+
+#landingView .cm-btn-outline {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+#landingView .cm-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+#landingView .cm-btn-primary {
+  background: #7C3AED;
+  color: #FFFFFF;
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.45);
+}
+
+#landingView .cm-btn-primary:hover {
+  background: #6D28D9;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.6);
+}
+
 
 
 

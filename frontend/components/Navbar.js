@@ -12,8 +12,10 @@ export default function Navbar({
   onLogout,
   onScrollToSection
 }) {
+  const isLanding = activeView === "landing";
+
   return (
-    <header className="cm-nav">
+    <header className={`cm-nav ${isLanding ? "cm-nav-landing" : ""}`}>
       <div className="cm-nav-container">
         <a
           href="#"
