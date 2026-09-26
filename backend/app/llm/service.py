@@ -6,7 +6,6 @@ from app.core.logging import logger
 from app.db.models import ProblemCluster, Insight, Feedback, FeedbackAnalysis, problem_feedback
 from app.db.repositories.problem_repository import ProblemRepository
 from app.db.repositories.insight_repository import InsightRepository
-from app.intelligence.feature_extraction import dimension_extractor
 from app.llm.client import LLMClient
 from app.llm.prompts import SYSTEM_PROMPT, build_insight_prompt
 
@@ -36,6 +35,7 @@ class LLMInsightService:
         traceable_ids = [f.feedback_id for f in feedback_items[:20]]
 
         # Dimensions & metrics
+        from app.intelligence.feature_extraction import dimension_extractor
         dimensions = dimension_extractor.extract_dimensions_for_cluster(feedback_items)
         neg_count = sum(1 for f in feedback_items if f.analysis and f.analysis.sentiment == "negative")
         neg_pct = (neg_count / float(len(feedback_items))) if feedback_items else 0.0

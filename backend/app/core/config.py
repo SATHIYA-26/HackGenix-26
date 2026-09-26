@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None
     OPENAI_BASE_URL: str = "https://api.groq.com/openai/v1"
-    LLM_MODEL: str = "llama-3.3-70b-versatile"
+    LLM_MODEL: str = "openai/gpt-oss-120b"
     LLM_TEMPERATURE: float = 0.2
     LLM_TIMEOUT_SECONDS: int = 30
 
