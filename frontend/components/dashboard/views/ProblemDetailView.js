@@ -413,7 +413,6 @@ export default function ProblemDetailView({ problemId, onBack, onSelectFeedback,
           {/* AI Recommendation Panel */}
           <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#059669]" />
               <span className="text-xs font-bold text-[#059669] uppercase tracking-wider">
                 AI Problem Insight
               </span>

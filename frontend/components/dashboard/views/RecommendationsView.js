@@ -126,8 +126,8 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#059669] uppercase flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> AI Recommendation
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#059669] uppercase">
+                        AI Recommendation
                       </span>
                       <span className="text-xs text-[#71717A]">
                         Cluster: <strong>{rec.problemName}</strong>
@@ -203,9 +203,8 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
                     )}
                     <button
                       onClick={() => handlePromoteToAction(rec, associatedProb)}
-                      className="px-4 py-1.5 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5"
+                      className="px-4 py-1.5 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors"
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Promote to Product Action</span>
                     </button>
                   </div>

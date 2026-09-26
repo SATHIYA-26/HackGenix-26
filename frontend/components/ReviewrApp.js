@@ -140,7 +140,8 @@ export default function ReviewrApp({ initialView = "landing" }) {
         currentAccountId={currentAccountId}
         accounts={accounts}
         onAccountChange={handleAccountChange}
-        onNavigateLanding={() => handleNavigate("landing")}
+        onNavigateLanding={handleLogout}
+        onLogout={handleLogout}
       />
     );
   }

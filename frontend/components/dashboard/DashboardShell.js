@@ -90,6 +90,7 @@ export default function DashboardShell({
   initialFeedbackId = null,
   initialSettingsTab = "taxonomy",
   onNavigateLanding,
+  onLogout,
   currentAccountId = "acc_manis",
   currentAccount = null,
   accounts = [],
@@ -137,6 +138,20 @@ export default function DashboardShell({
   }, [currentAccountId]);
 
   const company = getCompanyIntelligence(selectedAccountId);
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("reviewr_account_id");
+      sessionStorage.removeItem("reviewr_account_id");
+    }
+    if (onLogout) {
+      onLogout();
+    } else if (onNavigateLanding) {
+      onNavigateLanding();
+    } else if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
+  };
 
   const handleSelectCompany = (accId) => {
     setSelectedAccountId(accId);
@@ -462,9 +477,9 @@ export default function DashboardShell({
               )}
               {isSidebarExpanded && (
                 <button
-                  onClick={onNavigateLanding}
-                  className="text-[#71717A] hover:text-[#7C3AED] p-1.5 rounded-lg hover:bg-[#F5F3FF] transition-colors shrink-0"
-                  title="Return to Marketing Overview"
+                  onClick={handleLogout}
+                  className="text-[#71717A] hover:text-[#E11D48] p-1.5 rounded-lg hover:bg-[#FFF1F2] transition-colors shrink-0"
+                  title="Logout from workspace"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -564,11 +579,11 @@ export default function DashboardShell({
 
             <div className="p-3 border-t border-[#ECE8E0] bg-[#FAF8F5]">
               <button
-                onClick={onNavigateLanding}
-                className="w-full py-2 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#18181B] hover:text-[#7C3AED] hover:bg-[#F5F3FF] transition-colors flex items-center justify-center gap-2"
+                onClick={handleLogout}
+                className="w-full py-2 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#71717A] hover:text-[#E11D48] hover:border-[#FCA5A5] hover:bg-[#FFF1F2] transition-colors flex items-center justify-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Return to Overview</span>
+                <span>Logout</span>
               </button>
             </div>
           </div>
@@ -661,12 +676,14 @@ export default function DashboardShell({
               )}
             </div>
 
-            {/* Return to Landing / Overview */}
+            {/* Logout Button */}
             <button
-              onClick={onNavigateLanding}
-              className="h-9 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors hidden sm:flex items-center gap-1.5"
+              onClick={handleLogout}
+              className="h-9 px-3 rounded-lg border border-[#E5E1D8] text-xs font-semibold text-[#71717A] hover:text-[#E11D48] hover:border-[#FCA5A5] hover:bg-[#FFF1F2] transition-colors hidden sm:flex items-center gap-1.5 shadow-2xs"
+              title="Logout from workspace"
             >
-              <span>Overview</span>
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
             </button>
           </div>
         </header>

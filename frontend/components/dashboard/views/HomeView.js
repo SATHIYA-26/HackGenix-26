@@ -141,10 +141,9 @@ export default function HomeView({
         <div className="flex items-center gap-2.5 flex-wrap">
           <button
             onClick={handleShare}
-            className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors flex items-center gap-1.5"
+            className="h-9 px-3.5 rounded-lg border border-[#E5E1D8] bg-white text-xs font-semibold text-[#18181B] hover:bg-[#F4F1EA] transition-colors"
           >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share</span>
+            Share
           </button>
 
           <button
@@ -156,10 +155,9 @@ export default function HomeView({
 
           <button
             onClick={() => onNavigate("recommendations")}
-            className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors flex items-center gap-1.5 shadow-xs"
+            className="h-9 px-4 rounded-lg bg-[#18181B] text-white text-xs font-semibold hover:bg-[#27272A] transition-colors shadow-xs"
           >
-            <span>Recommendations</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Recommendations
           </button>
         </div>
       </div>
@@ -168,8 +166,7 @@ export default function HomeView({
       {totalFb === 0 && !isLoading && (
         <div className="p-8 rounded-2xl bg-gradient-to-br from-[#FAF5FF] via-white to-[#FAF8F5] border border-[#DDD6FE] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-bold">
               <span>Workspace Ready for Live Ingestion</span>
             </div>
             <h2 className="text-lg font-bold text-[#18181B] font-serif">
@@ -181,9 +178,8 @@ export default function HomeView({
           </div>
           <button
             onClick={() => onNavigate("sources")}
-            className="h-10 px-5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 shrink-0"
+            className="h-10 px-5 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-sm shrink-0"
           >
-            <Play className="w-4 h-4 fill-white" />
             <span>Go to Sources & Ingest YouTube</span>
           </button>
         </div>
@@ -201,8 +197,8 @@ export default function HomeView({
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-[#7C3AED] text-white px-2 py-0.5 rounded-full">
                   Focused YouTube Video Stream
                 </span>
-                <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Live NLP Extracted
+                <span className="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] px-2 py-0.5 rounded-full">
+                  Live NLP Extracted
                 </span>
               </div>
               <h3 className="text-sm font-bold text-[#18181B] mt-1 font-serif line-clamp-1">
@@ -217,18 +213,16 @@ export default function HomeView({
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
             <button
               onClick={onClearVideoFocus}
-              className="h-8 px-3 rounded-lg bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="h-8 px-3 rounded-lg bg-[#18181B] hover:bg-[#27272A] text-white text-xs font-semibold transition-colors shadow-xs"
             >
-              <X className="w-3.5 h-3.5" />
-              <span>Clear Focus</span>
+              Clear Focus
             </button>
           </div>
         </div>
       )}
 
       {showShareToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#18181B] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl animate-in fade-in">
           <span>{company?.name} snapshot link copied to clipboard!</span>
         </div>
       )}
@@ -240,11 +234,9 @@ export default function HomeView({
             <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
               Total Ingested Voice
             </span>
-            <MessageSquare className="w-4 h-4 text-[#71717A]" />
           </div>
           <p className="text-2xl font-bold text-[#18181B] mt-2">{totalFb.toLocaleString()}</p>
-          <div className="flex items-center gap-1 text-[11px] text-[#059669] mt-1 font-semibold">
-            <TrendingUp className="w-3 h-3" />
+          <div className="text-[11px] text-[#059669] mt-1 font-semibold">
             <span>{analyzedFb} analyzed via RoBERTa</span>
           </div>
         </div>
@@ -254,7 +246,6 @@ export default function HomeView({
             <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
               Net Sentiment Score
             </span>
-            <Activity className="w-4 h-4 text-[#059669]" />
           </div>
           <p className={`text-2xl font-bold mt-2 ${avgSentiment >= 0 ? "text-[#059669]" : "text-[#E11D48]"}`}>
             {netSentimentDisplay}
@@ -269,7 +260,6 @@ export default function HomeView({
             <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
               Discovered Problems
             </span>
-            <AlertTriangle className="w-4 h-4 text-[#D97706]" />
           </div>
           <p className="text-2xl font-bold text-[#18181B] mt-2">{activeProblemsCount}</p>
           <p className="text-[11px] text-[#71717A] mt-1 font-semibold">
@@ -282,7 +272,6 @@ export default function HomeView({
             <span className="text-[11px] font-semibold text-[#71717A] uppercase tracking-wide">
               Emerging Signals
             </span>
-            <Flame className="w-4 h-4 text-[#E11D48]" />
           </div>
           <p className="text-2xl font-bold text-[#E11D48] mt-2">{emergingCount}</p>
           <p className="text-[11px] text-[#E11D48] mt-1 font-semibold">
@@ -297,8 +286,8 @@ export default function HomeView({
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-[#D97706]" /> Priority Problem Clusters
+              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+                Priority Problem Clusters
               </h2>
               <p className="text-xs text-[#71717A]">
                 Ranked by composite explainable priority formula from backend
@@ -306,10 +295,9 @@ export default function HomeView({
             </div>
             <button
               onClick={() => onNavigate("problems")}
-              className="text-xs font-semibold text-[#7C3AED] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#7C3AED] hover:underline"
             >
-              <span>View all</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              View all
             </button>
           </div>
 
@@ -380,9 +368,9 @@ export default function HomeView({
                         </p>
                         <span className="text-[10px] uppercase font-bold text-[#71717A]">{prob.status}</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-[#FAF8F5] group-hover:bg-[#18181B] group-hover:text-white flex items-center justify-center transition-colors">
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
+                      <span className="text-xs font-bold text-[#18181B] group-hover:text-[#7C3AED] transition-colors">
+                        Inspect
+                      </span>
                     </div>
                   </div>
                 );
@@ -394,8 +382,8 @@ export default function HomeView({
         {/* Right (1 col): Sentiment Health Distribution */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#059669]" /> Sentiment Breakdown
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+              Sentiment Breakdown
             </h2>
             <span className="text-[11px] font-mono font-bold text-[#71717A] uppercase">RoBERTa NLP</span>
           </div>
@@ -416,8 +404,8 @@ export default function HomeView({
             {/* Sentiment Trajectory Bars */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
-                  <ThumbsUp className="w-3.5 h-3.5 text-[#059669]" /> Positive Sentiment
+                <span className="font-semibold text-[#18181B]">
+                  Positive Sentiment
                 </span>
                 <span className="font-bold text-[#059669]">{posCount} ({posPct}%)</span>
               </div>
@@ -428,8 +416,8 @@ export default function HomeView({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#64748B]" /> Neutral Sentiment
+                <span className="font-semibold text-[#18181B]">
+                  Neutral Sentiment
                 </span>
                 <span className="font-bold text-[#64748B]">{neuCount} ({neuPct}%)</span>
               </div>
@@ -440,8 +428,8 @@ export default function HomeView({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[#18181B] flex items-center gap-1.5">
-                  <ThumbsDown className="w-3.5 h-3.5 text-[#E11D48]" /> Negative Friction
+                <span className="font-semibold text-[#18181B]">
+                  Negative Friction
                 </span>
                 <span className="font-bold text-[#E11D48]">{negCount} ({negPct}%)</span>
               </div>
@@ -477,8 +465,8 @@ export default function HomeView({
         {/* Col 1: Emerging Trends */}
         <div className="space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#7C3AED]" /> Emerging Trends
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+              Emerging Trends
             </h2>
             <p className="text-xs text-[#71717A]">
               Velocity comparison across 7d windows
@@ -516,8 +504,8 @@ export default function HomeView({
         {/* Col 2: Ingested Sources */}
         <div className="space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-[#0284C7]" /> Connected Sources
+            <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+              Connected Sources
             </h2>
             <p className="text-xs text-[#71717A]">
               Customer channels feeding the platform
@@ -536,9 +524,6 @@ export default function HomeView({
                   className="p-3 rounded-lg border border-[#ECE8E0] flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-md bg-[#FAF8F5] border border-[#ECE8E0] flex items-center justify-center p-1 shrink-0">
-                      <SourceLogo source={src.type || src.name} name={src.name} type={src.type} className="w-4 h-4" />
-                    </div>
                     <div>
                       <p className="text-xs font-bold text-[#18181B]">{src.name}</p>
                       <p className="text-[10px] text-[#71717A]">Source Channel</p>
@@ -558,8 +543,8 @@ export default function HomeView({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-[#7C3AED]" /> Recent Customer Voice
+              <h2 className="text-sm font-bold text-[#18181B] uppercase tracking-wider">
+                Recent Customer Voice
               </h2>
               <p className="text-xs text-[#71717A]">
                 Latest normalized customer records
@@ -567,10 +552,9 @@ export default function HomeView({
             </div>
             <button
               onClick={() => onNavigate("feedback")}
-              className="text-xs font-semibold text-[#7C3AED] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#7C3AED] hover:underline"
             >
-              <span>Explore</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Explore
             </button>
           </div>
 

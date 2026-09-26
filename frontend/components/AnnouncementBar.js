@@ -4,7 +4,6 @@ export default function AnnouncementBar({ onScrollToSection }) {
   return (
     <div className="top-announcement-bar">
       <div className="announcement-content">
-        <span className="announcement-sparkle">✦</span>
         <span className="announcement-text">
           Meet <strong>Reviewr AI</strong>, the AI agent for customer feedback analysis, built to think like a seasoned analyst.
         </span>
@@ -16,7 +15,7 @@ export default function AnnouncementBar({ onScrollToSection }) {
             if (onScrollToSection) onScrollToSection("whatWeDoSection");
           }}
         >
-          Learn more →
+          Learn more
         </a>
       </div>
     </div>

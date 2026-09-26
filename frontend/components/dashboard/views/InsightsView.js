@@ -74,7 +74,6 @@ export default function InsightsView({ onSelectProblem, onSelectFeedback, compan
           {aiBrief && aiBrief.shifts?.length > 0 && (
             <div className="p-5 rounded-2xl bg-[#F5F3FF] border border-[#DDD6FE] space-y-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#7C3AED]" />
                 <span className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
                   {aiBrief.headline}
                 </span>
@@ -95,8 +94,8 @@ export default function InsightsView({ onSelectProblem, onSelectFeedback, compan
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5F3FF] text-[#7C3AED] uppercase flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> Autonomous Signal
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F5F3FF] text-[#7C3AED] uppercase">
+                        Autonomous Signal
                       </span>
                       <span className="text-xs text-[#71717A]">
                         Category: <strong>{prob.category || "General"}</strong>
