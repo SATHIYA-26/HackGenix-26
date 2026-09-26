@@ -14,6 +14,17 @@ import {
 import { getRecommendations, createActionFromRecommendation } from "@/lib/api/recommendations";
 import { getProblems } from "@/lib/api/problems";
 
+function parseRecommendationSteps(text) {
+  if (!text) return [];
+  const rawLines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const steps = [];
+  for (const line of rawLines) {
+    const subSteps = line.split(/(?=\b\d+\.\s+)/).map((s) => s.trim()).filter(Boolean);
+    steps.push(...subSteps);
+  }
+  return steps;
+}
+
 export default function RecommendationsView({ onSelectProblem, onOpenCreateAction, company }) {
   const [recommendations, setRecommendations] = useState([]);
   const [problemsList, setProblemsList] = useState([]);
@@ -41,11 +52,16 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
 
   const handlePromoteToAction = async (rec, associatedProb) => {
     try {
+      const steps = parseRecommendationSteps(rec.title || rec.recommendation);
+      const actionTitle = associatedProb?.name
+        ? `Resolve: ${associatedProb.name}`
+        : steps[0] || rec.title || "Product Engineering Action";
+
       await createActionFromRecommendation(rec.id, {
-        title: rec.title || rec.recommendation,
+        title: actionTitle,
         owner: company?.ownerName || "Product Lead",
       });
-      setActionSuccessMsg(`Created product action for "${rec.title || rec.recommendation}"`);
+      setActionSuccessMsg(`Created product action for "${actionTitle}"`);
       setTimeout(() => setActionSuccessMsg(""), 4000);
     } catch (err) {
       if (onOpenCreateAction) {
@@ -117,7 +133,34 @@ export default function RecommendationsView({ onSelectProblem, onOpenCreateActio
                         Cluster: <strong>{rec.problemName}</strong>
                       </span>
                     </div>
-                    <h2 className="text-base font-bold text-[#18181B]">{rec.title}</h2>
+                    {/* Multi-step Recommendation Action Items */}
+                    {(() => {
+                      const steps = parseRecommendationSteps(rec.title || rec.recommendation);
+                      if (steps.length > 1) {
+                        return (
+                          <div className="space-y-2 py-1.5">
+                            {steps.map((step, idx) => {
+                              const cleanStep = step.replace(/^\d+\.\s*/, "");
+                              return (
+                                <div key={idx} className="flex items-start gap-2.5">
+                                  <span className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded-md bg-[#18181B] text-white text-[11px] font-bold mt-0.5 shadow-2xs">
+                                    {idx + 1}
+                                  </span>
+                                  <p className="text-sm font-semibold text-[#18181B] leading-snug">
+                                    {cleanStep}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
+                      return (
+                        <h2 className="text-base font-bold text-[#18181B] leading-snug">
+                          {steps[0] || rec.title}
+                        </h2>
+                      );
+                    })()}
                     {associatedProb && (
                       <p className="text-xs text-[#71717A]">
                         Category: {associatedProb.category || "Core Experience"} · Priority Score: {typeof associatedProb.priorityScore === "number" ? associatedProb.priorityScore.toFixed(2) : associatedProb.priorityScore}

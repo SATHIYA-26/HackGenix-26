@@ -80,12 +80,21 @@ export function adaptFeedback(raw) {
 export function adaptRecommendation(raw) {
   if (!raw) return null;
 
+  const rawRec = raw.recommendation || "";
+  const rawLines = rawRec.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const steps = [];
+  for (const line of rawLines) {
+    const subSteps = line.split(/(?=\b\d+\.\s+)/).map((s) => s.trim()).filter(Boolean);
+    steps.push(...subSteps);
+  }
+
   return {
     id: String(raw.id),
     problemId: String(raw.problem_id),
     problemName: raw.problem_name || `Problem #${raw.problem_id}`,
     recommendation: raw.recommendation,
     title: raw.recommendation,
+    steps: steps.length > 0 ? steps : [rawRec],
     reason: raw.reason,
     evidence: raw.evidence || {},
     confidence: raw.confidence ?? 0.85,
